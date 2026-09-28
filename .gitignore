@@ -1,0 +1,23 @@
+# Build output (NetBeans Ant)
+build/
+dist/
+
+# NetBeans: cau hinh rieng tung may + file tu sinh (moi may tu sinh lai khi mo project)
+nbproject/private/
+nbproject/build-impl.xml
+nbproject/genfiles.properties
+nbproject/ant-deploy.xml
+
+# Cau hinh DB rieng tung nguoi (copy tu db.properties.example)
+src/java/db.properties
+
+# IDE khac
+.idea/
+*.iml
+.vscode/
+
+# He dieu hanh
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
