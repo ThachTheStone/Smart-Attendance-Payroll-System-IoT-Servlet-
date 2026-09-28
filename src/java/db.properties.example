@@ -1,0 +1,8 @@
+# ================================================================
+# COPY file nay thanh "db.properties" (cung thu muc) roi sua cho
+# dung may cua ban. File db.properties da nam trong .gitignore
+# nen moi nguoi giu mat khau SQL Server rieng, khong bi conflict.
+# ================================================================
+db.url=jdbc:sqlserver://localhost:1433;databaseName=SmartAttendanceDB;encrypt=true;trustServerCertificate=true
+db.user=sa
+db.password=123456

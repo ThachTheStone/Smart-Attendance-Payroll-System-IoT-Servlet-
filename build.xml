@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- File build cua NetBeans (Ant). Phan chinh nam o nbproject/build-impl.xml,
+     NetBeans tu sinh file do khi mo project lan dau. -->
+<project name="SmartAttendance" default="default" basedir=".">
+    <description>Builds, tests, and runs the project SmartAttendance.</description>
+    <import file="nbproject/build-impl.xml"/>
+</project>

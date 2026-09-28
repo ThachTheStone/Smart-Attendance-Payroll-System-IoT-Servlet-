@@ -1,0 +1,39 @@
+<%-- Phan dau trang dung chung. Trang con khai bao taglib + c:set pageTitle, activeNav roi include file nay. --%>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><c:out value="${pageTitle}"/> · SmartAttend</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+</head>
+<body>
+<c:set var="me" value="${sessionScope.account}"/>
+<header class="topbar">
+    <a class="brand" href="${pageContext.request.contextPath}${me.role.homePath}">
+        <span class="brand-mark">SA</span> SmartAttend
+    </a>
+    <nav class="nav">
+        <c:if test="${me.role == 'ADMIN'}">
+            <a href="${pageContext.request.contextPath}/admin/users" class="${activeNav == 'users' ? 'active' : ''}">Người dùng</a>
+            <span class="nav-soon" title="Sprint sau">Chấm công</span>
+            <span class="nav-soon" title="Sprint sau">Bảng lương</span>
+        </c:if>
+        <c:if test="${me.role == 'STAFF'}">
+            <a href="${pageContext.request.contextPath}/staff/today" class="${activeNav == 'today' ? 'active' : ''}">Hôm nay</a>
+        </c:if>
+    </nav>
+    <div class="user-menu">
+        <span class="role-badge role-${me.role}"><c:out value="${me.role.label}"/></span>
+        <span class="user-name"><c:out value="${me.displayName}"/></span>
+        <a href="${pageContext.request.contextPath}/account/password" class="${activeNav == 'password' ? 'active' : ''}">Đổi mật khẩu</a>
+        <a href="${pageContext.request.contextPath}/logout" class="btn btn-ghost btn-sm">Đăng xuất</a>
+    </div>
+</header>
+<main class="container">
+    <c:if test="${not empty sessionScope.flash}">
+        <div class="alert alert-${sessionScope.flash.type}"><c:out value="${sessionScope.flash.message}"/></div>
+        <c:remove var="flash" scope="session"/>
+    </c:if>
