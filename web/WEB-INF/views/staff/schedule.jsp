@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="pageTitle" value="Lịch làm việc"/>
+<c:set var="pageTitle" value="My Schedule"/>
 <c:set var="activeNav" value="schedule"/>
 <%@ include file="../common/header.jspf" %>
 
@@ -37,8 +37,8 @@
 
 <div class="page-head">
     <div>
-        <h1>📅 Lịch làm việc của tôi</h1>
-        <p class="muted">Xem lịch phân ca làm việc tuần này và tuần sau (FR-SHIFT-04)</p>
+        <h1>📅 My Shift Schedule</h1>
+        <p class="muted">View your assigned shifts for this week and next week (FR-SHIFT-04)</p>
     </div>
 </div>
 
@@ -49,8 +49,8 @@
 <!-- THIS WEEK -->
 <div class="card" style="margin-bottom: 24px;">
     <h2 style="margin: 0; font-size: 16px; display: flex; align-items: center; justify-content: space-between;">
-        <span>Lịch tuần này</span>
-        <span class="muted small">Hôm nay là ${today}</span>
+        <span>This Week</span>
+        <span class="muted small">Today is ${today}</span>
     </h2>
     <div class="schedule-week-grid">
         <c:forEach var="day" items="${thisWeek}">
@@ -59,15 +59,15 @@
             <div class="day-card ${isToday ? 'is-today' : ''}">
                 <div class="day-title">
                     <c:choose>
-                        <c:when test="${day.dayOfWeek.value == 1}">Thứ 2</c:when>
-                        <c:when test="${day.dayOfWeek.value == 2}">Thứ 3</c:when>
-                        <c:when test="${day.dayOfWeek.value == 3}">Thứ 4</c:when>
-                        <c:when test="${day.dayOfWeek.value == 4}">Thứ 5</c:when>
-                        <c:when test="${day.dayOfWeek.value == 5}">Thứ 6</c:when>
-                        <c:when test="${day.dayOfWeek.value == 6}">Thứ 7</c:when>
-                        <c:when test="${day.dayOfWeek.value == 7}">Chủ nhật</c:when>
+                        <c:when test="${day.dayOfWeek.value == 1}">Mon</c:when>
+                        <c:when test="${day.dayOfWeek.value == 2}">Tue</c:when>
+                        <c:when test="${day.dayOfWeek.value == 3}">Wed</c:when>
+                        <c:when test="${day.dayOfWeek.value == 4}">Thu</c:when>
+                        <c:when test="${day.dayOfWeek.value == 5}">Fri</c:when>
+                        <c:when test="${day.dayOfWeek.value == 6}">Sat</c:when>
+                        <c:when test="${day.dayOfWeek.value == 7}">Sun</c:when>
                     </c:choose>
-                    <c:if test="${isToday}"><span style="color:var(--primary); font-size:11px;">(Hôm nay)</span></c:if>
+                    <c:if test="${isToday}"><span style="color:var(--primary); font-size:11px;">(Today)</span></c:if>
                 </div>
                 <div class="day-date">${day.dayOfMonth}/${day.monthValue}</div>
 
@@ -76,11 +76,11 @@
                         <div class="shift-box ${asgn.startTime > asgn.endTime ? 'shift-box-overnight' : ''}">
                             <div style="font-weight: 700;">${asgn.shiftName}</div>
                             <div class="mono" style="font-size: 12px; margin-top: 2px;">${asgn.startTime} - ${asgn.endTime}</div>
-                            <div class="small" style="opacity: 0.8; margin-top: 2px;">Nghỉ: ${asgn.breakMinutes}p</div>
+                            <div class="small" style="opacity: 0.8; margin-top: 2px;">Break: ${asgn.breakMinutes}m</div>
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <div class="off-box">Nghỉ</div>
+                        <div class="off-box">Day Off</div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -90,20 +90,20 @@
 
 <!-- NEXT WEEK -->
 <div class="card">
-    <h2 style="margin: 0; font-size: 16px;">Lịch tuần sau</h2>
+    <h2 style="margin: 0; font-size: 16px;">Next Week</h2>
     <div class="schedule-week-grid">
         <c:forEach var="day" items="${nextWeek}">
             <c:set var="asgn" value="${scheduleMap[day.toString()]}"/>
             <div class="day-card">
                 <div class="day-title">
                     <c:choose>
-                        <c:when test="${day.dayOfWeek.value == 1}">Thứ 2</c:when>
-                        <c:when test="${day.dayOfWeek.value == 2}">Thứ 3</c:when>
-                        <c:when test="${day.dayOfWeek.value == 3}">Thứ 4</c:when>
-                        <c:when test="${day.dayOfWeek.value == 4}">Thứ 5</c:when>
-                        <c:when test="${day.dayOfWeek.value == 5}">Thứ 6</c:when>
-                        <c:when test="${day.dayOfWeek.value == 6}">Thứ 7</c:when>
-                        <c:when test="${day.dayOfWeek.value == 7}">Chủ nhật</c:when>
+                        <c:when test="${day.dayOfWeek.value == 1}">Mon</c:when>
+                        <c:when test="${day.dayOfWeek.value == 2}">Tue</c:when>
+                        <c:when test="${day.dayOfWeek.value == 3}">Wed</c:when>
+                        <c:when test="${day.dayOfWeek.value == 4}">Thu</c:when>
+                        <c:when test="${day.dayOfWeek.value == 5}">Fri</c:when>
+                        <c:when test="${day.dayOfWeek.value == 6}">Sat</c:when>
+                        <c:when test="${day.dayOfWeek.value == 7}">Sun</c:when>
                     </c:choose>
                 </div>
                 <div class="day-date">${day.dayOfMonth}/${day.monthValue}</div>
@@ -113,11 +113,11 @@
                         <div class="shift-box ${asgn.startTime > asgn.endTime ? 'shift-box-overnight' : ''}">
                             <div style="font-weight: 700;">${asgn.shiftName}</div>
                             <div class="mono" style="font-size: 12px; margin-top: 2px;">${asgn.startTime} - ${asgn.endTime}</div>
-                            <div class="small" style="opacity: 0.8; margin-top: 2px;">Nghỉ: ${asgn.breakMinutes}p</div>
+                            <div class="small" style="opacity: 0.8; margin-top: 2px;">Break: ${asgn.breakMinutes}m</div>
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <div class="off-box">Nghỉ</div>
+                        <div class="off-box">Day Off</div>
                     </c:otherwise>
                 </c:choose>
             </div>

@@ -155,7 +155,7 @@ public class SseHub {
         int count = unrecognizedScanTimestamps.size();
         if (count >= 5) {
             String alertJson = String.format(
-                    "{\"type\":\"SECURITY_ALERT\",\"severity\":\"HIGH\",\"message\":\"Cảnh báo an ninh: Phát hiện %d lần quét vân tay không xác định trong 1 phút!\",\"count\":%d,\"time\":%d}",
+                    "{\"type\":\"SECURITY_ALERT\",\"severity\":\"HIGH\",\"message\":\"Security Alert: Detected %d unrecognized fingerprint scans within 1 minute!\",\"count\":%d,\"time\":%d}",
                     count, count, now
             );
             broadcast("dashboard", "security_alert", alertJson);
@@ -170,7 +170,7 @@ public class SseHub {
      */
     public void broadcastLowConfidenceAlert(int confidence, double minConfidence) {
         String alertJson = String.format(
-                "{\"type\":\"SECURITY_ALERT\",\"severity\":\"MEDIUM\",\"message\":\"Cảnh báo: Lần quét với độ tin cậy thấp (%d%% < %.0f%%)\",\"confidence\":%d,\"time\":%d}",
+                "{\"type\":\"SECURITY_ALERT\",\"severity\":\"MEDIUM\",\"message\":\"Warning: Scan with low confidence score (%d%% < %.0f%%)\",\"confidence\":%d,\"time\":%d}",
                 confidence, minConfidence, confidence, System.currentTimeMillis()
         );
         broadcast("dashboard", "security_alert", alertJson);

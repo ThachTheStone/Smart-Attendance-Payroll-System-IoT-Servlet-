@@ -34,7 +34,7 @@ public class StaffScheduleServlet extends HttpServlet {
         Account user = session == null ? null : (Account) session.getAttribute(Constants.SESSION_USER);
 
         if (user == null || user.getEmployeeId() == null) {
-            req.setAttribute("errorMessage", "Tài khoản của bạn chưa được liên kết với hồ sơ nhân viên.");
+            req.setAttribute("errorMessage", "Your account is not linked to an employee profile.");
             req.getRequestDispatcher("/WEB-INF/views/staff/schedule.jsp").forward(req, res);
             return;
         }

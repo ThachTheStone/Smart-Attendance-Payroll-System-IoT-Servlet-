@@ -56,7 +56,7 @@ public class UserValidator {
         // ---- Vai tro ----
         Role role = Role.parse(f.getRole());
         if (role == null) {
-            err.put("role", "Vui lòng chọn vai trò hợp lệ.");
+            err.put("role", "Please select a valid role.");
         }
 
         if (create) {
@@ -71,50 +71,50 @@ public class UserValidator {
             int empId = (create || existing.getEmployeeId() == null) ? 0 : existing.getEmployeeId();
             if (create) {
                 if (isBlank(f.getCode())) {
-                    err.put("code", "Mã nhân viên không được để trống.");
+                    err.put("code", "Employee code cannot be empty.");
                 } else if (!CODE.matcher(f.getCode()).matches()) {
-                    err.put("code", "Mã nhân viên phải có dạng NV + 3-6 chữ số (vd: NV013).");
+                    err.put("code", "Employee code must be in the format NV + 3-6 digits (e.g. NV013).");
                 } else if (employeeDAO.existsCode(f.getCode())) {
-                    err.put("code", "Mã nhân viên đã tồn tại.");
+                    err.put("code", "Employee code already exists.");
                 }
             }
 
             if (isBlank(f.getFullName())) {
-                err.put("fullName", "Họ tên không được để trống.");
+                err.put("fullName", "Full name cannot be empty.");
             } else if (f.getFullName().length() < 2 || f.getFullName().length() > 100) {
-                err.put("fullName", "Họ tên dài 2-100 ký tự.");
+                err.put("fullName", "Full name must be between 2 and 100 characters.");
             } else if (!FULL_NAME.matcher(f.getFullName()).matches()) {
-                err.put("fullName", "Họ tên chỉ gồm chữ cái, tối thiểu 2 từ (vd: Nguyễn Văn A).");
+                err.put("fullName", "Full name must contain letters only, with at least 2 words (e.g. John Doe).");
             }
 
             if (isBlank(f.getEmail())) {
-                err.put("email", "Email không được để trống.");
+                err.put("email", "Email cannot be empty.");
             } else if (f.getEmail().length() > 100 || !EMAIL.matcher(f.getEmail()).matches()) {
-                err.put("email", "Email không đúng định dạng.");
+                err.put("email", "Invalid email format.");
             } else if (employeeDAO.existsEmail(f.getEmail(), empId)) {
-                err.put("email", "Email đã được sử dụng.");
+                err.put("email", "Email is already in use.");
             }
 
             if (isBlank(f.getPhone())) {
-                err.put("phone", "Số điện thoại không được để trống.");
+                err.put("phone", "Phone number cannot be empty.");
             } else if (!PHONE.matcher(f.getPhone()).matches()) {
-                err.put("phone", "SĐT phải là số di động VN 10 số, bắt đầu 03/05/07/08/09.");
+                err.put("phone", "Phone must be a valid 10-digit mobile number starting with 03/05/07/08/09.");
             } else if (employeeDAO.existsPhone(f.getPhone(), empId)) {
-                err.put("phone", "Số điện thoại đã được sử dụng.");
+                err.put("phone", "Phone number is already in use.");
             }
 
             if (isBlank(f.getDepartment()) || !Constants.DEPARTMENTS.contains(f.getDepartment())) {
-                err.put("department", "Vui lòng chọn phòng ban.");
+                err.put("department", "Please select a department.");
             }
 
             if (isBlank(f.getPosition())) {
-                err.put("position", "Chức vụ không được để trống.");
+                err.put("position", "Position cannot be empty.");
             } else if (f.getPosition().length() < 2 || f.getPosition().length() > 50) {
-                err.put("position", "Chức vụ dài 2-50 ký tự.");
+                err.put("position", "Position must be between 2 and 50 characters.");
             }
 
             if (!Constants.SALARY_TYPES.contains(f.getSalaryType())) {
-                err.put("salaryType", "Vui lòng chọn loại lương.");
+                err.put("salaryType", "Please select a salary type.");
             }
             validateSalary(f, err);
         }
@@ -124,32 +124,32 @@ public class UserValidator {
     /** Dung chung cho doi mat khau / reset mat khau. */
     public void validatePassword(String pw, String confirm, String username, Map<String, String> err) {
         if (pw == null || pw.isEmpty()) {
-            err.put("password", "Mật khẩu không được để trống.");
+            err.put("password", "Password cannot be empty.");
             return;
         }
         if (pw.length() < 8 || pw.length() > 50) {
-            err.put("password", "Mật khẩu dài 8-50 ký tự.");
+            err.put("password", "Password must be between 8 and 50 characters.");
         } else if (pw.chars().anyMatch(Character::isWhitespace)) {
-            err.put("password", "Mật khẩu không được chứa khoảng trắng.");
+            err.put("password", "Password cannot contain whitespace.");
         } else if (!pw.matches(".*[A-Z].*") || !pw.matches(".*[a-z].*")
                 || !pw.matches(".*\\d.*") || !pw.matches(".*[^A-Za-z0-9].*")) {
-            err.put("password", "Mật khẩu phải có chữ hoa, chữ thường, chữ số và ký tự đặc biệt.");
+            err.put("password", "Password must contain uppercase, lowercase, numbers, and special characters.");
         } else if (username != null && !username.isEmpty() && pw.toLowerCase().contains(username)) {
-            err.put("password", "Mật khẩu không được chứa tên đăng nhập.");
+            err.put("password", "Password cannot contain the username.");
         }
         if (confirm == null || !confirm.equals(pw)) {
-            err.put("confirmPassword", "Mật khẩu nhập lại không khớp.");
+            err.put("confirmPassword", "Confirmation password does not match.");
         }
     }
 
     private void validateUsername(UserForm f, Map<String, String> err) {
         String u = f.getUsername();
         if (isBlank(u)) {
-            err.put("username", "Tên đăng nhập không được để trống.");
+            err.put("username", "Username cannot be empty.");
         } else if (!USERNAME.matcher(u).matches()) {
-            err.put("username", "Tên đăng nhập 4-30 ký tự, chỉ gồm a-z, 0-9, dấu . và _ (không bắt đầu/kết thúc bằng dấu .).");
+            err.put("username", "Username must be 4-30 characters, containing only a-z, 0-9, dot and underscore (cannot start/end with dot).");
         } else if (accountDAO.existsUsername(u)) {
-            err.put("username", "Tên đăng nhập đã tồn tại.");
+            err.put("username", "Username already exists.");
         }
     }
 
@@ -159,32 +159,32 @@ public class UserValidator {
             return;
         }
         if ((oldRole == Role.KIOSK) != (newRole == Role.KIOSK)) {
-            err.put("role", "Không thể đổi giữa tài khoản KIOSK và tài khoản nhân viên. Hãy tạo tài khoản mới.");
+            err.put("role", "Cannot switch between KIOSK and employee accounts. Please create a new account.");
         } else if (existing.getId() == currentUser.getId()) {
-            err.put("role", "Bạn không thể tự đổi vai trò của chính mình.");
+            err.put("role", "You cannot change your own role.");
         } else if (oldRole == Role.ADMIN && existing.isActive() && accountDAO.countActiveAdmins() <= 1) {
-            err.put("role", "Đây là admin cuối cùng đang hoạt động, không thể hạ quyền.");
+            err.put("role", "This is the last active administrator and cannot be demoted.");
         }
     }
 
     private void validateSalary(UserForm f, Map<String, String> err) {
         if (isBlank(f.getBaseSalary())) {
-            err.put("baseSalary", "Mức lương không được để trống.");
+            err.put("baseSalary", "Salary cannot be empty.");
             return;
         }
         BigDecimal v;
         try {
             v = new BigDecimal(f.getBaseSalary());
         } catch (NumberFormatException e) {
-            err.put("baseSalary", "Mức lương phải là số.");
+            err.put("baseSalary", "Salary must be a valid number.");
             return;
         }
         if ("HOURLY".equals(f.getSalaryType())) {
             if (v.compareTo(HOURLY_MIN) < 0 || v.compareTo(HOURLY_MAX) > 0) {
-                err.put("baseSalary", "Lương theo giờ phải từ 10.000 đến 2.000.000 VND.");
+                err.put("baseSalary", "Hourly rate must be between 10,000 and 2,000,000 VND.");
             }
         } else if (v.compareTo(MONTHLY_MIN) < 0 || v.compareTo(MONTHLY_MAX) > 0) {
-            err.put("baseSalary", "Lương tháng phải từ 1.000.000 đến 500.000.000 VND.");
+            err.put("baseSalary", "Monthly salary must be between 1,000,000 and 500,000,000 VND.");
         }
     }
 

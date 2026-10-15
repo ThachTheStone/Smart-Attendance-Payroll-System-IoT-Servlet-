@@ -201,60 +201,60 @@ CREATE TABLE AuditLog (
 );
 GO
 
-PRINT N'[4/4] Dang nap du lieu nen va du lieu demo...';
+PRINT '[4/4] Loading seed and demo data...';
 
 /* ---------- SEED 1: SALARY RULES ---------- */
 INSERT INTO SalaryRule (rule_key, value, description) VALUES 
-('standard_hours_per_month', 208.0, N'Số giờ làm việc chuẩn mỗi tháng (26 ngày x 8h)'),
-('ot_weekday_multiplier', 1.5, N'Hệ số làm thêm giờ ngày thường (150%)'),
-('ot_weekend_multiplier', 2.0, N'Hệ số làm thêm giờ ngày nghỉ cuối tuần (200%)'),
-('ot_holiday_multiplier', 3.0, N'Hệ số làm thêm giờ ngày nghỉ lễ/Tết (300%)'),
-('night_allowance_multiplier', 0.3, N'Phụ cấp làm việc ban đêm 22h-06h (+30%)'),
-('night_ot_multiplier', 0.2, N'Thưởng thêm làm thêm giờ vào ban đêm (+20%)'),
-('grace_period_minutes', 5.0, N'Thời gian ân hạn đi muộn không bị phạt (phút)'),
-('penalty_rate_per_minute', 1000.0, N'Mức phạt đi muộn mỗi phút sau ân hạn (VNĐ/phút)'),
-('min_confidence', 50.0, N'Ngưỡng độ tin cậy nhận diện vân tay tối thiểu (%)');
+('standard_hours_per_month', 208.0, 'Standard working hours per month (26 days x 8h)'),
+('ot_weekday_multiplier', 1.5, 'Weekday overtime multiplier (150%)'),
+('ot_weekend_multiplier', 2.0, 'Weekend overtime multiplier (200%)'),
+('ot_holiday_multiplier', 3.0, 'Public holiday overtime multiplier (300%)'),
+('night_allowance_multiplier', 0.3, 'Night shift allowance 22:00 - 06:00 (+30%)'),
+('night_ot_multiplier', 0.2, 'Night overtime bonus multiplier (+20%)'),
+('grace_period_minutes', 5.0, 'Grace period for late arrival without penalty (minutes)'),
+('penalty_rate_per_minute', 1000.0, 'Penalty rate per minute after grace period (VND/min)'),
+('min_confidence', 50.0, 'Minimum fingerprint recognition confidence threshold (%)');
 
 /* ---------- SEED 2: HOLIDAYS (2026) ---------- */
 INSERT INTO Holiday (date, name) VALUES
-('2026-01-01', N'Tết Dương lịch'),
-('2026-02-16', N'Tết Nguyên đán (29 Tết)'),
-('2026-02-17', N'Tết Nguyên đán (Mùng 1)'),
-('2026-02-18', N'Tết Nguyên đán (Mùng 2)'),
-('2026-02-19', N'Tết Nguyên đán (Mùng 3)'),
-('2026-02-20', N'Tết Nguyên đán (Mùng 4)'),
-('2026-04-26', N'Giỗ Tổ Hùng Vương'),
-('2026-04-30', N'Ngày Giải phóng miền Nam'),
-('2026-05-01', N'Quốc tế Lao động'),
-('2026-09-02', N'Quốc khánh'),
-('2026-10-20', N'Ngày Phụ nữ Việt Nam');
+('2026-01-01', 'New Year''s Day'),
+('2026-02-16', 'Lunar New Year Eve'),
+('2026-02-17', 'Lunar New Year (Day 1)'),
+('2026-02-18', 'Lunar New Year (Day 2)'),
+('2026-02-19', 'Lunar New Year (Day 3)'),
+('2026-02-20', 'Lunar New Year (Day 4)'),
+('2026-04-26', 'Hung Kings Commemoration Day'),
+('2026-04-30', 'Reunification Day'),
+('2026-05-01', 'International Labor Day'),
+('2026-09-02', 'National Day'),
+('2026-10-20', 'Vietnamese Women''s Day');
 
 /* ---------- SEED 3: SHIFTS ---------- */
 INSERT INTO Shift (name, start_time, end_time, break_minutes) VALUES 
-(N'Ca Sáng',       '06:00', '14:00', 0),
-(N'Ca Hành Chính', '08:00', '17:00', 60),
-(N'Ca Chiều',      '14:00', '22:00', 0),
-(N'Ca Đêm',        '22:00', '06:00', 0);
+('Morning Shift', '06:00', '14:00', 0),
+('Office Shift',  '08:00', '17:00', 60),
+('Evening Shift', '14:00', '22:00', 0),
+('Night Shift',   '22:00', '06:00', 0);
 
 /* ---------- SEED 4: IOT DEVICES ---------- */
 INSERT INTO Device (name, location, api_key, last_heartbeat) VALUES
-(N'Cổng chính ESP32',    N'Tầng 1 - Cửa ra vào',     'DEVICE_SECRET_KEY_2026', SYSDATETIME()),
-(N'Cổng xưởng sản xuất', N'Khu sản xuất - Tầng trệt', 'DEV-7f3a9c2e-esp32-main', SYSDATETIME());
+('ESP32 Main Gate',     'Floor 1 - Main Entrance',      'DEVICE_SECRET_KEY_2026', SYSDATETIME()),
+('ESP32 Workshop Gate', 'Workshop Area - Ground Floor', 'DEV-7f3a9c2e-esp32-main', SYSDATETIME());
 
 /* ---------- SEED 5: EMPLOYEES ---------- */
 INSERT INTO Employee (code, full_name, email, phone, department, position, salary_type, base_salary, status) VALUES
-('NV001', N'Nguyễn Văn An',    'an.nguyen@sap.vn',   '0901000001', N'Ban Giám đốc', N'Quản lý',         'MONTHLY', 20000000, 'ACTIVE'),
-('NV002', N'Trần Thị Lan',     'lan.tran@sap.vn',    '0901000002', N'Nhân sự',     N'Trưởng phòng HR', 'MONTHLY', 15000000, 'ACTIVE'),
-('NV003', N'Lê Minh Tuấn',     'tuan.le@sap.vn',     '0901000003', N'Sản xuất',    N'Công nhân',       'MONTHLY',  8320000, 'ACTIVE'),
-('NV004', N'Phạm Thị Hoa',     'hoa.pham@sap.vn',    '0901000004', N'Sản xuất',    N'Công nhân',       'MONTHLY',  8320000, 'ACTIVE'),
-('NV005', N'Hoàng Đức Minh',   'minh.hoang@sap.vn',  '0901000005', N'Sản xuất',    N'Tổ trưởng',       'MONTHLY', 10400000, 'ACTIVE'),
-('NV006', N'Võ Thị Mai',       'mai.vo@sap.vn',      '0901000006', N'Kho',         N'Thủ kho',         'MONTHLY',  9000000, 'ACTIVE'),
-('NV007', N'Đặng Quốc Bảo',    'bao.dang@sap.vn',    '0901000007', N'Kho',         N'Nhân viên kho',   'HOURLY',     35000, 'ACTIVE'),
-('NV008', N'Bùi Thanh Hương',  'huong.bui@sap.vn',   '0901000008', N'Kế toán',     N'Kế toán viên',    'MONTHLY', 11000000, 'ACTIVE'),
-('NV009', N'Đỗ Văn Hùng',      'hung.do@sap.vn',     '0901000009', N'Bảo vệ',      N'Bảo vệ ca đêm',   'MONTHLY',  7500000, 'ACTIVE'),
-('NV010', N'Ngô Thị Thu',      'thu.ngo@sap.vn',     '0901000010', N'Sản xuất',    N'Công nhân',       'HOURLY',     32000, 'ACTIVE'),
-('NV011', N'Trương Văn Khoa',  'khoa.truong@sap.vn', '0901000011', N'Sản xuất',    N'Công nhân',       'MONTHLY',  8320000, 'ACTIVE'),
-('NV012', N'Lý Thị Ngọc',      'ngoc.ly@sap.vn',     '0901000012', N'Kho',         N'Nhân viên kho',   'MONTHLY',  8000000, 'INACTIVE');
+('NV001', 'Nguyen Van An',    'an.nguyen@sap.vn',   '0901000001', 'Executive Board', 'General Manager',    'MONTHLY', 20000000, 'ACTIVE'),
+('NV002', 'Tran Thi Lan',     'lan.tran@sap.vn',    '0901000002', 'Human Resources', 'HR Manager',        'MONTHLY', 15000000, 'ACTIVE'),
+('NV003', 'Le Minh Tuan',     'tuan.le@sap.vn',     '0901000003', 'Production',      'Factory Worker',    'MONTHLY',  8320000, 'ACTIVE'),
+('NV004', 'Pham Thi Hoa',     'hoa.pham@sap.vn',    '0901000004', 'Production',      'Factory Worker',    'MONTHLY',  8320000, 'ACTIVE'),
+('NV005', 'Hoang Duc Minh',   'minh.hoang@sap.vn',  '0901000005', 'Production',      'Team Leader',       'MONTHLY', 10400000, 'ACTIVE'),
+('NV006', 'Vo Thi Mai',       'mai.vo@sap.vn',      '0901000006', 'Warehouse',       'Head Warehouseman', 'MONTHLY',  9000000, 'ACTIVE'),
+('NV007', 'Dang Quoc Bao',    'bao.dang@sap.vn',    '0901000007', 'Warehouse',       'Warehouse Staff',   'HOURLY',     35000, 'ACTIVE'),
+('NV008', 'Bui Thanh Huong',  'huong.bui@sap.vn',   '0901000008', 'Accounting',      'Accountant',        'MONTHLY', 11000000, 'ACTIVE'),
+('NV009', 'Do Van Hung',      'hung.do@sap.vn',     '0901000009', 'Security',        'Night Guard',       'MONTHLY',  7500000, 'ACTIVE'),
+('NV010', 'Ngo Thi Thu',      'thu.ngo@sap.vn',     '0901000010', 'Production',      'Factory Worker',    'HOURLY',     32000, 'ACTIVE'),
+('NV011', 'Truong Van Khoa',  'khoa.truong@sap.vn', '0901000011', 'Production',      'Factory Worker',    'MONTHLY',  8320000, 'ACTIVE'),
+('NV012', 'Ly Thi Ngoc',      'ngoc.ly@sap.vn',     '0901000012', 'Warehouse',       'Warehouse Staff',   'MONTHLY',  8000000, 'INACTIVE');
 
 /* ---------- SEED 6: ACCOUNTS ---------- */
 INSERT INTO Account (employee_id, username, password_hash, role, status)
@@ -274,23 +274,23 @@ SELECT NULL,'kiosk01',    '$2a$10$tzZNxRcSFfK.r/UWHped5.mXMr3gme3X72/0NiueIXX7Nw
 
 /* ---------- SEED 7: FINGERPRINTS ---------- */
 INSERT INTO Fingerprint (employee_id, template_id, finger_name)
-SELECT id, 1, N'Ngón trỏ phải' FROM Employee WHERE code = 'NV001' UNION ALL
-SELECT id, 2, N'Ngón cái phải' FROM Employee WHERE code = 'NV002' UNION ALL
-SELECT id, 3, N'Ngón trỏ phải' FROM Employee WHERE code = 'NV003' UNION ALL
-SELECT id, 4, N'Ngón trỏ phải' FROM Employee WHERE code = 'NV004' UNION ALL
-SELECT id, 5, N'Ngón trỏ phải' FROM Employee WHERE code = 'NV005';
+SELECT id, 1, 'Right index finger' FROM Employee WHERE code = 'NV001' UNION ALL
+SELECT id, 2, 'Right thumb'        FROM Employee WHERE code = 'NV002' UNION ALL
+SELECT id, 3, 'Right index finger' FROM Employee WHERE code = 'NV003' UNION ALL
+SELECT id, 4, 'Right index finger' FROM Employee WHERE code = 'NV004' UNION ALL
+SELECT id, 5, 'Right index finger' FROM Employee WHERE code = 'NV005';
 
-/* ---------- SEED 8: DEMO ATTENDANCE & PAYROLL CHO THANG 10/2026 ---------- */
+/* ---------- SEED 8: DEMO ATTENDANCE & PAYROLL FOR OCT 2026 ---------- */
 DECLARE @EmpTuanId INT = (SELECT id FROM Employee WHERE code = 'NV003');
-DECLARE @ShiftAdminId INT = (SELECT TOP 1 id FROM Shift WHERE name = N'Ca Hành Chính');
-DECLARE @ShiftNightId INT = (SELECT TOP 1 id FROM Shift WHERE name = N'Ca Đêm');
+DECLARE @ShiftAdminId INT = (SELECT TOP 1 id FROM Shift WHERE name = 'Office Shift');
+DECLARE @ShiftNightId INT = (SELECT TOP 1 id FROM Shift WHERE name = 'Night Shift');
 DECLARE @DeviceId INT = (SELECT TOP 1 id FROM Device WHERE api_key = 'DEVICE_SECRET_KEY_2026');
 
 IF @ShiftAdminId IS NULL SET @ShiftAdminId = 2;
 IF @ShiftNightId IS NULL SET @ShiftNightId = 4;
 IF @DeviceId IS NULL SET @DeviceId = 1;
 
--- Lich phan ca NV003
+-- Schedule assignments for NV003
 DECLARE @curDay INT = 1;
 WHILE @curDay <= 27
 BEGIN
@@ -306,7 +306,7 @@ END
 INSERT INTO ShiftAssignment (employee_id, shift_id, work_date)
 VALUES (@EmpTuanId, @ShiftNightId, '2026-10-28');
 
--- Cham cong NV003 (SRS 8.676.000 VND example)
+-- Attendance for NV003 (SRS 8,676,000 VND example)
 DECLARE @d INT = 1;
 WHILE @d <= 20
 BEGIN
@@ -332,9 +332,9 @@ VALUES (@EmpTuanId, '2026-10-21', @ShiftAdminId, '2026-10-21 08:25:00', '2026-10
 
 -- Attendance Logs
 INSERT INTO AttendanceLog (employee_id, device_id, event_time, confidence_score, result, reason) VALUES
-(@EmpTuanId, @DeviceId, '2026-10-28 21:55:12', 92, 'CHECK_IN',  N'Check-in thành công: Đúng giờ (Ca Đêm)'),
-(@EmpTuanId, @DeviceId, '2026-10-29 06:05:08', 95, 'CHECK_OUT', N'Check-out thành công (Đúng giờ, 8h0m)'),
-(NULL,       @DeviceId, DATEADD(minute, -15, SYSDATETIME()), 35, 'NOT_RECOGNIZED', N'Độ tin cậy nhận diện thấp: 35 < 50');
+(@EmpTuanId, @DeviceId, '2026-10-28 21:55:12', 92, 'CHECK_IN',  'Check-in successful: On Time (Night Shift)'),
+(@EmpTuanId, @DeviceId, '2026-10-29 06:05:08', 95, 'CHECK_OUT', 'Check-out successful (On Time, 8h0m)'),
+(NULL,       @DeviceId, DATEADD(minute, -15, SYSDATETIME()), 35, 'NOT_RECOGNIZED', 'Low recognition confidence: 35 < 50');
 
 -- Payroll & PayrollDetail
 INSERT INTO Payroll (month, year, status) VALUES (10, 2026, 'DRAFT');
@@ -357,23 +357,23 @@ DECLARE @mAtt INT = (SELECT COUNT(*) FROM Attendance);
 DECLARE @mLog INT = (SELECT COUNT(*) FROM AttendanceLog);
 DECLARE @mPd INT = (SELECT COUNT(*) FROM PayrollDetail);
 
-PRINT N'======================================================================';
-PRINT N'   KHOI TAO CSDL HOAN TAT 100%!                                     ';
-PRINT N'======================================================================';
-PRINT N'Thong ke du lieu:';
-PRINT N'  - Employee:        ' + CAST(@mEmp AS VARCHAR);
-PRINT N'  - Account:         ' + CAST(@mAcc AS VARCHAR);
-PRINT N'  - Device:          ' + CAST(@mDev AS VARCHAR);
-PRINT N'  - Shift:           ' + CAST(@mShift AS VARCHAR);
-PRINT N'  - ShiftAssignment: ' + CAST(@mSa AS VARCHAR);
-PRINT N'  - Attendance:      ' + CAST(@mAtt AS VARCHAR);
-PRINT N'  - AttendanceLog:   ' + CAST(@mLog AS VARCHAR);
-PRINT N'  - PayrollDetail:   ' + CAST(@mPd AS VARCHAR);
-PRINT N'----------------------------------------------------------------------';
-PRINT N'Tai khoan mau:';
-PRINT N'  * ADMIN: username: admin    | password: Admin@123';
-PRINT N'  * ADMIN: username: hr.lan   | password: Admin@123';
-PRINT N'  * STAFF: username: tuan.le  | password: Staff@123';
-PRINT N'  * KIOSK: username: kiosk01  | password: Kiosk@123';
-PRINT N'======================================================================';
+PRINT '======================================================================';
+PRINT '   DATABASE INITIALIZATION COMPLETED SUCCESSFULLY!                   ';
+PRINT '======================================================================';
+PRINT 'Database Statistics:';
+PRINT '  - Employees:        ' + CAST(@mEmp AS VARCHAR);
+PRINT '  - Accounts:         ' + CAST(@mAcc AS VARCHAR);
+PRINT '  - Devices:          ' + CAST(@mDev AS VARCHAR);
+PRINT '  - Shifts:           ' + CAST(@mShift AS VARCHAR);
+PRINT '  - ShiftAssignments: ' + CAST(@mSa AS VARCHAR);
+PRINT '  - Attendances:      ' + CAST(@mAtt AS VARCHAR);
+PRINT '  - AttendanceLogs:   ' + CAST(@mLog AS VARCHAR);
+PRINT '  - PayrollDetails:   ' + CAST(@mPd AS VARCHAR);
+PRINT '----------------------------------------------------------------------';
+PRINT 'Sample Accounts:';
+PRINT '  * ADMIN: username: admin    | password: Admin@123';
+PRINT '  * ADMIN: username: hr.lan   | password: Admin@123';
+PRINT '  * STAFF: username: tuan.le  | password: Staff@123';
+PRINT '  * KIOSK: username: kiosk01  | password: Kiosk@123';
+PRINT '======================================================================';
 GO

@@ -42,12 +42,12 @@ public class LoginServlet extends HttpServlet {
         Long lockedUntil = (Long) session.getAttribute("loginLockedUntil");
         if (lockedUntil != null && lockedUntil > System.currentTimeMillis()) {
             long sec = (lockedUntil - System.currentTimeMillis()) / 1000 + 1;
-            fail(req, res, "Bạn nhập sai quá " + MAX_FAILS + " lần. Vui lòng thử lại sau " + sec + " giây.");
+            fail(req, res, "Too many failed attempts (" + MAX_FAILS + "). Please try again in " + sec + " seconds.");
             return;
         }
 
         if (username.isEmpty() || password.isEmpty()) {
-            fail(req, res, "Vui lòng nhập tên đăng nhập và mật khẩu.");
+            fail(req, res, "Please enter both username and password.");
             return;
         }
 
@@ -59,11 +59,11 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("loginLockedUntil", System.currentTimeMillis() + LOCK_MILLIS);
                 session.setAttribute("loginFails", 0);
             }
-            fail(req, res, "Tên đăng nhập hoặc mật khẩu không đúng.");
+            fail(req, res, "Invalid username or password.");
             return;
         }
         if (!acc.isActive()) {
-            fail(req, res, "Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
+            fail(req, res, "Account is disabled. Please contact your administrator.");
             return;
         }
 

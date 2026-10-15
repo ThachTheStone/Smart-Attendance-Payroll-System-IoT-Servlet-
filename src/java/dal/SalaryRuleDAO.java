@@ -47,15 +47,15 @@ public class SalaryRuleDAO extends DBContext {
              PreparedStatement ps = con.prepareStatement(countSql);
              ResultSet rs = ps.executeQuery()) {
             if (rs.next() && rs.getInt(1) == 0) {
-                insertDefaultRule(con, "standard_hours_per_month", 208.0, "Số giờ làm việc chuẩn mỗi tháng (26 ngày x 8h)");
-                insertDefaultRule(con, "ot_weekday_multiplier", 1.5, "Hệ số làm thêm giờ ngày thường (150%)");
-                insertDefaultRule(con, "ot_weekend_multiplier", 2.0, "Hệ số làm thêm giờ ngày nghỉ cuối tuần (200%)");
-                insertDefaultRule(con, "ot_holiday_multiplier", 3.0, "Hệ số làm thêm giờ ngày nghỉ lễ/Tết (300%)");
-                insertDefaultRule(con, "night_allowance_multiplier", 0.3, "Phụ cấp làm việc ban đêm 22h-06h (+30%)");
-                insertDefaultRule(con, "night_ot_multiplier", 0.2, "Thưởng thêm làm thêm giờ vào ban đêm (+20%)");
-                insertDefaultRule(con, "grace_period_minutes", 5.0, "Thời gian ân hạn đi muộn không bị phạt (phút)");
-                insertDefaultRule(con, "penalty_rate_per_minute", 1000.0, "Mức phạt đi muộn mỗi phút sau ân hạn (VNĐ/phút)");
-                insertDefaultRule(con, "min_confidence", 50.0, "Ngưỡng độ tin cậy nhận diện vân tay tối thiểu (%)");
+                insertDefaultRule(con, "standard_hours_per_month", 208.0, "Standard working hours per month (26 days x 8h)");
+                insertDefaultRule(con, "ot_weekday_multiplier", 1.5, "Weekday overtime multiplier (150%)");
+                insertDefaultRule(con, "ot_weekend_multiplier", 2.0, "Weekend overtime multiplier (200%)");
+                insertDefaultRule(con, "ot_holiday_multiplier", 3.0, "Public holiday overtime multiplier (300%)");
+                insertDefaultRule(con, "night_allowance_multiplier", 0.3, "Night shift allowance 22:00 - 06:00 (+30%)");
+                insertDefaultRule(con, "night_ot_multiplier", 0.2, "Night overtime bonus multiplier (+20%)");
+                insertDefaultRule(con, "grace_period_minutes", 5.0, "Grace period for late arrival without penalty (minutes)");
+                insertDefaultRule(con, "penalty_rate_per_minute", 1000.0, "Penalty rate per minute after grace period (VND/min)");
+                insertDefaultRule(con, "min_confidence", 50.0, "Minimum fingerprint recognition confidence threshold (%)");
             }
         } catch (SQLException e) {
             e.printStackTrace();

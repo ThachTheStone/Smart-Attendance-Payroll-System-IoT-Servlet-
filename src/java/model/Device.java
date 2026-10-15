@@ -69,7 +69,15 @@ public class Device {
     }
 
     public boolean isOnline() {
-        if (lastHeartbeat == null) return false;
+        if (lastHeartbeat == null)
+            return false;
         return java.time.Duration.between(lastHeartbeat, LocalDateTime.now()).getSeconds() <= 120;
+    }
+
+    public String getFormattedHeartbeat() {
+        if (lastHeartbeat == null) {
+            return "No signal";
+        }
+        return lastHeartbeat.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy"));
     }
 }

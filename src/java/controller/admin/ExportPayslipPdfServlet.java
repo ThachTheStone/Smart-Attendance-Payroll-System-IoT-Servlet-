@@ -31,7 +31,7 @@ public class ExportPayslipPdfServlet extends HttpServlet {
         String empIdStr = req.getParameter("employeeId");
 
         if (pIdStr == null || pIdStr.trim().isEmpty()) {
-            Flash.error(req, "Thiếu tham số mã bảng lương (payrollId).");
+            Flash.error(req, "Missing payroll period ID parameter (payrollId).");
             res.sendRedirect(req.getContextPath() + "/admin/payroll");
             return;
         }
@@ -40,14 +40,14 @@ public class ExportPayslipPdfServlet extends HttpServlet {
         try {
             payrollId = Integer.parseInt(pIdStr.trim());
         } catch (NumberFormatException e) {
-            Flash.error(req, "Mã bảng lương không hợp lệ.");
+            Flash.error(req, "Invalid payroll period ID.");
             res.sendRedirect(req.getContextPath() + "/admin/payroll");
             return;
         }
 
         Payroll payroll = payrollDAO.findById(payrollId);
         if (payroll == null) {
-            Flash.error(req, "Không tìm thấy bảng lương tương ứng.");
+            Flash.error(req, "Payroll period not found.");
             res.sendRedirect(req.getContextPath() + "/admin/payroll");
             return;
         }
@@ -58,7 +58,7 @@ public class ExportPayslipPdfServlet extends HttpServlet {
                 int employeeId = Integer.parseInt(empIdStr.trim());
                 PayrollDetail detail = payrollDAO.findDetailByPayrollAndEmployee(payrollId, employeeId);
                 if (detail == null) {
-                    Flash.error(req, "Không tìm thấy dữ liệu phiếu lương của nhân viên này.");
+                    Flash.error(req, "No payslip data found for this employee.");
                     res.sendRedirect(req.getContextPath() + "/admin/payroll?month=" + payroll.getMonth() + "&year=" + payroll.getYear());
                     return;
                 }
@@ -75,7 +75,7 @@ public class ExportPayslipPdfServlet extends HttpServlet {
             // Case 2: Batch company-wide PDF export
             List<PayrollDetail> details = payrollDAO.findDetailsByPayrollId(payrollId);
             if (details.isEmpty()) {
-                Flash.error(req, "Bảng lương chưa có dữ liệu nhân sự để xuất PDF.");
+                Flash.error(req, "Payroll period has no employee records to export.");
                 res.sendRedirect(req.getContextPath() + "/admin/payroll?month=" + payroll.getMonth() + "&year=" + payroll.getYear());
                 return;
             }
@@ -87,7 +87,7 @@ public class ExportPayslipPdfServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Flash.error(req, "Lỗi trong quá trình tạo tệp PDF: " + e.getMessage());
+            Flash.error(req, "Error generating PDF file: " + e.getMessage());
             res.sendRedirect(req.getContextPath() + "/admin/payroll?month=" + payroll.getMonth() + "&year=" + payroll.getYear());
         }
     }

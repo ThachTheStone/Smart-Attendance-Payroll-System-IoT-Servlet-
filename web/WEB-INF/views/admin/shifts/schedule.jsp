@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="pageTitle" value="Lịch xếp ca làm việc"/>
+<c:set var="pageTitle" value="Shift Schedule"/>
 <c:set var="activeNav" value="shifts"/>
 <%@ include file="../../common/header.jspf" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
@@ -25,28 +25,28 @@
 
 <div class="page-head">
     <div>
-        <h1>📅 Lịch xếp ca làm việc</h1>
-        <p class="muted">Phân công ca làm việc theo tuần hoặc theo mẫu định kỳ (FR-SHIFT-02)</p>
+        <h1>📅 Shift Schedule</h1>
+        <p class="muted">Assign employee shifts on a weekly basis or recurring patterns (FR-SHIFT-02)</p>
     </div>
     <div style="display:flex; gap:10px;">
-        <a class="btn btn-secondary" href="${ctx}/admin/shifts">⚙️ Danh sách ca làm</a>
-        <a class="btn btn-secondary" href="${ctx}/admin/holidays">🎉 Ngày lễ</a>
+        <a class="btn btn-secondary" href="${ctx}/admin/shifts">⚙️ Shift List</a>
+        <a class="btn btn-secondary" href="${ctx}/admin/holidays">🎉 Holidays</a>
     </div>
 </div>
 
 <div class="schedule-header">
     <div class="week-nav">
-        <a class="btn btn-secondary btn-sm" href="${ctx}/admin/shifts/schedule?offset=${offset - 1}">← Tuần trước</a>
+        <a class="btn btn-secondary btn-sm" href="${ctx}/admin/shifts/schedule?offset=${offset - 1}">← Previous Week</a>
         <c:if test="${offset != 0}">
-            <a class="btn btn-ghost btn-sm" href="${ctx}/admin/shifts/schedule?offset=0">Về tuần này</a>
+            <a class="btn btn-ghost btn-sm" href="${ctx}/admin/shifts/schedule?offset=0">This Week</a>
         </c:if>
         <span style="font-weight: 600; font-size: 15px;">
-            Từ ${monday} đến ${sunday}
+            From ${monday} to ${sunday}
         </span>
-        <a class="btn btn-secondary btn-sm" href="${ctx}/admin/shifts/schedule?offset=${offset + 1}">Tuần sau →</a>
+        <a class="btn btn-secondary btn-sm" href="${ctx}/admin/shifts/schedule?offset=${offset + 1}">Next Week →</a>
     </div>
     <div>
-        <a class="btn btn-sm" href="#assignBox">+ Phân ca hàng loạt</a>
+        <a class="btn btn-sm" href="#assignBox">+ Bulk Assign Shifts</a>
     </div>
 </div>
 
@@ -55,18 +55,18 @@
     <table class="table" style="min-width: 900px;">
         <thead>
             <tr>
-                <th style="width: 220px;">Nhân viên</th>
+                <th style="width: 220px;">Employee</th>
                 <c:forEach var="day" items="${weekDays}" varStatus="status">
                     <th style="text-align: center; width: 140px;">
                         <div>
                             <c:choose>
-                                <c:when test="${day.dayOfWeek.value == 1}">Thứ 2</c:when>
-                                <c:when test="${day.dayOfWeek.value == 2}">Thứ 3</c:when>
-                                <c:when test="${day.dayOfWeek.value == 3}">Thứ 4</c:when>
-                                <c:when test="${day.dayOfWeek.value == 4}">Thứ 5</c:when>
-                                <c:when test="${day.dayOfWeek.value == 5}">Thứ 6</c:when>
-                                <c:when test="${day.dayOfWeek.value == 6}">Thứ 7</c:when>
-                                <c:when test="${day.dayOfWeek.value == 7}">Chủ nhật</c:when>
+                                <c:when test="${day.dayOfWeek.value == 1}">Mon</c:when>
+                                <c:when test="${day.dayOfWeek.value == 2}">Tue</c:when>
+                                <c:when test="${day.dayOfWeek.value == 3}">Wed</c:when>
+                                <c:when test="${day.dayOfWeek.value == 4}">Thu</c:when>
+                                <c:when test="${day.dayOfWeek.value == 5}">Fri</c:when>
+                                <c:when test="${day.dayOfWeek.value == 6}">Sat</c:when>
+                                <c:when test="${day.dayOfWeek.value == 7}">Sun</c:when>
                             </c:choose>
                         </div>
                         <div class="muted small">${day.dayOfMonth}/${day.monthValue}</div>
@@ -90,11 +90,11 @@
                                     <c:forEach var="asgn" items="${cellShifts}">
                                         <div class="shift-tag ${asgn.startTime > asgn.endTime ? 'shift-tag-overnight' : ''}">
                                             <span>${asgn.shiftName} (${asgn.startTime})</span>
-                                            <form action="${ctx}/admin/shifts/schedule" method="post" style="display:inline;" onsubmit="return confirm('Hủy ca làm này?');">
+                                            <form action="${ctx}/admin/shifts/schedule" method="post" style="display:inline;" onsubmit="return confirm('Cancel this shift assignment?');">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id" value="${asgn.id}">
                                                 <input type="hidden" name="offset" value="${offset}">
-                                                <button type="submit" class="shift-del-btn" title="Hủy ca">×</button>
+                                                <button type="submit" class="shift-del-btn" title="Remove shift">×</button>
                                             </form>
                                         </div>
                                     </c:forEach>
@@ -108,7 +108,7 @@
                 </tr>
             </c:forEach>
             <c:if test="${empty employees}">
-                <tr><td colspan="8" style="text-align:center; padding: 24px;" class="muted">Không có nhân viên hoạt động nào.</td></tr>
+                <tr><td colspan="8" style="text-align:center; padding: 24px;" class="muted">No active employees found.</td></tr>
             </c:if>
         </tbody>
     </table>
@@ -116,8 +116,8 @@
 
 <!-- Bulk Shift Assignment Section -->
 <div class="card" id="assignBox">
-    <h2 style="font-size: 16px; margin-top: 0;">⚡ Phân công ca làm việc hàng loạt (Bulk Assignment)</h2>
-    <p class="muted small">Chọn nhân viên, ca làm việc, khoảng ngày và ngày trong tuần để tự động tạo lịch phân công.</p>
+    <h2 style="font-size: 16px; margin-top: 0;">⚡ Bulk Shift Assignment</h2>
+    <p class="muted small">Select employees, shift, date range, and weekdays to automatically generate schedules.</p>
     
     <form action="${ctx}/admin/shifts/schedule" method="post">
         <input type="hidden" name="action" value="assign">
@@ -125,8 +125,8 @@
 
         <div style="margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label style="font-weight: 500; font-size: 13px;">1. Chọn nhân viên: <span style="color:red;">*</span></label>
-                <button type="button" class="btn btn-ghost btn-sm" onclick="toggleAllEmployees(true)">Chọn tất cả</button>
+                <label style="font-weight: 500; font-size: 13px;">1. Select Employees: <span style="color:red;">*</span></label>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="toggleAllEmployees(true)">Select All</button>
             </div>
             <div class="emp-checkbox-list">
                 <c:forEach var="emp" items="${employees}">
@@ -140,7 +140,7 @@
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
             <div>
-                <label style="display:block; font-weight:500; margin-bottom:4px; font-size:13px;">2. Ca làm việc: <span style="color:red;">*</span></label>
+                <label style="display:block; font-weight:500; margin-bottom:4px; font-size:13px;">2. Shift: <span style="color:red;">*</span></label>
                 <select name="shiftId" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px;">
                     <c:forEach var="s" items="${shifts}">
                         <option value="${s.id}">${s.name} (${s.startTime} - ${s.endTime})</option>
@@ -148,29 +148,29 @@
                 </select>
             </div>
             <div>
-                <label style="display:block; font-weight:500; margin-bottom:4px; font-size:13px;">3. Từ ngày: <span style="color:red;">*</span></label>
+                <label style="display:block; font-weight:500; margin-bottom:4px; font-size:13px;">3. From Date: <span style="color:red;">*</span></label>
                 <input type="date" name="startDate" value="${monday}" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px;">
             </div>
             <div>
-                <label style="display:block; font-weight:500; margin-bottom:4px; font-size:13px;">4. Đến ngày: <span style="color:red;">*</span></label>
+                <label style="display:block; font-weight:500; margin-bottom:4px; font-size:13px;">4. To Date: <span style="color:red;">*</span></label>
                 <input type="date" name="endDate" value="${sunday}" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px;">
             </div>
         </div>
 
         <div style="margin-bottom: 20px;">
-            <label style="display:block; font-weight:500; margin-bottom:6px; font-size:13px;">5. Áp dụng cho các ngày trong tuần (để trống nếu áp dụng tất cả các ngày trong khoảng):</label>
+            <label style="display:block; font-weight:500; margin-bottom:6px; font-size:13px;">5. Apply to days of the week (leave unchecked to apply every day):</label>
             <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="1" checked> Thứ 2</label>
-                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="2" checked> Thứ 3</label>
-                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="3" checked> Thứ 4</label>
-                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="4" checked> Thứ 5</label>
-                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="5" checked> Thứ 6</label>
-                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="6"> Thứ 7</label>
-                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="7"> Chủ nhật</label>
+                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="1" checked> Mon</label>
+                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="2" checked> Tue</label>
+                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="3" checked> Wed</label>
+                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="4" checked> Thu</label>
+                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="5" checked> Fri</label>
+                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="6"> Sat</label>
+                <label style="display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;"><input type="checkbox" name="daysOfWeek" value="7"> Sun</label>
             </div>
         </div>
 
-        <button type="submit" class="btn" style="padding: 10px 24px;">Phân ca làm việc</button>
+        <button type="submit" class="btn" style="padding: 10px 24px;">Assign Shifts</button>
     </form>
 </div>
 

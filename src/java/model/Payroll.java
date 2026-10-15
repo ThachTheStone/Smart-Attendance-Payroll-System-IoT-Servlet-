@@ -86,6 +86,6 @@ public class Payroll {
     }
 
     public String getPeriodLabel() {
-        return String.format("Tháng %02d/%d", month, year);
+        return String.format("Month %02d/%d", month, year);
     }
 }

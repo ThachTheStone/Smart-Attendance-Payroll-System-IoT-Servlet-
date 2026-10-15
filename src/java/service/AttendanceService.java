@@ -64,36 +64,36 @@ public class AttendanceService {
         // 1. Raw check: invalid or missing template ID (FR-IOT-03, FR-ATT-01)
         if (templateId == null || templateId <= 0) {
             AttendanceLog log = new AttendanceLog(null, deviceId, now, confidence,
-                    "NOT_RECOGNIZED", "Vân tay không xác định (templateId trống hoặc không hợp lệ)");
+                    "NOT_RECOGNIZED", "Unrecognized fingerprint (empty or invalid templateId)");
             attendanceLogDAO.insert(log);
-            return ScanResult.notRecognized("Vân tay không xác định");
+            return ScanResult.notRecognized("Unrecognized fingerprint");
         }
 
         // 2. Confidence threshold check (FR-IOT-04)
         double minConfidence = salaryRuleDAO.getRuleValue("min_confidence", 50.0);
         if (confidence != null && confidence < minConfidence) {
             AttendanceLog log = new AttendanceLog(null, deviceId, now, confidence,
-                    "NOT_RECOGNIZED", "Độ tin cậy nhận diện thấp: " + confidence + " < " + minConfidence);
+                    "NOT_RECOGNIZED", "Low recognition confidence: " + confidence + " < " + minConfidence);
             attendanceLogDAO.insert(log);
-            return ScanResult.notRecognized("Độ tin cậy nhận diện quá thấp (" + confidence + "%)");
+            return ScanResult.notRecognized("Recognition confidence too low (" + confidence + "%)");
         }
 
         // 3. Template existence in DB
         Fingerprint fp = fingerprintDAO.findByTemplateId(templateId);
         if (fp == null) {
             AttendanceLog log = new AttendanceLog(null, deviceId, now, confidence,
-                    "NOT_RECOGNIZED", "Template ID " + templateId + " chưa đăng ký trong CSDL");
+                    "NOT_RECOGNIZED", "Template ID " + templateId + " not registered in database");
             attendanceLogDAO.insert(log);
-            return ScanResult.notRecognized("Vân tay chưa đăng ký trên hệ thống");
+            return ScanResult.notRecognized("Fingerprint not registered in the system");
         }
 
         // 4. Employee active status check
         Employee emp = employeeDAO.findById(fp.getEmployeeId());
         if (emp == null || !"ACTIVE".equalsIgnoreCase(emp.getStatus())) {
             AttendanceLog log = new AttendanceLog(fp.getEmployeeId(), deviceId, now, confidence,
-                    "IGNORED", "Nhân viên không hoạt động hoặc đã nghỉ việc");
+                    "IGNORED", "Employee is inactive or has left company");
             attendanceLogDAO.insert(log);
-            return ScanResult.ignored("Nhân viên không hoạt động hoặc đã nghỉ việc");
+            return ScanResult.ignored("Employee is inactive or has left company");
         }
 
         // 5. Cooldown check: ignore scans within 60 seconds (FR-ATT-06)
@@ -102,9 +102,9 @@ public class AttendanceService {
             long seconds = Duration.between(lastLog.getEventTime(), now).getSeconds();
             if (seconds >= 0 && seconds < 60) {
                 AttendanceLog log = new AttendanceLog(emp.getId(), deviceId, now, confidence,
-                        "IGNORED", "Quẹt thẻ liên tiếp trong " + seconds + "s (< 60s)");
+                        "IGNORED", "Consecutive scans within " + seconds + "s (< 60s)");
                 attendanceLogDAO.insert(log);
-                return ScanResult.ignored("Vui lòng đợi 1 phút giữa các lần quẹt thẻ (đã qua " + seconds + "s)");
+                return ScanResult.ignored("Please wait 1 minute between scans (" + seconds + "s elapsed)");
             }
         }
 
@@ -187,7 +187,7 @@ public class AttendanceService {
         attendanceDAO.update(att);
 
         // Raw log
-        String reason = "Check-out thành công (" + att.getStatusLabel() + ", " + (workedMinutes / 60) + "h" + (workedMinutes % 60) + "m)";
+        String reason = "Check-out successful (" + att.getStatusLabel() + ", " + (workedMinutes / 60) + "h" + (workedMinutes % 60) + "m)";
         AttendanceLog log = new AttendanceLog(emp.getId(), deviceId, now, confidence, "CHECK_OUT", reason);
         attendanceLogDAO.insert(log);
 
@@ -217,9 +217,9 @@ public class AttendanceService {
             List<Shift> allShifts = shiftDAO.findAll();
             if (allShifts.isEmpty()) {
                 AttendanceLog log = new AttendanceLog(emp.getId(), deviceId, now, confidence,
-                        "IGNORED", "Hệ thống chưa thiết lập ca làm việc nào");
+                        "IGNORED", "No shifts have been configured in the system");
                 attendanceLogDAO.insert(log);
-                return ScanResult.ignored("Hệ thống chưa thiết lập ca làm việc nào");
+                return ScanResult.ignored("No shifts have been configured in the system");
             }
 
             targetShift = findClosestShift(allShifts, now.toLocalTime());
@@ -252,7 +252,7 @@ public class AttendanceService {
         }
 
         // Raw log
-        String reason = "Check-in thành công: " + att.getStatusLabel() + " (" + targetShift.getName() + ")";
+        String reason = "Check-in successful: " + att.getStatusLabel() + " (" + targetShift.getName() + ")";
         AttendanceLog log = new AttendanceLog(emp.getId(), deviceId, now, confidence, "CHECK_IN", reason);
         attendanceLogDAO.insert(log);
 

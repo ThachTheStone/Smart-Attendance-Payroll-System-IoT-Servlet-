@@ -37,11 +37,11 @@ public class ChangePasswordServlet extends HttpServlet {
 
         Map<String, String> errors = new LinkedHashMap<>();
         if (!PasswordUtil.verify(current, me.getPasswordHash())) {
-            errors.put("currentPassword", "Mật khẩu hiện tại không đúng.");
+            errors.put("currentPassword", "Current password is incorrect.");
         }
         validator.validatePassword(pw, req.getParameter("confirmPassword"), me.getUsername(), errors);
         if (!errors.containsKey("password") && pw != null && pw.equals(current)) {
-            errors.put("password", "Mật khẩu mới phải khác mật khẩu hiện tại.");
+            errors.put("password", "New password must be different from current password.");
         }
         if (!errors.isEmpty()) {
             req.setAttribute("errors", errors);
@@ -49,7 +49,7 @@ public class ChangePasswordServlet extends HttpServlet {
             return;
         }
         accountDAO.updatePassword(me.getId(), PasswordUtil.hash(pw));
-        Flash.success(req, "Đổi mật khẩu thành công.");
+        Flash.success(req, "Password changed successfully.");
         res.sendRedirect(req.getContextPath() + me.getRole().getHomePath());
     }
 }

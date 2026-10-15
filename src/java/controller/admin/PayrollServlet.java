@@ -100,9 +100,9 @@ public class PayrollServlet extends HttpServlet {
             int payrollId = Integer.parseInt(req.getParameter("payrollId"));
             boolean locked = payrollDAO.lockPayroll(payrollId);
             if (locked) {
-                Flash.success(req, "Đã khóa bảng lương Tháng " + month + "/" + year + " thành công. Dữ liệu đã lưu chính thức.");
+                Flash.success(req, "Payroll for Month " + month + "/" + year + " locked successfully. Data is now final.");
             } else {
-                Flash.error(req, "Không thể khóa bảng lương.");
+                Flash.error(req, "Failed to lock payroll.");
             }
             res.sendRedirect(req.getContextPath() + "/admin/payroll?month=" + month + "&year=" + year);
             return;
@@ -112,8 +112,8 @@ public class PayrollServlet extends HttpServlet {
             // Check for missing checkouts (FR-PAY-03)
             List<Attendance> missingCheckouts = payrollDAO.findMissingCheckoutsForMonth(month, year);
             if (!missingCheckouts.isEmpty()) {
-                Flash.error(req, "Không thể tính lương: Tháng " + month + "/" + year + " còn " 
-                        + missingCheckouts.size() + " lượt quên check-out chưa được xử lý (FR-PAY-03).");
+                Flash.error(req, "Cannot generate payroll: Month " + month + "/" + year + " has " 
+                        + missingCheckouts.size() + " unresolved missing checkouts (FR-PAY-03).");
                 res.sendRedirect(req.getContextPath() + "/admin/payroll?month=" + month + "&year=" + year);
                 return;
             }
@@ -121,7 +121,7 @@ public class PayrollServlet extends HttpServlet {
             // Check if existing payroll is locked
             Payroll existing = payrollDAO.findByMonthAndYear(month, year);
             if (existing != null && existing.isLocked()) {
-                Flash.error(req, "Bảng lương Tháng " + month + "/" + year + " đã bị KHÓA và không thể tính toán lại.");
+                Flash.error(req, "Payroll for Month " + month + "/" + year + " is LOCKED and cannot be recalculated.");
                 res.sendRedirect(req.getContextPath() + "/admin/payroll?month=" + month + "&year=" + year);
                 return;
             }
@@ -130,7 +130,7 @@ public class PayrollServlet extends HttpServlet {
             if (existing == null) {
                 payrollId = payrollDAO.createDraft(month, year);
                 if (payrollId <= 0) {
-                    Flash.error(req, "Không thể khởi tạo bản ghi bảng lương mới.");
+                    Flash.error(req, "Could not initialize new payroll record.");
                     res.sendRedirect(req.getContextPath() + "/admin/payroll?month=" + month + "&year=" + year);
                     return;
                 }
@@ -165,10 +165,10 @@ public class PayrollServlet extends HttpServlet {
 
             boolean saved = payrollDAO.savePayrollDetails(payrollId, details);
             if (saved) {
-                Flash.success(req, "Đã tính toán bảng lương Tháng " + month + "/" + year 
-                        + " cho " + details.size() + " nhân sự (Bản nháp DRAFT).");
+                Flash.success(req, "Calculated payroll for Month " + month + "/" + year 
+                        + " across " + details.size() + " employees (DRAFT).");
             } else {
-                Flash.error(req, "Không thể lưu dữ liệu chi tiết bảng lương.");
+                Flash.error(req, "Could not save payroll details.");
             }
 
             res.sendRedirect(req.getContextPath() + "/admin/payroll?month=" + month + "&year=" + year);

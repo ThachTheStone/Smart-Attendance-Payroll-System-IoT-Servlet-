@@ -51,12 +51,12 @@ public class ShiftServlet extends HttpServlet {
                 int id = Integer.parseInt(req.getParameter("id"));
                 boolean deleted = shiftDAO.delete(id);
                 if (deleted) {
-                    Flash.success(req, "Xóa ca làm việc thành công.");
+                    Flash.success(req, "Shift deleted successfully.");
                 } else {
-                    Flash.error(req, "Không thể xóa ca làm việc (đang được gán cho nhân viên hoặc có dữ liệu chấm công).");
+                    Flash.error(req, "Cannot delete shift (currently assigned to employees or has attendance records).");
                 }
             } catch (NumberFormatException e) {
-                Flash.error(req, "ID ca làm việc không hợp lệ.");
+                Flash.error(req, "Invalid shift ID.");
             }
             res.sendRedirect(req.getContextPath() + "/admin/shifts");
             return;
@@ -78,14 +78,14 @@ public class ShiftServlet extends HttpServlet {
         }
 
         if (name == null || name.trim().isEmpty()) {
-            Flash.error(req, "Vui lòng nhập tên ca làm việc.");
+            Flash.error(req, "Please enter shift name.");
             res.sendRedirect(req.getContextPath() + "/admin/shifts");
             return;
         }
 
         name = name.trim();
         if (shiftDAO.existsName(name, id)) {
-            Flash.error(req, "Tên ca làm việc '" + name + "' đã tồn tại.");
+            Flash.error(req, "Shift name '" + name + "' already exists.");
             res.sendRedirect(req.getContextPath() + "/admin/shifts");
             return;
         }
@@ -96,7 +96,7 @@ public class ShiftServlet extends HttpServlet {
             startTime = LocalTime.parse(startStr.trim());
             endTime = LocalTime.parse(endStr.trim());
         } catch (DateTimeParseException | NullPointerException e) {
-            Flash.error(req, "Định dạng giờ không hợp lệ (HH:mm).");
+            Flash.error(req, "Invalid time format (HH:mm).");
             res.sendRedirect(req.getContextPath() + "/admin/shifts");
             return;
         }
@@ -114,12 +114,12 @@ public class ShiftServlet extends HttpServlet {
         boolean ok;
         if (id > 0) {
             ok = shiftDAO.update(shift);
-            if (ok) Flash.success(req, "Cập nhật ca làm việc thành công.");
-            else Flash.error(req, "Cập nhật ca làm việc thất bại.");
+            if (ok) Flash.success(req, "Shift updated successfully.");
+            else Flash.error(req, "Failed to update shift.");
         } else {
             ok = shiftDAO.insert(shift);
-            if (ok) Flash.success(req, "Thêm mới ca làm việc thành công.");
-            else Flash.error(req, "Thêm mới ca làm việc thất bại.");
+            if (ok) Flash.success(req, "New shift created successfully.");
+            else Flash.error(req, "Failed to create new shift.");
         }
 
         res.sendRedirect(req.getContextPath() + "/admin/shifts");

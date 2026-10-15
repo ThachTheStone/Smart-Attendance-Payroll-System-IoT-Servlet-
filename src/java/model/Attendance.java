@@ -146,14 +146,14 @@ public class Attendance {
     }
 
     public String getStatusLabel() {
-        if (status == null) return "Chưa rõ";
+        if (status == null) return "Unknown";
         switch (status) {
-            case "ON_TIME": return "Đúng giờ";
-            case "LATE": return "Đi muộn";
-            case "EARLY_LEAVE": return "Về sớm";
-            case "MISSING_CHECKOUT": return "Quên checkout";
-            case "ABSENT": return "Vắng mặt";
-            case "OVERTIME": return "Tăng ca";
+            case "ON_TIME": return "On Time";
+            case "LATE": return "Late";
+            case "EARLY_LEAVE": return "Early Leave";
+            case "MISSING_CHECKOUT": return "Missing Checkout";
+            case "ABSENT": return "Absent";
+            case "OVERTIME": return "Overtime";
             default: return status;
         }
     }

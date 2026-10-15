@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<c:set var="pageTitle" value="Hôm nay"/>
+<c:set var="pageTitle" value="Today's Attendance"/>
 <c:set var="activeNav" value="today"/>
 <%@ include file="../common/header.jspf" %>
 
@@ -161,7 +161,7 @@
         color: var(--text);
     }
 
-    /* Filter Form */
+    /* Filter Bar */
     .filter-bar {
         display: flex;
         gap: 12px;
@@ -188,29 +188,29 @@
 <!-- 1. Hero / Live Work Clock (FR-STAFF-01) -->
 <div class="today-hero">
     <div class="today-hero-left">
-        <h1>Xin chào, <c:out value="${emp.fullName}"/> 👋</h1>
+        <h1>Welcome, <c:out value="${emp.fullName}"/> 👋</h1>
         <p style="color:#94a3b8; margin:0; font-size:14px;">
-            Mã NV: <strong>${emp.code}</strong> · Phòng ban: <strong><c:out value="${emp.department}"/></strong> · Chức vụ: <strong><c:out value="${emp.position}"/></strong>
+            Emp ID: <strong>${emp.code}</strong> · Department: <strong><c:out value="${emp.department}"/></strong> · Position: <strong><c:out value="${emp.position}"/></strong>
         </p>
         <div style="margin-top: 14px; display:flex; gap:10px; align-items:center;">
             <c:choose>
                 <c:when test="${not empty todayAtt && not empty todayAtt.checkIn && empty todayAtt.checkOut}">
                     <span class="role-badge" style="background:#065f46; color:#6ee7b7; padding:5px 12px; font-size:13px;">
-                        ● Đang làm việc (${todayAtt.statusLabel})
+                        ● Currently Working (${todayAtt.statusLabel})
                     </span>
-                    <span style="font-size:13px; color:#cbd5e1;">Bắt đầu check-in lúc: <strong>${todayAtt.formattedCheckIn}</strong></span>
+                    <span style="font-size:13px; color:#cbd5e1;">Checked in at: <strong>${todayAtt.formattedCheckIn}</strong></span>
                 </c:when>
                 <c:when test="${not empty todayAtt && not empty todayAtt.checkOut}">
                     <span class="role-badge" style="background:#1e3a8a; color:#93c5fd; padding:5px 12px; font-size:13px;">
-                        ✓ Đã kết thúc ca (${todayAtt.statusLabel})
+                        ✓ Shift Completed (${todayAtt.statusLabel})
                     </span>
-                    <span style="font-size:13px; color:#cbd5e1;">Tổng thời gian: <strong>${todayAtt.workedMinutes / 60}h ${todayAtt.workedMinutes % 60}m</strong></span>
+                    <span style="font-size:13px; color:#cbd5e1;">Total Duration: <strong>${todayAtt.workedMinutes / 60}h ${todayAtt.workedMinutes % 60}m</strong></span>
                 </c:when>
                 <c:otherwise>
                     <span class="role-badge" style="background:#475569; color:#e2e8f0; padding:5px 12px; font-size:13px;">
-                        ○ Chưa check-in hôm nay
+                        ○ Not Checked In Today
                     </span>
-                    <span style="font-size:13px; color:#cbd5e1;">Hãy đặt ngón tay lên máy chấm công để bắt đầu ca làm.</span>
+                    <span style="font-size:13px; color:#cbd5e1;">Scan your fingerprint on the kiosk to start your shift.</span>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -219,7 +219,7 @@
     <!-- Live Timer Card (FR-STAFF-01) -->
     <div class="today-live-clock-card">
         <div class="live-timer-val" id="liveWorkClock">--:--:--</div>
-        <div class="live-timer-label" id="liveWorkLabel">Thời gian làm việc hôm nay</div>
+        <div class="live-timer-label" id="liveWorkLabel">Hours Worked Today</div>
     </div>
 </div>
 
@@ -227,8 +227,8 @@
 <div class="shift-card">
     <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-            <h2 style="font-size:17px; margin:0;">Ca làm việc hôm nay</h2>
-            <p class="muted small" style="margin:2px 0 0;"><fmt:formatDate value="<%= new java.util.Date() %>" pattern="EEEE, dd/MM/yyyy" /></p>
+            <h2 style="font-size:17px; margin:0;">Today's Assigned Shift</h2>
+            <p class="muted small" style="margin:2px 0 0;"><fmt:formatDate value="<%= new java.util.Date() %>" pattern="EEEE, MMM dd, yyyy" /></p>
         </div>
         <c:if test="${not empty todayShift}">
             <span class="role-badge role-STAFF" style="font-size:13px;"><c:out value="${todayShift.name}"/></span>
@@ -239,20 +239,20 @@
         <c:when test="${not empty todayShift}">
             <div class="shift-grid">
                 <div class="shift-metric">
-                    <div class="shift-metric-label">Giờ bắt đầu ca</div>
+                    <div class="shift-metric-label">Start Time</div>
                     <div class="shift-metric-val mono">${todayShift.startTime}</div>
                 </div>
                 <div class="shift-metric">
-                    <div class="shift-metric-label">Giờ kết thúc ca</div>
+                    <div class="shift-metric-label">End Time</div>
                     <div class="shift-metric-val mono">${todayShift.endTime}</div>
                 </div>
                 <div class="shift-metric">
-                    <div class="shift-metric-label">Nghỉ giữa ca</div>
-                    <div class="shift-metric-val">${todayShift.breakMinutes} phút</div>
+                    <div class="shift-metric-label">Break Duration</div>
+                    <div class="shift-metric-val">${todayShift.breakMinutes} mins</div>
                 </div>
                 <div class="shift-metric">
-                    <div class="shift-metric-label">Thời lượng chuẩn</div>
-                    <div class="shift-metric-val">${todayShift.durationMinutes / 60} giờ</div>
+                    <div class="shift-metric-label">Standard Duration</div>
+                    <div class="shift-metric-val">${todayShift.durationMinutes / 60} hrs</div>
                 </div>
             </div>
 
@@ -271,69 +271,69 @@
                 <!-- Step 2: Break -->
                 <div class="timeline-step ${not empty todayAtt && not empty todayAtt.checkIn ? 'active' : ''}">
                     <div class="timeline-node">2</div>
-                    <div class="timeline-step-title">Nghỉ giữa ca</div>
-                    <div class="timeline-step-time">${todayShift.breakMinutes}m giải lao</div>
+                    <div class="timeline-step-title">Break</div>
+                    <div class="timeline-step-time">${todayShift.breakMinutes}m break</div>
                 </div>
 
                 <!-- Step 3: Shift End / Checkout -->
                 <div class="timeline-step ${not empty todayAtt && not empty todayAtt.checkOut ? 'completed' : ''}">
                     <div class="timeline-node">3</div>
-                    <div class="timeline-step-title">Tan ca</div>
+                    <div class="timeline-step-title">Check-out</div>
                     <div class="timeline-step-time">${not empty todayAtt && not empty todayAtt.checkOut ? todayAtt.formattedCheckOut : todayShift.endTime}</div>
                 </div>
 
                 <!-- Step 4: Overtime -->
                 <div class="timeline-step ${not empty todayAtt && todayAtt.status == 'OVERTIME' ? 'completed' : ''}">
                     <div class="timeline-node">4</div>
-                    <div class="timeline-step-title">Tăng ca</div>
-                    <div class="timeline-step-time">${todayAtt.status == 'OVERTIME' ? 'Đã ghi nhận OT' : 'Tùy chọn'}</div>
+                    <div class="timeline-step-title">Overtime</div>
+                    <div class="timeline-step-time">${todayAtt.status == 'OVERTIME' ? 'OT Recorded' : 'Optional'}</div>
                 </div>
             </div>
         </c:when>
         <c:otherwise>
-            <div class="empty" style="padding:24px 0;">Hôm nay bạn không có lịch ca làm việc được phân công.</div>
+            <div class="empty" style="padding:24px 0;">You do not have a shift scheduled for today.</div>
         </c:otherwise>
     </c:choose>
 </div>
 
 <!-- 3. Monthly Summary Cards (FR-STAFF-03) -->
-<h2 style="font-size:18px; margin:0 0 14px 0;">Tổng hợp tháng này (Tháng <%= java.time.LocalDate.now().getMonthValue() %>)</h2>
+<h2 style="font-size:18px; margin:0 0 14px 0;">Monthly Summary (Month <%= java.time.LocalDate.now().getMonthValue() %>)</h2>
 <div class="month-kpi-grid">
     <div class="month-kpi-card">
-        <div class="muted small font-bold" style="text-transform:uppercase;">Tổng giờ làm việc</div>
-        <div class="month-kpi-val" style="color:#2563eb;">${totalHoursMonth} <span style="font-size:15px; font-weight:500;">giờ</span></div>
-        <div class="muted small" style="margin-top:4px;">Chuẩn: 208 giờ/tháng</div>
+        <div class="muted small font-bold" style="text-transform:uppercase;">Total Worked Hours</div>
+        <div class="month-kpi-val" style="color:#2563eb;">${totalHoursMonth} <span style="font-size:15px; font-weight:500;">hrs</span></div>
+        <div class="muted small" style="margin-top:4px;">Target: 208 hrs/month</div>
     </div>
     <div class="month-kpi-card">
-        <div class="muted small font-bold" style="text-transform:uppercase;">Số lần đi muộn</div>
-        <div class="month-kpi-val" style="color:#d97706;">${lateCountMonth} <span style="font-size:15px; font-weight:500;">lần</span></div>
-        <div class="muted small" style="margin-top:4px;">${onTimeCountMonth} ca đúng giờ</div>
+        <div class="muted small font-bold" style="text-transform:uppercase;">Late Occurrences</div>
+        <div class="month-kpi-val" style="color:#d97706;">${lateCountMonth} <span style="font-size:15px; font-weight:500;">times</span></div>
+        <div class="muted small" style="margin-top:4px;">${onTimeCountMonth} on-time shifts</div>
     </div>
     <div class="month-kpi-card">
-        <div class="muted small font-bold" style="text-transform:uppercase;">Ca tăng ca (OT)</div>
-        <div class="month-kpi-val" style="color:#7c3aed;">${overtimeCountMonth} <span style="font-size:15px; font-weight:500;">ca</span></div>
-        <div class="muted small" style="margin-top:4px;">Hệ số 150% - 300%</div>
+        <div class="muted small font-bold" style="text-transform:uppercase;">Overtime Shifts (OT)</div>
+        <div class="month-kpi-val" style="color:#7c3aed;">${overtimeCountMonth} <span style="font-size:15px; font-weight:500;">shifts</span></div>
+        <div class="muted small" style="margin-top:4px;">150% - 300% Multipliers</div>
     </div>
     <div class="month-kpi-card">
-        <div class="muted small font-bold" style="text-transform:uppercase;">Lương ước tính tích lũy</div>
+        <div class="muted small font-bold" style="text-transform:uppercase;">Estimated Accrued Salary</div>
         <div class="month-kpi-val" style="color:#059669;"><fmt:formatNumber value="${estimatedSalary}" pattern="#,##0"/> <span style="font-size:14px; font-weight:500;">VND</span></div>
-        <div class="muted small" style="margin-top:4px;">Chưa trừ bảo hiểm &amp; phạt</div>
+        <div class="muted small" style="margin-top:4px;">Before tax &amp; deductions</div>
     </div>
 </div>
 
 <!-- 4. Attendance History Table with Filter (FR-STAFF-04) -->
 <div class="card" style="margin-top:24px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
-        <h2 style="font-size:17px; margin:0;">Lịch sử chấm công</h2>
+        <h2 style="font-size:17px; margin:0;">Attendance History</h2>
 
         <form method="get" action="${pageContext.request.contextPath}/staff/today" class="filter-bar" style="margin:0;">
             <label style="flex-direction:row; align-items:center; gap:6px; font-size:13px; margin:0;">
-                Từ: <input type="date" name="from" value="${fromDate}">
+                From: <input type="date" name="from" value="${fromDate}">
             </label>
             <label style="flex-direction:row; align-items:center; gap:6px; font-size:13px; margin:0;">
-                Đến: <input type="date" name="to" value="${toDate}">
+                To: <input type="date" name="to" value="${toDate}">
             </label>
-            <button type="submit" class="btn btn-secondary btn-sm">Lọc</button>
+            <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
         </form>
     </div>
 
@@ -341,19 +341,19 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Ngày</th>
-                    <th>Ca làm việc</th>
-                    <th>Giờ check-in</th>
-                    <th>Giờ check-out</th>
-                    <th>Thời gian làm</th>
-                    <th>Trạng thái</th>
+                    <th>Date</th>
+                    <th>Shift</th>
+                    <th>Check-in Time</th>
+                    <th>Check-out Time</th>
+                    <th>Duration</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 <c:choose>
                     <c:when test="${empty historyList}">
                         <tr>
-                            <td colspan="6" class="empty">Không tìm thấy bản ghi chấm công nào trong khoảng thời gian này.</td>
+                            <td colspan="6" class="empty">No attendance records found for this period.</td>
                         </tr>
                     </c:when>
                     <c:otherwise>
@@ -416,13 +416,13 @@
             const h = Math.floor(totalM / 60);
             const m = totalM % 60;
             document.getElementById('liveWorkClock').textContent = h + 'h ' + m + 'm';
-            document.getElementById('liveWorkLabel').textContent = 'Tổng thời gian đã làm hôm nay';
+            document.getElementById('liveWorkLabel').textContent = 'Total hours completed today';
             document.getElementById('timelineBar').style.width = '100%';
         </c:when>
         <c:otherwise>
             // Not checked in yet
             document.getElementById('liveWorkClock').textContent = '00:00:00';
-            document.getElementById('liveWorkLabel').textContent = 'Chưa bắt đầu ca';
+            document.getElementById('liveWorkLabel').textContent = 'Shift not started';
             document.getElementById('timelineBar').style.width = '0%';
         </c:otherwise>
     </c:choose>

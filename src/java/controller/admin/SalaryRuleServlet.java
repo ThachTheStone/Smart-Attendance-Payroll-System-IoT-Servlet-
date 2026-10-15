@@ -53,9 +53,9 @@ public class SalaryRuleServlet extends HttpServlet {
         }
 
         if (updatedCount > 0) {
-            Flash.success(req, "Đã cập nhật thành công " + updatedCount + " quy tắc tính lương.");
+            Flash.success(req, "Successfully updated " + updatedCount + " salary rules.");
         } else {
-            Flash.info(req, "Không có thay đổi nào được lưu.");
+            Flash.info(req, "No changes were made.");
         }
 
         res.sendRedirect(req.getContextPath() + "/admin/rules");

@@ -1,12 +1,12 @@
-<%-- Phan dau trang dung chung. Trang con khai bao taglib + c:set pageTitle, activeNav roi include file nay. --%>
+<%-- Common header for authenticated views. Subpages declare taglibs + c:set pageTitle, activeNav then include this file. --%>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><c:out value="${pageTitle}"/> · SmartAttend</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
 </head>
 <body>
@@ -18,24 +18,24 @@
     <nav class="nav">
         <c:if test="${me.role == 'ADMIN'}">
             <a href="${pageContext.request.contextPath}/admin/dashboard" class="${activeNav == 'dashboard' ? 'active' : ''}">Dashboard</a>
-            <a href="${pageContext.request.contextPath}/admin/users" class="${activeNav == 'users' ? 'active' : ''}">Người dùng</a>
-            <a href="${pageContext.request.contextPath}/admin/shifts" class="${activeNav == 'shifts' || activeNav == 'holidays' ? 'active' : ''}">Ca làm &amp; Lịch</a>
-            <a href="${pageContext.request.contextPath}/admin/attendance" class="${activeNav == 'attendance' ? 'active' : ''}">Chấm công</a>
-            <a href="${pageContext.request.contextPath}/admin/rules" class="${activeNav == 'rules' ? 'active' : ''}">Quy tắc</a>
-            <a href="${pageContext.request.contextPath}/admin/payroll" class="${activeNav == 'payroll' ? 'active' : ''}">Bảng lương</a>
+            <a href="${pageContext.request.contextPath}/admin/users" class="${activeNav == 'users' ? 'active' : ''}">Users</a>
+            <a href="${pageContext.request.contextPath}/admin/shifts" class="${activeNav == 'shifts' || activeNav == 'holidays' ? 'active' : ''}">Shifts &amp; Schedule</a>
+            <a href="${pageContext.request.contextPath}/admin/attendance" class="${activeNav == 'attendance' ? 'active' : ''}">Attendance</a>
+            <a href="${pageContext.request.contextPath}/admin/rules" class="${activeNav == 'rules' ? 'active' : ''}">Rules</a>
+            <a href="${pageContext.request.contextPath}/admin/payroll" class="${activeNav == 'payroll' ? 'active' : ''}">Payroll</a>
             <a href="${pageContext.request.contextPath}/dev/simulator" class="${activeNav == 'simulator' ? 'active' : ''}">Simulator</a>
         </c:if>
         <c:if test="${me.role == 'STAFF'}">
-            <a href="${pageContext.request.contextPath}/staff/today" class="${activeNav == 'today' ? 'active' : ''}">Hôm nay</a>
-            <a href="${pageContext.request.contextPath}/staff/schedule" class="${activeNav == 'schedule' ? 'active' : ''}">Lịch làm việc</a>
-            <a href="${pageContext.request.contextPath}/staff/payslips" class="${activeNav == 'payslips' ? 'active' : ''}">Phiếu lương</a>
+            <a href="${pageContext.request.contextPath}/staff/today" class="${activeNav == 'today' ? 'active' : ''}">Today</a>
+            <a href="${pageContext.request.contextPath}/staff/schedule" class="${activeNav == 'schedule' ? 'active' : ''}">My Schedule</a>
+            <a href="${pageContext.request.contextPath}/staff/payslips" class="${activeNav == 'payslips' ? 'active' : ''}">My Payslips</a>
         </c:if>
     </nav>
     <div class="user-menu">
         <span class="role-badge role-${me.role}"><c:out value="${me.role.label}"/></span>
         <span class="user-name"><c:out value="${me.displayName}"/></span>
-        <a href="${pageContext.request.contextPath}/account/password" class="${activeNav == 'password' ? 'active' : ''}">Đổi mật khẩu</a>
-        <a href="${pageContext.request.contextPath}/logout" class="btn btn-ghost btn-sm">Đăng xuất</a>
+        <a href="${pageContext.request.contextPath}/account/password" class="${activeNav == 'password' ? 'active' : ''}">Change Password</a>
+        <a href="${pageContext.request.contextPath}/logout" class="btn btn-ghost btn-sm">Log out</a>
     </div>
 </header>
 <main class="container">

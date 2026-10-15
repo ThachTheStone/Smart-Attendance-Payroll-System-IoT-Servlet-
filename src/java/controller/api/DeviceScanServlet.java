@@ -114,7 +114,7 @@ public class DeviceScanServlet extends HttpServlet {
 
             // Dashboard live feed
             String dashPayload = String.format(
-                    "{\"type\":\"SCAN_EVENT\",\"result\":\"NOT_RECOGNIZED\",\"employeeName\":\"Không xác định\",\"employeeCode\":\"--\",\"department\":\"--\",\"time\":\"%s\",\"status\":\"NOT_RECOGNIZED\",\"statusLabel\":\"Không nhận diện\",\"deviceName\":\"%s\",\"confidence\":%d,\"message\":\"%s\"}",
+                    "{\"type\":\"SCAN_EVENT\",\"result\":\"NOT_RECOGNIZED\",\"employeeName\":\"Unrecognized\",\"employeeCode\":\"--\",\"department\":\"--\",\"time\":\"%s\",\"status\":\"NOT_RECOGNIZED\",\"statusLabel\":\"Not Recognized\",\"deviceName\":\"%s\",\"confidence\":%d,\"message\":\"%s\"}",
                     timeStr, JsonUtil.escape(device.getName()), confidence != null ? confidence : 0, JsonUtil.escape(res.getMessage())
             );
             hub.broadcast("dashboard", "scan_event", dashPayload);
@@ -128,9 +128,9 @@ public class DeviceScanServlet extends HttpServlet {
             hub.broadcast("kiosk", "scan", kioskPayload);
 
             String dashPayload = String.format(
-                    "{\"type\":\"SCAN_EVENT\",\"result\":\"%s\",\"employeeName\":\"%s\",\"employeeCode\":\"--\",\"department\":\"--\",\"time\":\"%s\",\"status\":\"IGNORED\",\"statusLabel\":\"Bỏ qua\",\"deviceName\":\"%s\",\"confidence\":%d,\"message\":\"%s\"}",
+                    "{\"type\":\"SCAN_EVENT\",\"result\":\"%s\",\"employeeName\":\"%s\",\"employeeCode\":\"--\",\"department\":\"--\",\"time\":\"%s\",\"status\":\"IGNORED\",\"statusLabel\":\"Ignored\",\"deviceName\":\"%s\",\"confidence\":%d,\"message\":\"%s\"}",
                     res.getResult(),
-                    res.getEmployee() != null ? JsonUtil.escape(res.getEmployee().getFullName()) : "Nhân viên",
+                    res.getEmployee() != null ? JsonUtil.escape(res.getEmployee().getFullName()) : "Employee",
                     timeStr, JsonUtil.escape(device.getName()), confidence != null ? confidence : 0, JsonUtil.escape(res.getMessage())
             );
             hub.broadcast("dashboard", "scan_event", dashPayload);

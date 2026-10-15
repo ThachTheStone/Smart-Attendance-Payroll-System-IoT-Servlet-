@@ -102,19 +102,19 @@ public class MailService {
      */
     public MailResult sendPayslipEmail(String recipientEmail, String recipientName, int month, int year, byte[] pdfBytes, String pdfFilename) {
         if (recipientEmail == null || recipientEmail.trim().isEmpty()) {
-            return new MailResult(false, "Nhân viên chưa có địa chỉ email trong hồ sơ", false);
+            return new MailResult(false, "Employee has no email address configured in profile", false);
         }
 
         String safeEmail = recipientEmail.trim();
         String safeName = recipientName != null ? recipientName.trim() : safeEmail;
-        String subject = "Phiếu lương Tháng " + String.format("%02d", month) + "/" + year + " - SmartAttend";
+        String subject = "Payslip for Month " + String.format("%02d", month) + "/" + year + " - SmartAttend";
 
         // Simulation mode
         if (!configured) {
             System.out.println("[SIMULATED EMAIL] To: " + safeEmail + " (" + safeName + ")");
             System.out.println("[SIMULATED EMAIL] Subject: " + subject);
             System.out.println("[SIMULATED EMAIL] Attachment: " + pdfFilename + " (" + (pdfBytes != null ? pdfBytes.length : 0) + " bytes)");
-            return new MailResult(true, "Mô phỏng gửi thành công (Demo Mock Mode). Để gửi thật, tạo file mail.properties từ mail.properties.example.", true);
+            return new MailResult(true, "Simulated send successful (Demo Mock Mode). To send real emails, create mail.properties from mail.properties.example.", true);
         }
 
         // Live SMTP delivery
@@ -156,11 +156,11 @@ public class MailService {
             message.setContent(multipart);
             Transport.send(message);
 
-            return new MailResult(true, "Đã gửi email thành công tới " + safeEmail, false);
+            return new MailResult(true, "Email successfully sent to " + safeEmail, false);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return new MailResult(false, "Lỗi kết nối máy chủ thư SMTP: " + e.getMessage(), false);
+            return new MailResult(false, "SMTP server connection error: " + e.getMessage(), false);
         }
     }
 
@@ -171,21 +171,21 @@ public class MailService {
                 + "<body style='font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif; line-height:1.6; color:#1e293b; background:#f1f5f9; margin:0; padding:30px 10px;'>"
                 + "<table align='center' width='100%' style='max-width:580px; background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e2e8f0; box-shadow:0 4px 6px rgba(0,0,0,0.05);'>"
                 + "<tr><td style='background:linear-gradient(135deg, #1e3a8a, #2563eb); padding:28px 24px; text-align:center; color:#ffffff;'>"
-                + "<div style='font-size:20px; font-weight:800; letter-spacing:0.5px;'>SMARTATTEND VIỆT NAM</div>"
-                + "<div style='font-size:13px; opacity:0.9; margin-top:4px;'>Hệ thống Quản lý Chấm công & Tính lương Tự động</div>"
+                + "<div style='font-size:20px; font-weight:800; letter-spacing:0.5px;'>SMARTATTEND SYSTEM</div>"
+                + "<div style='font-size:13px; opacity:0.9; margin-top:4px;'>Automated Attendance & Payroll Management</div>"
                 + "</td></tr>"
                 + "<tr><td style='padding:28px 24px;'>"
-                + "<h2 style='font-size:18px; margin-top:0; color:#0f172a;'>Kính gửi Anh/Chị " + escapeHtml(name) + ",</h2>"
-                + "<p style='color:#334155;'>Phòng Nhân sự và Kế toán xin gửi tới Anh/Chị phiếu chi tiết lương của kỳ lương <strong>Tháng " + periodStr + "</strong> đã được phê duyệt chính thức.</p>"
+                + "<h2 style='font-size:18px; margin-top:0; color:#0f172a;'>Dear " + escapeHtml(name) + ",</h2>"
+                + "<p style='color:#334155;'>The Human Resources & Accounting Department hereby provides your detailed payslip for <strong>Month " + periodStr + "</strong> which has been officially approved.</p>"
                 + "<div style='background:#f8fafc; border-left:4px solid #2563eb; border-radius:6px; padding:14px 16px; margin:20px 0;'>"
-                + "<div style='font-weight:700; color:#1e3a8a; margin-bottom:4px;'>📄 Tệp đính kèm: Phiếu lương PDF</div>"
-                + "<div style='font-size:13px; color:#64748b;'>Chi tiết bảng tính lương, giờ chuẩn, giờ làm thêm (OT 150%, 200%, 300%), phụ cấp ca đêm và khấu trừ đã được tích hợp trong tệp đính kèm.</div>"
+                + "<div style='font-weight:700; color:#1e3a8a; margin-bottom:4px;'>Attached File: Payslip PDF</div>"
+                + "<div style='font-size:13px; color:#64748b;'>Detailed salary calculations, regular hours, overtime (OT 150%, 200%, 300%), night shift allowance, and deductions are included in the attached document.</div>"
                 + "</div>"
-                + "<p style='font-size:13px; color:#64748b;'>Nếu có bất kỳ thắc mắc hoặc sai lệch nào về dữ liệu chấm công và chế độ đãi ngộ, xin vui lòng phản hồi lại phòng Nhân sự trong vòng 03 ngày làm việc kể từ ngày nhận email này.</p>"
+                + "<p style='font-size:13px; color:#64748b;'>If you have any questions or discrepancies regarding your attendance data or compensation, please contact Human Resources within 3 working days of receiving this email.</p>"
                 + "<hr style='border:none; border-top:1px solid #e2e8f0; margin:24px 0;'>"
                 + "<div style='font-size:12px; color:#94a3b8; text-align:center;'>"
-                + "Đây là email được gửi tự động từ hệ thống SmartAttend. Vui lòng không trả lời trực tiếp email này.<br>"
-                + "© 2026 SmartAttend Inc. All rights reserved."
+                + "This is an automated email sent from the SmartAttend system. Please do not reply directly to this email.<br>"
+                + "(c) 2026 SmartAttend Inc. All rights reserved."
                 + "</div>"
                 + "</td></tr></table>"
                 + "</body></html>";

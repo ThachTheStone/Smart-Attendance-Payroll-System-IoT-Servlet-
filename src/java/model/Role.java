@@ -2,9 +2,9 @@ package model;
 
 /** Vai tro tai khoan (FR-AUTH-01). */
 public enum Role {
-    ADMIN("Quản trị"),
-    STAFF("Nhân viên"),
-    KIOSK("Máy kiosk");
+    ADMIN("Administrator"),
+    STAFF("Staff Member"),
+    KIOSK("Kiosk Device");
 
     private final String label;
 

@@ -1,11 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kiosk Chấm Công · SmartAttend</title>
+    <title>Attendance Kiosk · SmartAttend</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
@@ -480,10 +480,10 @@
         <div class="nav-actions">
             <div class="sse-indicator" id="sseBadge">
                 <span class="dot-pulse" id="sseDot"></span>
-                <span id="sseStatusText">Đã kết nối máy chủ</span>
+                <span id="sseStatusText">Server Connected</span>
             </div>
-            <button type="button" class="btn-fullscreen" onclick="toggleFullscreen()" id="btnFullscreen">Toàn màn hình</button>
-            <a href="${pageContext.request.contextPath}/logout" class="btn-exit">Đăng xuất</a>
+            <button type="button" class="btn-fullscreen" onclick="toggleFullscreen()" id="btnFullscreen">Fullscreen</button>
+            <a href="${pageContext.request.contextPath}/logout" class="btn-exit">Sign Out</a>
         </div>
     </header>
 
@@ -498,7 +498,7 @@
             <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
             <line x1="12" y1="20" x2="12.01" y2="20"></line>
         </svg>
-        <span id="offlineBannerText">CẢNH BÁO: Thiết bị cảm biến vân tay đang ngoại tuyến (Mất kết nối)!</span>
+        <span id="offlineBannerText">WARNING: Biometric fingerprint sensor is offline (Connection lost)!</span>
     </div>
 
     <!-- Main Dynamic Workspace -->
@@ -507,7 +507,7 @@
         <!-- VIEW 1: IDLE STATE (FR-KIOSK-02) -->
         <section class="view-idle" id="viewIdle">
             <div class="clock-display" id="clock">--:--:--</div>
-            <div class="date-display" id="date">Đang tải ngày...</div>
+            <div class="date-display" id="date">Loading date...</div>
 
             <div class="scanner-halo">
                 <div class="scanner-ring"></div>
@@ -520,33 +520,33 @@
                 </svg>
             </div>
 
-            <div class="prompt-title">Đặt ngón tay lên cảm biến</div>
-            <div class="prompt-subtitle">Chạm giữ ngón tay ngay ngắn để xác nhận chấm công</div>
+            <div class="prompt-title">Place your finger on the sensor</div>
+            <div class="prompt-subtitle">Hold your finger flat and steady to record attendance</div>
         </section>
 
         <!-- VIEW 2: SUCCESS CHECK-IN / CHECK-OUT (FR-KIOSK-03) -->
         <section class="view-success" id="viewSuccess">
             <div class="avatar-circle" id="succAvatar">LT</div>
-            <div class="action-banner" id="succActionBanner">CHECK-IN THÀNH CÔNG</div>
-            <h2 class="emp-name" id="succEmpName">Lê Tuấn</h2>
-            <div class="emp-meta" id="succEmpMeta">Mã: EMP001 · Phòng Kỹ thuật</div>
+            <div class="action-banner" id="succActionBanner">CHECK-IN SUCCESSFUL</div>
+            <h2 class="emp-name" id="succEmpName">Employee</h2>
+            <div class="emp-meta" id="succEmpMeta">Code: EMP001 · Engineering</div>
 
             <div class="scan-stats-grid">
                 <div class="scan-stat-col">
-                    <div class="label">Thời gian</div>
+                    <div class="label">Time</div>
                     <div class="val" id="succTime" style="color:#60a5fa;">07:58:12</div>
                 </div>
                 <div class="scan-stat-col">
-                    <div class="label">Trạng thái</div>
-                    <div class="val"><span class="status-pill pill-ON_TIME" id="succStatusPill">Đúng giờ</span></div>
+                    <div class="label">Status</div>
+                    <div class="val"><span class="status-pill pill-ON_TIME" id="succStatusPill">On Time</span></div>
                 </div>
                 <div class="scan-stat-col">
-                    <div class="label">Làm hôm nay</div>
+                    <div class="label">Worked Today</div>
                     <div class="val" id="succHours" style="color:#34d399;">--</div>
                 </div>
             </div>
 
-            <p style="font-size:14px; color:var(--text-muted);" id="succMsg">Check-in thành công</p>
+            <p style="font-size:14px; color:var(--text-muted);" id="succMsg">Check-in successful</p>
 
             <div class="countdown-wrap">
                 <div class="countdown-bar" id="succCountdown"></div>
@@ -563,8 +563,8 @@
                 </svg>
             </div>
 
-            <h2 style="font-size: 26px; font-weight: 800; color: #f87171; margin-bottom: 8px;">Vân tay không xác định</h2>
-            <p style="font-size: 15px; color: #cbd5e1; margin-bottom: 16px;" id="failMsg">Vui lòng thử lại hoặc đặt ngón tay sạch và phẳng trên cảm biến.</p>
+            <h2 style="font-size: 26px; font-weight: 800; color: #f87171; margin-bottom: 8px;">Fingerprint Not Recognized</h2>
+            <p style="font-size: 15px; color: #cbd5e1; margin-bottom: 16px;" id="failMsg">Please try again or ensure your finger is clean and flat on the sensor.</p>
 
             <div class="countdown-wrap">
                 <div class="countdown-bar danger" id="failCountdown"></div>
@@ -573,8 +573,8 @@
 
         <!-- VIEW 4: ENROLLMENT GUIDANCE (FR-KIOSK-05) -->
         <section class="view-enroll" id="viewEnroll">
-            <div style="font-size: 14px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">Chế độ đăng ký vân tay mới</div>
-            <h2 class="emp-name" id="enrollEmpName" style="margin-top: 6px;">Đang đăng ký nhân viên...</h2>
+            <div style="font-size: 14px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">Fingerprint Enrollment Mode</div>
+            <h2 class="emp-name" id="enrollEmpName" style="margin-top: 6px;">Enrolling employee...</h2>
 
             <div class="step-indicators">
                 <div class="step-dot active" id="dotStep1">1</div>
@@ -582,8 +582,8 @@
                 <div class="step-dot" id="dotStep3">✓</div>
             </div>
 
-            <div style="font-size: 22px; font-weight: 700; color: #f8fafc; margin: 20px 0 10px;" id="enrollStepText">Đặt ngón tay lên cảm biến (lần 1)</div>
-            <p style="font-size: 14px; color: var(--text-muted);" id="enrollSubText">Chạm ngón tay chắc chắn vào mắt đọc cảm biến AS608.</p>
+            <div style="font-size: 22px; font-weight: 700; color: #f8fafc; margin: 20px 0 10px;" id="enrollStepText">Step 1/2: Place finger on sensor</div>
+            <p style="font-size: 14px; color: var(--text-muted);" id="enrollSubText">Place finger flat and keep steady on optical scanner.</p>
 
             <div class="countdown-wrap">
                 <div class="countdown-bar primary" id="enrollCountdown"></div>
@@ -593,7 +593,7 @@
     </main>
 
     <footer class="kiosk-footer">
-        Smart Attendance &amp; Payroll System · Màn hình Kiosk kết nối cảm biến sinh trắc học thời gian thực
+        Smart Attendance &amp; Payroll System · Real-time Biometric Kiosk Terminal
     </footer>
 
     <script>
@@ -604,9 +604,9 @@
         // 1. Digital Clock (FR-KIOSK-02)
         function updateClock() {
             const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString('vi-VN', {hour12: false});
-            document.getElementById('date').textContent = now.toLocaleDateString('vi-VN', {
-                weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric'
+            document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', {hour12: false});
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', {
+                weekday: 'long', month: 'short', day: '2-digit', year: 'numeric'
             });
         }
         updateClock();
@@ -645,9 +645,9 @@
         // 3. Scan Event Handling (FR-KIOSK-03, 04)
         function handleScanSuccess(data) {
             const emp = data.employee || {};
-            document.getElementById('succEmpName').textContent = emp.name || 'Nhân viên';
+            document.getElementById('succEmpName').textContent = emp.name || 'Employee';
             document.getElementById('succEmpMeta').textContent = 
-                'Mã: ' + (emp.code || '--') + ' · ' + (emp.department || 'Công ty');
+                'Code: ' + (emp.code || '--') + ' · ' + (emp.department || 'Company');
 
             // Avatar / Initials
             const avatarBox = document.getElementById('succAvatar');
@@ -662,17 +662,17 @@
             const banner = document.getElementById('succActionBanner');
             if (data.result === 'CHECK_IN') {
                 banner.className = 'action-banner banner-checkin';
-                banner.textContent = 'CHECK-IN THÀNH CÔNG';
+                banner.textContent = 'CHECK-IN SUCCESSFUL';
             } else {
                 banner.className = 'action-banner banner-checkout';
-                banner.textContent = 'CHECK-OUT THÀNH CÔNG';
+                banner.textContent = 'CHECK-OUT SUCCESSFUL';
             }
 
             // Time & Status
             document.getElementById('succTime').textContent = data.time || '--:--:--';
             const pill = document.getElementById('succStatusPill');
             pill.className = 'status-pill pill-' + (data.status || 'ON_TIME');
-            pill.textContent = data.statusLabel || data.status || 'Đúng giờ';
+            pill.textContent = data.statusLabel || data.status || 'On Time';
 
             // Hours
             const hoursBox = document.getElementById('succHours');
@@ -681,17 +681,17 @@
                 const m = data.workedMinutes % 60;
                 hoursBox.textContent = h + 'h ' + m + 'm';
             } else {
-                hoursBox.textContent = (data.result === 'CHECK_IN') ? 'Bắt đầu ca' : '--';
+                hoursBox.textContent = (data.result === 'CHECK_IN') ? 'Shift Started' : '--';
             }
 
-            document.getElementById('succMsg').textContent = data.message || 'Chấm công hoàn tất';
+            document.getElementById('succMsg').textContent = data.message || 'Attendance recorded';
 
             showView('viewSuccess');
             scheduleReturnToIdle(5000, 'succCountdown'); // Return after 5 seconds (FR-KIOSK-03)
         }
 
         function handleScanFail(data) {
-            document.getElementById('failMsg').textContent = data.message || 'Vân tay không xác định, vui lòng thử lại.';
+            document.getElementById('failMsg').textContent = data.message || 'Fingerprint not recognized, please try again.';
             showView('viewFail');
             scheduleReturnToIdle(4000, 'failCountdown'); // Return after 4 seconds (FR-KIOSK-04)
         }
@@ -716,31 +716,31 @@
 
             if (step === 'PLACE_FINGER') {
                 d1.className = 'step-dot active';
-                text.textContent = 'Bước 1/2: Đặt ngón tay lên cảm biến';
-                sub.textContent = 'Đặt ngón tay phẳng và giữ yên trên mắt quét.';
+                text.textContent = 'Step 1/2: Place finger on sensor';
+                sub.textContent = 'Place finger flat and keep steady on optical scanner.';
                 scheduleReturnToIdle(15000, 'enrollCountdown');
             } else if (step === 'REMOVE_FINGER') {
                 d1.className = 'step-dot completed';
                 d2.className = 'step-dot active';
-                text.textContent = 'Nhấc ngón tay ra';
-                sub.textContent = 'Nhấc ngón tay ra khỏi cảm biến để chuẩn bị quét lần 2.';
+                text.textContent = 'Lift your finger';
+                sub.textContent = 'Lift your finger from the sensor to prepare for second scan.';
                 scheduleReturnToIdle(10000, 'enrollCountdown');
             } else if (step === 'PLACE_AGAIN') {
                 d1.className = 'step-dot completed';
                 d2.className = 'step-dot active';
-                text.textContent = 'Bước 2/2: Đặt lại cùng ngón tay lần nữa';
-                sub.textContent = 'Đặt lại đúng ngón tay vừa quét để máy đối chiếu xác nhận.';
+                text.textContent = 'Step 2/2: Place the same finger again';
+                sub.textContent = 'Place the same finger again for template verification.';
                 scheduleReturnToIdle(15000, 'enrollCountdown');
             } else if (step === 'SUCCESS') {
                 d1.className = 'step-dot completed';
                 d2.className = 'step-dot completed';
                 d3.className = 'step-dot completed';
-                text.textContent = '✅ Đăng ký vân tay thành công!';
-                sub.textContent = 'Nhân viên có thể bắt đầu quét chấm công ngay.';
+                text.textContent = '✅ Fingerprint Enrolled Successfully!';
+                sub.textContent = 'Employee can now use fingerprint for attendance.';
                 scheduleReturnToIdle(5000, 'enrollCountdown');
             } else if (step === 'FAILED') {
-                text.textContent = '❌ Đăng ký vân tay thất bại!';
-                sub.textContent = 'Hai lần quét không khớp hoặc chất lượng vân tay kém. Vui lòng thử lại.';
+                text.textContent = '❌ Fingerprint Enrollment Failed!';
+                sub.textContent = 'Fingerprint scans did not match or template quality was low. Please retry.';
                 scheduleReturnToIdle(5000, 'enrollCountdown');
             }
         }
@@ -751,7 +751,7 @@
             if (data.online === false) {
                 banner.style.display = 'flex';
                 document.getElementById('offlineBannerText').textContent = 
-                    'CẢNH BÁO: Thiết bị ' + (data.deviceName || 'Cảm biến') + ' đang ngoại tuyến!';
+                    'WARNING: Device ' + (data.deviceName || 'Sensor') + ' is offline!';
             } else {
                 banner.style.display = 'none';
             }
@@ -766,7 +766,7 @@
 
             es.addEventListener('open', () => {
                 dot.className = 'dot-pulse';
-                text.textContent = 'Trực tuyến (SSE)';
+                text.textContent = 'Online (SSE)';
             });
 
             es.addEventListener('scan', (e) => {
@@ -778,7 +778,7 @@
                         handleScanFail(data);
                     } else {
                         // IGNORED
-                        handleScanFail({ message: data.message || 'Quét bị bỏ qua' });
+                        handleScanFail({ message: data.message || 'Scan ignored' });
                     }
                 } catch (err) {
                     console.error('Scan parse error', err);
@@ -805,7 +805,7 @@
 
             es.onerror = () => {
                 dot.className = 'dot-pulse dot-offline';
-                text.textContent = 'Đang kết nối lại...';
+                text.textContent = 'Reconnecting...';
             };
         }
 
@@ -813,10 +813,10 @@
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => {});
-                document.getElementById('btnFullscreen').textContent = 'Thu nhỏ';
+                document.getElementById('btnFullscreen').textContent = 'Exit Fullscreen';
             } else {
                 document.exitFullscreen().catch(() => {});
-                document.getElementById('btnFullscreen').textContent = 'Toàn màn hình';
+                document.getElementById('btnFullscreen').textContent = 'Fullscreen';
             }
         }
 

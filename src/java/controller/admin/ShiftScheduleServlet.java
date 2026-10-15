@@ -89,10 +89,10 @@ public class ShiftScheduleServlet extends HttpServlet {
             try {
                 int id = Integer.parseInt(req.getParameter("id"));
                 boolean ok = assignmentDAO.delete(id);
-                if (ok) Flash.success(req, "Đã xóa ca phân công.");
-                else Flash.error(req, "Không thể xóa ca phân công.");
+                if (ok) Flash.success(req, "Shift assignment deleted.");
+                else Flash.error(req, "Cannot delete shift assignment.");
             } catch (NumberFormatException e) {
-                Flash.error(req, "ID không hợp lệ.");
+                Flash.error(req, "Invalid ID.");
             }
             res.sendRedirect(redirectUrl);
             return;
@@ -106,7 +106,7 @@ public class ShiftScheduleServlet extends HttpServlet {
             String[] dowStrs = req.getParameterValues("daysOfWeek");
 
             if (empIdStrs == null || empIdStrs.length == 0 || shiftIdStr == null || startStr == null || endStr == null) {
-                Flash.error(req, "Vui lòng chọn nhân viên, ca làm và khoảng ngày.");
+                Flash.error(req, "Please select employees, shift, and date range.");
                 res.sendRedirect(redirectUrl);
                 return;
             }
@@ -119,12 +119,12 @@ public class ShiftScheduleServlet extends HttpServlet {
                 from = LocalDate.parse(startStr.trim());
                 to = LocalDate.parse(endStr.trim());
                 if (to.isBefore(from)) {
-                    Flash.error(req, "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.");
+                    Flash.error(req, "End date must be greater than or equal to start date.");
                     res.sendRedirect(redirectUrl);
                     return;
                 }
             } catch (DateTimeParseException | NumberFormatException e) {
-                Flash.error(req, "Ngày hoặc ca làm không hợp lệ.");
+                Flash.error(req, "Invalid date or shift.");
                 res.sendRedirect(redirectUrl);
                 return;
             }
@@ -148,7 +148,7 @@ public class ShiftScheduleServlet extends HttpServlet {
             }
 
             int count = assignmentDAO.assignBatch(empIds, shiftId, from, to, daysOfWeek);
-            Flash.success(req, "Đã xếp " + count + " ca làm việc thành công.");
+            Flash.success(req, "Successfully scheduled " + count + " shift assignments.");
             res.sendRedirect(redirectUrl);
         }
     }

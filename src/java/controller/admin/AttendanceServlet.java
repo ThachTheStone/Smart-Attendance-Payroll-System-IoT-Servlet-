@@ -161,7 +161,7 @@ public class AttendanceServlet extends HttpServlet {
 
         // Mandatory reason enforcement (FR-ATT-05)
         if (reason == null || reason.trim().isEmpty()) {
-            Flash.error(request, "Lý do điều chỉnh bảng công là bắt buộc (FR-ATT-05).");
+            Flash.error(request, "Reason for attendance adjustment is required (FR-ATT-05).");
             response.sendRedirect(redirectUrl);
             return;
         }
@@ -170,14 +170,14 @@ public class AttendanceServlet extends HttpServlet {
         try {
             id = Integer.parseInt(idStr);
         } catch (NumberFormatException e) {
-            Flash.error(request, "Mã bảng công không hợp lệ.");
+            Flash.error(request, "Invalid attendance record ID.");
             response.sendRedirect(redirectUrl);
             return;
         }
 
         Attendance old = attendanceDAO.findById(id);
         if (old == null) {
-            Flash.error(request, "Không tìm thấy bản ghi chấm công cần điều chỉnh.");
+            Flash.error(request, "Attendance record not found.");
             response.sendRedirect(redirectUrl);
             return;
         }
@@ -235,9 +235,9 @@ public class AttendanceServlet extends HttpServlet {
             AuditLog audit = new AuditLog(current.getId(), "Attendance", old.getId(), oldValueStr, newValueStr, reason.trim());
             auditLogDAO.insert(audit);
 
-            Flash.success(request, "Đã cập nhật bảng công #" + old.getId() + " và lưu lịch sử kiểm toán thành công.");
+            Flash.success(request, "Updated attendance record #" + old.getId() + " and audit log recorded successfully.");
         } else {
-            Flash.error(request, "Không thể cập nhật bảng công vào cơ sở dữ liệu.");
+            Flash.error(request, "Failed to update attendance record in database.");
         }
 
         response.sendRedirect(redirectUrl);

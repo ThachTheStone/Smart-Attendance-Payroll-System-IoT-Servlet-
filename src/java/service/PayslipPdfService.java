@@ -113,20 +113,20 @@ public class PayslipPdfService {
         Font companyFont = getFont(11, Font.BOLD, new Color(37, 99, 235));
 
         // Company header
-        Paragraph comp = new Paragraph("CÔNG TY CP SMARTATTEND VIỆT NAM", companyFont);
+        Paragraph comp = new Paragraph("SMARTATTEND CORPORATION", companyFont);
         comp.setAlignment(Element.ALIGN_LEFT);
         document.add(comp);
 
-        Paragraph addr = new Paragraph("Hệ thống Chấm công Sinh trắc học & Tính lương Tự động SmartAttend", subTitleFont);
+        Paragraph addr = new Paragraph("SmartAttend Biometric Attendance & Automated Payroll System", subTitleFont);
         addr.setSpacingAfter(15);
         document.add(addr);
 
         // Payslip Title
-        Paragraph title = new Paragraph("PHIẾU LƯƠNG NHÂN VIÊN / PAYSLIP", titleFont);
+        Paragraph title = new Paragraph("EMPLOYEE PAYSLIP", titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
 
-        Paragraph period = new Paragraph("Kỳ lương: Tháng " + String.format("%02d", month) + " / " + year, subTitleFont);
+        Paragraph period = new Paragraph("Pay Period: Month " + String.format("%02d", month) + " / " + year, subTitleFont);
         period.setAlignment(Element.ALIGN_CENTER);
         period.setSpacingAfter(18);
         document.add(period);
@@ -137,14 +137,14 @@ public class PayslipPdfService {
         infoTable.setSpacingAfter(18);
         infoTable.setWidths(new float[]{22, 28, 22, 28});
 
-        addInfoCell(infoTable, "Mã nhân viên:", d.getEmployeeCode(), boldFont, normalFont);
-        addInfoCell(infoTable, "Họ và tên:", d.getEmployeeName(), boldFont, normalFont);
-        addInfoCell(infoTable, "Phòng ban:", d.getDepartment(), boldFont, normalFont);
-        addInfoCell(infoTable, "Chức vụ:", d.getPosition(), boldFont, normalFont);
-        addInfoCell(infoTable, "Loại lương:", d.getSalaryType(), boldFont, normalFont);
-        addInfoCell(infoTable, "Lương cơ bản:", fmt(d.getBaseSalary()) + " VND", boldFont, normalFont);
-        addInfoCell(infoTable, "Lương 1 giờ (Rate):", fmt(d.getHourlyRate()) + " VND/h", boldFont, normalFont);
-        addInfoCell(infoTable, "Tổng giờ OT:", d.getTotalOvertimeHours() + " giờ", boldFont, normalFont);
+        addInfoCell(infoTable, "Employee Code:", d.getEmployeeCode(), boldFont, normalFont);
+        addInfoCell(infoTable, "Full Name:", d.getEmployeeName(), boldFont, normalFont);
+        addInfoCell(infoTable, "Department:", d.getDepartment(), boldFont, normalFont);
+        addInfoCell(infoTable, "Position:", d.getPosition(), boldFont, normalFont);
+        addInfoCell(infoTable, "Salary Type:", d.getSalaryType(), boldFont, normalFont);
+        addInfoCell(infoTable, "Base Salary:", fmt(d.getBaseSalary()) + " VND", boldFont, normalFont);
+        addInfoCell(infoTable, "Hourly Rate:", fmt(d.getHourlyRate()) + " VND/h", boldFont, normalFont);
+        addInfoCell(infoTable, "Total OT:", d.getTotalOvertimeHours() + " hrs", boldFont, normalFont);
 
         document.add(infoTable);
 
@@ -155,34 +155,34 @@ public class PayslipPdfService {
         table.setSpacingAfter(22);
 
         Color headerColor = new Color(30, 41, 59);
-        addHeaderCell(table, "Khoản mục thu nhập / Khấu trừ", headerFont, headerColor);
-        addHeaderCell(table, "Chi tiết giờ / phút", headerFont, headerColor);
-        addHeaderCell(table, "Hệ số", headerFont, headerColor);
-        addHeaderCell(table, "Thành tiền (VND)", headerFont, headerColor);
+        addHeaderCell(table, "Earnings / Deductions Item", headerFont, headerColor);
+        addHeaderCell(table, "Hours / Minutes", headerFont, headerColor);
+        addHeaderCell(table, "Factor", headerFont, headerColor);
+        addHeaderCell(table, "Amount (VND)", headerFont, headerColor);
 
         // 1. Regular hours
-        addRow(table, "1. Lương giờ tiêu chuẩn (Regular Pay)", d.getRegularHours() + " giờ", "100%", fmt(d.getRegularPay()), normalFont);
+        addRow(table, "1. Standard Regular Pay", d.getRegularHours() + " hrs", "100%", fmt(d.getRegularPay()), normalFont);
 
         // 2. OT Weekday (150%)
-        addRow(table, "2. Làm thêm ngày thường (Weekday OT)", d.getOtWeekdayHours() + " giờ", "150%", fmt(d.getOtWeekdayPay()), normalFont);
+        addRow(table, "2. Weekday Overtime (150%)", d.getOtWeekdayHours() + " hrs", "150%", fmt(d.getOtWeekdayPay()), normalFont);
 
         // 3. OT Weekend (200%)
-        addRow(table, "3. Làm thêm ngày nghỉ cuối tuần (Weekend OT)", d.getOtWeekendHours() + " giờ", "200%", fmt(d.getOtWeekendPay()), normalFont);
+        addRow(table, "3. Weekend Overtime (200%)", d.getOtWeekendHours() + " hrs", "200%", fmt(d.getOtWeekendPay()), normalFont);
 
         // 4. OT Holiday (300%)
-        addRow(table, "4. Làm thêm ngày lễ/Tết (Holiday OT)", d.getOtHolidayHours() + " giờ", "300%", fmt(d.getOtHolidayPay()), normalFont);
+        addRow(table, "4. Holiday Overtime (300%)", d.getOtHolidayHours() + " hrs", "300%", fmt(d.getOtHolidayPay()), normalFont);
 
         // 5. Night Allowance (30%)
-        addRow(table, "5. Phụ cấp làm việc ban đêm (22h - 06h)", d.getNightHours() + " giờ", "+30%", fmt(d.getNightAllowance()), normalFont);
+        addRow(table, "5. Night Shift Allowance (22h - 06h)", d.getNightHours() + " hrs", "+30%", fmt(d.getNightAllowance()), normalFont);
 
         // 6. Night OT Bonus (20%)
-        addRow(table, "6. Thưởng làm thêm ca đêm", d.getNightOtHours() + " giờ", "+20%", fmt(d.getNightOtBonus()), normalFont);
+        addRow(table, "6. Night Overtime Bonus", d.getNightOtHours() + " hrs", "+20%", fmt(d.getNightOtBonus()), normalFont);
 
         // 7. Late Penalty
-        addRow(table, "7. Khấu trừ phạt đi muộn (sau ân hạn)", d.getLateMinutes() + " phút", "-1,000 đ/m", "-" + fmt(d.getPenalty()), normalFont);
+        addRow(table, "7. Late Penalty Deduction", d.getLateMinutes() + " mins", "-1,000 VND/m", "-" + fmt(d.getPenalty()), normalFont);
 
         // Total Net Row
-        PdfPCell totalLabelCell = new PdfPCell(new Phrase("TỔNG LƯƠNG THỰC NHẬN (NET SALARY):", totalFont));
+        PdfPCell totalLabelCell = new PdfPCell(new Phrase("TOTAL NET SALARY:", totalFont));
         totalLabelCell.setColspan(3);
         totalLabelCell.setPadding(8);
         totalLabelCell.setBackgroundColor(new Color(236, 253, 245));
@@ -202,9 +202,9 @@ public class PayslipPdfService {
         signTable.setWidthPercentage(100);
         signTable.setSpacingBefore(16);
 
-        addSignCell(signTable, "Người lập phiếu", "(Ký, họ tên)", normalFont, boldFont);
-        addSignCell(signTable, "Kế toán trưởng", "(Ký, họ tên)", normalFont, boldFont);
-        addSignCell(signTable, "Người nhận lương", "(Ký, họ tên)", normalFont, boldFont);
+        addSignCell(signTable, "Prepared By", "(Signature & Name)", normalFont, boldFont);
+        addSignCell(signTable, "Chief Accountant", "(Signature & Name)", normalFont, boldFont);
+        addSignCell(signTable, "Employee Signature", "(Signature & Name)", normalFont, boldFont);
 
         document.add(signTable);
     }

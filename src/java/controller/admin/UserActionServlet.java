@@ -66,11 +66,11 @@ public class UserActionServlet extends HttpServlet {
         Account me = (Account) req.getSession().getAttribute(Constants.SESSION_USER);
         String status = req.getParameter("status");
         if (!"ACTIVE".equals(status) && !"INACTIVE".equals(status)) {
-            Flash.error(req, "Trạng thái không hợp lệ.");
+            Flash.error(req, "Invalid status.");
         } else if ("INACTIVE".equals(status) && target.getId() == me.getId()) {
-            Flash.error(req, "Bạn không thể tự vô hiệu hóa tài khoản của mình.");
+            Flash.error(req, "You cannot deactivate your own account.");
         } else if ("INACTIVE".equals(status) && target.getRole() == Role.ADMIN && accountDAO.countActiveAdmins() <= 1) {
-            Flash.error(req, "Không thể vô hiệu hóa admin cuối cùng đang hoạt động.");
+            Flash.error(req, "Cannot deactivate the last active administrator.");
         } else {
             accountDAO.updateStatus(target.getId(), status);
 
@@ -86,8 +86,8 @@ public class UserActionServlet extends HttpServlet {
                 }
             }
 
-            Flash.success(req, ("ACTIVE".equals(status) ? "Đã kích hoạt" : "Đã vô hiệu hóa")
-                    + " tài khoản \"" + target.getUsername() + "\".");
+            Flash.success(req, ("ACTIVE".equals(status) ? "Activated" : "Deactivated")
+                    + " account \"" + target.getUsername() + "\".");
         }
         res.sendRedirect(req.getContextPath() + "/admin/users");
     }
@@ -104,7 +104,7 @@ public class UserActionServlet extends HttpServlet {
             return;
         }
         accountDAO.updatePassword(target.getId(), PasswordUtil.hash(pw));
-        Flash.success(req, "Đã đặt lại mật khẩu cho \"" + target.getUsername() + "\".");
+        Flash.success(req, "Password reset successfully for \"" + target.getUsername() + "\".");
         res.sendRedirect(req.getContextPath() + "/admin/users");
     }
 
@@ -117,7 +117,7 @@ public class UserActionServlet extends HttpServlet {
     }
 
     private void notFound(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        Flash.error(req, "Không tìm thấy người dùng.");
+        Flash.error(req, "User not found.");
         res.sendRedirect(req.getContextPath() + "/admin/users");
     }
 }

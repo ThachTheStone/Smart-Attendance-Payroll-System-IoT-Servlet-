@@ -42,7 +42,7 @@ public class UserFormServlet extends HttpServlet {
         } else {
             Account existing = loadExisting(req);
             if (existing == null) {
-                Flash.error(req, "Không tìm thấy người dùng.");
+                Flash.error(req, "User not found.");
                 res.sendRedirect(req.getContextPath() + "/admin/users");
                 return;
             }
@@ -59,7 +59,7 @@ public class UserFormServlet extends HttpServlet {
         if (!create) {
             existing = loadExisting(req);
             if (existing == null) {
-                Flash.error(req, "Không tìm thấy người dùng.");
+                Flash.error(req, "User not found.");
                 res.sendRedirect(req.getContextPath() + "/admin/users");
                 return;
             }
@@ -106,14 +106,14 @@ public class UserFormServlet extends HttpServlet {
             acc.setPasswordHash(PasswordUtil.hash(form.getPassword()));
             acc.setRole(role);
             accountDAO.create(acc, emp);
-            Flash.success(req, "Đã thêm người dùng \"" + form.getUsername() + "\".");
+            Flash.success(req, "User \"" + form.getUsername() + "\" created successfully.");
         } else {
             existing.setRole(role);
             if (emp != null) {
                 emp.setId(existing.getEmployeeId());
             }
             accountDAO.update(existing, emp);
-            Flash.success(req, "Đã cập nhật người dùng \"" + existing.getUsername() + "\".");
+            Flash.success(req, "User \"" + existing.getUsername() + "\" updated successfully.");
         }
         res.sendRedirect(req.getContextPath() + "/admin/users");
     }

@@ -40,7 +40,7 @@ public class SendPayslipEmailServlet extends HttpServlet {
         String sendAllStr = req.getParameter("sendAll");
 
         if (pIdStr == null || pIdStr.trim().isEmpty()) {
-            Flash.error(req, "Thiếu tham số bảng lương.");
+            Flash.error(req, "Missing payroll period ID parameter.");
             res.sendRedirect(req.getContextPath() + "/admin/payroll");
             return;
         }
@@ -49,14 +49,14 @@ public class SendPayslipEmailServlet extends HttpServlet {
         try {
             payrollId = Integer.parseInt(pIdStr.trim());
         } catch (NumberFormatException e) {
-            Flash.error(req, "Mã bảng lương không hợp lệ.");
+            Flash.error(req, "Invalid payroll period ID.");
             res.sendRedirect(req.getContextPath() + "/admin/payroll");
             return;
         }
 
         Payroll payroll = payrollDAO.findById(payrollId);
         if (payroll == null) {
-            Flash.error(req, "Không tìm thấy bảng lương tương ứng.");
+            Flash.error(req, "Payroll period not found.");
             res.sendRedirect(req.getContextPath() + "/admin/payroll");
             return;
         }
@@ -71,14 +71,14 @@ public class SendPayslipEmailServlet extends HttpServlet {
                 int employeeId = Integer.parseInt(empIdStr.trim());
                 PayrollDetail d = payrollDAO.findDetailByPayrollAndEmployee(payrollId, employeeId);
                 if (d == null) {
-                    Flash.error(req, "Không tìm thấy dữ liệu phiếu lương của nhân viên này.");
+                    Flash.error(req, "No payslip data found for this employee.");
                     res.sendRedirect(redirectUrl);
                     return;
                 }
 
                 if (d.getEmployeeEmail() == null || d.getEmployeeEmail().trim().isEmpty()) {
                     payrollDAO.updateEmailStatus(payrollId, employeeId, "FAILED");
-                    Flash.error(req, "Nhân viên " + d.getEmployeeName() + " chưa có email trong hồ sơ.");
+                    Flash.error(req, "Employee " + d.getEmployeeName() + " has no email address configured.");
                     res.sendRedirect(redirectUrl);
                     return;
                 }
@@ -99,17 +99,17 @@ public class SendPayslipEmailServlet extends HttpServlet {
                 payrollDAO.updateEmailStatus(payrollId, employeeId, result.isSuccess() ? "SENT" : "FAILED");
 
                 if (result.isSuccess()) {
-                    String prefix = result.isSimulated() ? "[Mô phỏng Demo] " : "";
-                    Flash.success(req, prefix + "Đã gửi phiếu lương thành công tới " + d.getEmployeeName() + " (" + d.getEmployeeEmail() + ").");
+                    String prefix = result.isSimulated() ? "[Demo Simulation] " : "";
+                    Flash.success(req, prefix + "Payslip email sent successfully to " + d.getEmployeeName() + " (" + d.getEmployeeEmail() + ").");
                 } else {
-                    Flash.error(req, "Gửi email thất bại: " + result.getMessage());
+                    Flash.error(req, "Failed to send email: " + result.getMessage());
                 }
 
             } else {
                 // Send batch to all employees in this payroll
                 List<PayrollDetail> details = payrollDAO.findDetailsByPayrollId(payrollId);
                 if (details.isEmpty()) {
-                    Flash.error(req, "Bảng lương chưa có dữ liệu nhân viên.");
+                    Flash.error(req, "Payroll has no employee data.");
                     res.sendRedirect(redirectUrl);
                     return;
                 }
@@ -153,13 +153,13 @@ public class SendPayslipEmailServlet extends HttpServlet {
                     }
                 }
 
-                String prefix = anySimulated ? "[Mô phỏng Demo] " : "";
-                Flash.success(req, prefix + "Hoàn tất tiến trình gửi email: " + successCount + " thành công, " + failCount + " thất bại.");
+                String prefix = anySimulated ? "[Demo Simulation] " : "";
+                Flash.success(req, prefix + "Email delivery finished: " + successCount + " successful, " + failCount + " failed.");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            Flash.error(req, "Lỗi trong tiến trình gửi email: " + e.getMessage());
+            Flash.error(req, "Error during email delivery: " + e.getMessage());
         }
 
         res.sendRedirect(redirectUrl);

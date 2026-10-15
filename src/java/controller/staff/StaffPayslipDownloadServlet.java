@@ -41,7 +41,7 @@ public class StaffPayslipDownloadServlet extends HttpServlet {
         String pIdStr = req.getParameter("payrollId");
 
         if (pIdStr == null || pIdStr.trim().isEmpty()) {
-            Flash.error(req, "Thiếu tham số mã kỳ lương.");
+            Flash.error(req, "Missing payroll period ID parameter.");
             res.sendRedirect(req.getContextPath() + "/staff/payslips");
             return;
         }
@@ -50,21 +50,21 @@ public class StaffPayslipDownloadServlet extends HttpServlet {
         try {
             payrollId = Integer.parseInt(pIdStr.trim());
         } catch (NumberFormatException e) {
-            Flash.error(req, "Mã kỳ lương không hợp lệ.");
+            Flash.error(req, "Invalid payroll period ID.");
             res.sendRedirect(req.getContextPath() + "/staff/payslips");
             return;
         }
 
         Payroll payroll = payrollDAO.findById(payrollId);
         if (payroll == null || !payroll.isLocked()) {
-            Flash.error(req, "Phiếu lương này chưa được phòng Nhân sự khóa sổ chính thức.");
+            Flash.error(req, "This payroll period has not been officially locked and approved yet.");
             res.sendRedirect(req.getContextPath() + "/staff/payslips");
             return;
         }
 
         PayrollDetail detail = payrollDAO.findDetailByPayrollAndEmployee(payrollId, emp.getId());
         if (detail == null) {
-            Flash.error(req, "Không tìm thấy dữ liệu phiếu lương của bạn cho kỳ lương này.");
+            Flash.error(req, "No payslip data found for your account in this period.");
             res.sendRedirect(req.getContextPath() + "/staff/payslips");
             return;
         }
@@ -78,7 +78,7 @@ public class StaffPayslipDownloadServlet extends HttpServlet {
             pdfService.generatePayslipPdf(detail, payroll.getMonth(), payroll.getYear(), res.getOutputStream());
         } catch (Exception e) {
             e.printStackTrace();
-            Flash.error(req, "Lỗi trong quá trình tạo phiếu lương PDF: " + e.getMessage());
+            Flash.error(req, "Error generating payslip PDF: " + e.getMessage());
             res.sendRedirect(req.getContextPath() + "/staff/payslips");
         }
     }

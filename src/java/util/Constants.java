@@ -17,7 +17,7 @@ public final class Constants {
     public static final String SESSION_FLASH = "flash";
 
     public static final List<String> DEPARTMENTS = Collections.unmodifiableList(Arrays.asList(
-            "Ban Giám đốc", "Nhân sự", "Kế toán", "Sản xuất", "Kho", "Bảo vệ"));
+            "Executive Board", "Human Resources", "Accounting", "Production", "Warehouse", "Security"));
 
     public static final List<String> SALARY_TYPES = Collections.unmodifiableList(Arrays.asList("MONTHLY", "HOURLY"));
 }

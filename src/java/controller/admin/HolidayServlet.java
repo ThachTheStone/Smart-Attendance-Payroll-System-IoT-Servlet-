@@ -39,10 +39,10 @@ public class HolidayServlet extends HttpServlet {
             try {
                 LocalDate date = LocalDate.parse(dateStr.trim());
                 boolean ok = holidayDAO.delete(date);
-                if (ok) Flash.success(req, "Xóa ngày lễ thành công.");
-                else Flash.error(req, "Không thể xóa ngày lễ.");
+                if (ok) Flash.success(req, "Holiday deleted successfully.");
+                else Flash.error(req, "Could not delete holiday.");
             } catch (DateTimeParseException | NullPointerException e) {
-                Flash.error(req, "Ngày không hợp lệ.");
+                Flash.error(req, "Invalid date.");
             }
             res.sendRedirect(req.getContextPath() + "/admin/holidays");
             return;
@@ -53,7 +53,7 @@ public class HolidayServlet extends HttpServlet {
             String name = req.getParameter("name");
 
             if (dateStr == null || name == null || dateStr.trim().isEmpty() || name.trim().isEmpty()) {
-                Flash.error(req, "Vui lòng nhập ngày và tên ngày lễ.");
+                Flash.error(req, "Please enter both date and holiday name.");
                 res.sendRedirect(req.getContextPath() + "/admin/holidays");
                 return;
             }
@@ -62,20 +62,20 @@ public class HolidayServlet extends HttpServlet {
             try {
                 date = LocalDate.parse(dateStr.trim());
             } catch (DateTimeParseException e) {
-                Flash.error(req, "Định dạng ngày không hợp lệ.");
+                Flash.error(req, "Invalid date format.");
                 res.sendRedirect(req.getContextPath() + "/admin/holidays");
                 return;
             }
 
             if (holidayDAO.isHoliday(date)) {
-                Flash.error(req, "Ngày " + date + " đã tồn tại trong danh sách ngày lễ.");
+                Flash.error(req, "Date " + date + " is already in the holiday list.");
                 res.sendRedirect(req.getContextPath() + "/admin/holidays");
                 return;
             }
 
             boolean ok = holidayDAO.insert(new Holiday(date, name.trim()));
-            if (ok) Flash.success(req, "Thêm ngày lễ thành công.");
-            else Flash.error(req, "Thêm ngày lễ thất bại.");
+            if (ok) Flash.success(req, "Holiday added successfully.");
+            else Flash.error(req, "Failed to add holiday.");
 
             res.sendRedirect(req.getContextPath() + "/admin/holidays");
         }

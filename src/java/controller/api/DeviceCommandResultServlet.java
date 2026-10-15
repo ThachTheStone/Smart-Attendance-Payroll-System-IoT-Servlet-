@@ -47,14 +47,14 @@ public class DeviceCommandResultServlet extends HttpServlet {
             if ("DONE".equals(status)) {
                 if ("ENROLL".equalsIgnoreCase(cmd.getType()) && cmd.getEmployeeId() != null) {
                     Fingerprint fp = new Fingerprint(cmd.getEmployeeId(), cmd.getTemplateId(), 
-                            cmd.getFingerName() != null ? cmd.getFingerName() : "Vân tay mới");
+                            cmd.getFingerName() != null ? cmd.getFingerName() : "New Fingerprint");
                     fingerprintDAO.insert(fp);
-                    realtime.SseHub.getInstance().broadcastEnrollStep(cmd.getId(), "", "SUCCESS", "Đăng ký vân tay thành công!");
+                    realtime.SseHub.getInstance().broadcastEnrollStep(cmd.getId(), "", "SUCCESS", "Fingerprint enrolled successfully!");
                 } else if ("DELETE".equalsIgnoreCase(cmd.getType())) {
                     fingerprintDAO.deleteByTemplateId(cmd.getTemplateId());
                 }
             } else if ("FAILED".equals(status)) {
-                realtime.SseHub.getInstance().broadcastEnrollStep(cmd.getId(), "", "FAILED", "Đăng ký vân tay thất bại, vui lòng thử lại!");
+                realtime.SseHub.getInstance().broadcastEnrollStep(cmd.getId(), "", "FAILED", "Fingerprint enrollment failed, please try again!");
             } else if (step != null && !step.isEmpty()) {
                 String msg = getStepMessage(step);
                 realtime.SseHub.getInstance().broadcastEnrollStep(cmd.getId(), "", step, msg);
@@ -69,10 +69,10 @@ public class DeviceCommandResultServlet extends HttpServlet {
 
     private String getStepMessage(String step) {
         switch (step.toUpperCase()) {
-            case "PLACE_FINGER": return "Đặt ngón tay lên cảm biến (lần 1)";
-            case "REMOVE_FINGER": return "Nhấc ngón tay ra khỏi cảm biến";
-            case "PLACE_AGAIN": return "Đặt lại cùng ngón tay lần nữa";
-            default: return "Đang xử lý đăng ký vân tay...";
+            case "PLACE_FINGER": return "Place finger on the sensor (step 1)";
+            case "REMOVE_FINGER": return "Lift finger off the sensor";
+            case "PLACE_AGAIN": return "Place the same finger again";
+            default: return "Processing fingerprint enrollment...";
         }
     }
 }

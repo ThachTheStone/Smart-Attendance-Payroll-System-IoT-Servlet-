@@ -33,14 +33,14 @@ public class EnrollServlet extends HttpServlet {
         try {
             employeeId = Integer.parseInt(req.getParameter("id"));
         } catch (NumberFormatException e) {
-            Flash.error(req, "ID nhân viên không hợp lệ.");
+            Flash.error(req, "Invalid employee ID.");
             res.sendRedirect(req.getContextPath() + "/admin/users");
             return;
         }
 
         Employee emp = employeeDAO.findById(employeeId);
         if (emp == null) {
-            Flash.error(req, "Không tìm thấy nhân viên.");
+            Flash.error(req, "Employee not found.");
             res.sendRedirect(req.getContextPath() + "/admin/users");
             return;
         }
@@ -69,14 +69,14 @@ public class EnrollServlet extends HttpServlet {
         try {
             employeeId = Integer.parseInt(req.getParameter("employeeId"));
         } catch (NumberFormatException e) {
-            Flash.error(req, "ID nhân viên không hợp lệ.");
+            Flash.error(req, "Invalid employee ID.");
             res.sendRedirect(req.getContextPath() + "/admin/users");
             return;
         }
 
         Employee emp = employeeDAO.findById(employeeId);
         if (emp == null) {
-            Flash.error(req, "Không tìm thấy nhân viên.");
+            Flash.error(req, "Employee not found.");
             res.sendRedirect(req.getContextPath() + "/admin/users");
             return;
         }
@@ -84,21 +84,21 @@ public class EnrollServlet extends HttpServlet {
         if ("enroll".equals(action)) {
             List<Fingerprint> existing = fingerprintDAO.findByEmployeeId(employeeId);
             if (existing.size() >= 2) {
-                Flash.error(req, "Mỗi nhân viên chỉ được đăng ký tối đa 2 vân tay (FR-ENROLL-03).");
+                Flash.error(req, "Each employee can only register up to 2 fingerprints (FR-ENROLL-03).");
                 res.sendRedirect(req.getContextPath() + "/admin/employees/enroll?id=" + employeeId);
                 return;
             }
 
             DeviceCommand pending = commandDAO.findPendingByEmployeeId(employeeId);
             if (pending != null) {
-                Flash.error(req, "Nhân viên này đang có một lệnh đăng ký đang chờ xử lý (Lệnh #" + pending.getId() + ").");
+                Flash.error(req, "This employee has a pending enrollment command (Command #" + pending.getId() + ").");
                 res.sendRedirect(req.getContextPath() + "/admin/employees/enroll?id=" + employeeId);
                 return;
             }
 
             int freeTemplateId = fingerprintDAO.findFreeTemplateId();
             if (freeTemplateId <= 0) {
-                Flash.error(req, "Bộ nhớ cảm biến vân tay đã đầy (162/162). Không thể đăng ký thêm.");
+                Flash.error(req, "Fingerprint sensor memory is full (162/162). Cannot enroll more.");
                 res.sendRedirect(req.getContextPath() + "/admin/employees/enroll?id=" + employeeId);
                 return;
             }
@@ -111,7 +111,7 @@ public class EnrollServlet extends HttpServlet {
 
             String fingerName = req.getParameter("fingerName");
             if (fingerName == null || fingerName.trim().isEmpty()) {
-                fingerName = "Vân tay " + (existing.size() + 1);
+                fingerName = "Fingerprint " + (existing.size() + 1);
             } else {
                 fingerName = fingerName.trim();
             }
@@ -121,11 +121,11 @@ public class EnrollServlet extends HttpServlet {
 
             if (created) {
                 realtime.SseHub.getInstance().broadcastEnrollStep(cmd.getId(), emp.getFullName(), 
-                        "PLACE_FINGER", "Bắt đầu đăng ký cho " + emp.getFullName() + ": Vui lòng đặt ngón tay lên cảm biến (lần 1)");
-                Flash.success(req, "Đã gửi lệnh đăng ký vân tay (Slot #" + freeTemplateId 
-                        + "). Vui lòng cho nhân viên quét ngón tay tại máy chấm công hoặc Simulator.");
+                        "PLACE_FINGER", "Starting enrollment for " + emp.getFullName() + ": Please place finger on sensor (step 1)");
+                Flash.success(req, "Fingerprint enrollment command sent (Slot #" + freeTemplateId 
+                        + "). Please place finger on the scanner or simulator.");
             } else {
-                Flash.error(req, "Không thể tạo lệnh đăng ký vân tay.");
+                Flash.error(req, "Could not create fingerprint enrollment command.");
             }
 
             res.sendRedirect(req.getContextPath() + "/admin/employees/enroll?id=" + employeeId);
@@ -137,7 +137,7 @@ public class EnrollServlet extends HttpServlet {
             try {
                 templateId = Integer.parseInt(req.getParameter("templateId"));
             } catch (NumberFormatException e) {
-                Flash.error(req, "ID vân tay không hợp lệ.");
+                Flash.error(req, "Invalid fingerprint ID.");
                 res.sendRedirect(req.getContextPath() + "/admin/employees/enroll?id=" + employeeId);
                 return;
             }
@@ -151,7 +151,7 @@ public class EnrollServlet extends HttpServlet {
                 commandDAO.insert(new DeviceCommand(d.getId(), "DELETE", templateId, employeeId, null));
             }
 
-            Flash.success(req, "Đã xóa vân tay và gửi lệnh xóa tới thiết bị (Slot #" + templateId + ").");
+            Flash.success(req, "Fingerprint deleted and removal command sent to devices (Slot #" + templateId + ").");
             res.sendRedirect(req.getContextPath() + "/admin/employees/enroll?id=" + employeeId);
         }
     }

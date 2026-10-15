@@ -1,7 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<c:set var="pageTitle" value="Bảng lương"/>
+<c:set var="pageTitle" value="Payroll Management"/>
 <c:set var="activeNav" value="payroll"/>
 <%@include file="/WEB-INF/views/common/header.jspf"%>
 
@@ -107,25 +107,25 @@
 
 <div class="payroll-header">
     <div>
-        <h1>Quản lý Bảng lương &amp; Phiếu lương</h1>
-        <p class="muted">Tính toán bảng lương tháng tự động, kiểm tra dữ liệu chấm công và khóa sổ lương chính thức (FR-PAY-01..04).</p>
+        <h1>Payroll &amp; Payslip Management</h1>
+        <p class="muted">Automated monthly payroll calculation, timesheet verification, and payroll locking (FR-PAY-01..04).</p>
     </div>
 
     <!-- Period Selector Form -->
     <form method="get" action="${pageContext.request.contextPath}/admin/payroll" class="period-filter-bar">
         <label style="flex-direction:row; align-items:center; gap:6px; font-weight:600; font-size:13px; margin:0;">
-            Tháng:
+            Month:
             <select name="month">
                 <c:forEach var="m" begin="1" end="12">
-                    <option value="${m}" ${m == month ? 'selected' : ''}>Tháng ${m}</option>
+                    <option value="${m}" ${m == month ? 'selected' : ''}>Month ${m}</option>
                 </c:forEach>
             </select>
         </label>
         <label style="flex-direction:row; align-items:center; gap:6px; font-weight:600; font-size:13px; margin:0;">
-            Năm:
+            Year:
             <input type="number" name="year" value="${year}" min="2020" max="2030" style="width:80px;">
         </label>
-        <button type="submit" class="btn btn-secondary btn-sm">Xem</button>
+        <button type="submit" class="btn btn-secondary btn-sm">View</button>
     </form>
 </div>
 
@@ -134,23 +134,23 @@
     <div class="missing-alert-box">
         <div style="display:flex; align-items:center; gap:10px; color:#b45309; font-weight:700; font-size:16px;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            <span>TÍNH LƯƠNG BỊ CHẶN: Phát hiện ${missingCheckouts.size()} lượt quên check-out trong Tháng ${month}/${year} (FR-PAY-03)</span>
+            <span>PAYROLL CALCULATION BLOCKED: Found ${missingCheckouts.size()} missing checkout(s) in Month ${month}/${year} (FR-PAY-03)</span>
         </div>
         <p style="color:#78350f; font-size:13px; margin:8px 0 14px 0;">
-            Theo quy định hệ thống, bảng lương không thể khởi tạo hoặc tính toán khi còn các bản ghi chấm công thiếu giờ check-out. Quản trị viên phải vào Bảng chấm công điều chỉnh và nhập lý do trước khi tính lương.
+            Under payroll integrity policies, payroll cannot be calculated or generated while unverified missing checkouts exist. Administrators must adjust check-out times in Attendance management with valid reasons first.
         </p>
 
         <div class="table-wrap">
             <table class="table" style="background:white;">
                 <thead>
                     <tr>
-                        <th>Mã NV</th>
-                        <th>Họ và tên</th>
-                        <th>Phòng ban</th>
-                        <th>Ngày làm</th>
-                        <th>Ca làm việc</th>
-                        <th>Giờ vào</th>
-                        <th>Hành động</th>
+                        <th>Emp Code</th>
+                        <th>Full Name</th>
+                        <th>Department</th>
+                        <th>Work Date</th>
+                        <th>Shift</th>
+                        <th>Check-in</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -164,7 +164,7 @@
                             <td class="mono">${mc.formattedCheckIn}</td>
                             <td>
                                 <a href="${pageContext.request.contextPath}/admin/attendance?employeeId=${mc.employeeId}&from=${mc.workDate}&to=${mc.workDate}" class="btn btn-secondary btn-sm" style="font-size:11px;">
-                                    Điều chỉnh giờ ra
+                                    Adjust Checkout
                                 </a>
                             </td>
                         </tr>
@@ -179,16 +179,16 @@
 <div class="card" style="margin-bottom:24px;">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
         <div style="display:flex; align-items:center; gap:12px;">
-            <h2 style="font-size:18px; margin:0;">Bảng lương Tháng ${month}/${year}</h2>
+            <h2 style="font-size:18px; margin:0;">Payroll Sheet Month ${month}/${year}</h2>
             <c:choose>
                 <c:when test="${empty payroll}">
-                    <span class="role-badge" style="background:#f1f5f9; color:#475569;">CHƯA KHỞI TẠO</span>
+                    <span class="role-badge" style="background:#f1f5f9; color:#475569;">NOT GENERATED</span>
                 </c:when>
                 <c:when test="${payroll.status == 'DRAFT'}">
-                    <span class="status-badge-draft">● BẢN NHÁP (DRAFT)</span>
+                    <span class="status-badge-draft">● DRAFT</span>
                 </c:when>
                 <c:when test="${payroll.status == 'LOCKED'}">
-                    <span class="status-badge-locked">🔒 ĐÃ KHÓA (LOCKED)</span>
+                    <span class="status-badge-locked">🔒 LOCKED</span>
                 </c:when>
             </c:choose>
         </div>
@@ -201,36 +201,36 @@
                     <input type="hidden" name="month" value="${month}">
                     <input type="hidden" name="year" value="${year}">
                     <button type="submit" class="btn ${not empty missingCheckouts ? 'btn-secondary' : ''}" 
-                            ${not empty missingCheckouts ? 'disabled title="Phải xử lý hết các lượt quên checkout trước"' : ''}>
-                        ${empty payroll ? '⚡ Tính toán bảng lương' : '🔄 Tính toán lại'}
+                            ${not empty missingCheckouts ? 'disabled title="Missing checkouts must be resolved first"' : ''}>
+                        ${empty payroll ? '⚡ Calculate Payroll' : '🔄 Recalculate'}
                     </button>
                 </form>
             </c:if>
 
             <!-- Button Lock -->
             <c:if test="${not empty payroll && !payroll.isLocked()}">
-                <form method="post" action="${pageContext.request.contextPath}/admin/payroll" onsubmit="return confirm('Bạn có chắc chắn muốn KHÓA bảng lương này? Sau khi khóa sẽ không thể tính toán lại.');" style="margin:0;">
+                <form method="post" action="${pageContext.request.contextPath}/admin/payroll" onsubmit="return confirm('Are you sure you want to LOCK this payroll? Once locked, calculations cannot be undone.');" style="margin:0;">
                     <input type="hidden" name="action" value="lock">
                     <input type="hidden" name="payrollId" value="${payroll.id}">
                     <input type="hidden" name="month" value="${month}">
                     <input type="hidden" name="year" value="${year}">
                     <button type="submit" class="btn btn-secondary" style="color:#059669; border-color:#059669;">
-                        🔒 Khóa bảng lương (LOCK)
+                        🔒 Lock Payroll (LOCK)
                     </button>
                 </form>
             </c:if>
 
             <!-- Batch Export PDF & Send Email (FR-PAY-05, FR-PAY-06) -->
             <c:if test="${not empty payroll && not empty details}">
-                <a href="${pageContext.request.contextPath}/admin/payroll/export-pdf?payrollId=${payroll.id}" class="btn btn-secondary" title="Xuất toàn bộ phiếu lương công ty thành 1 file PDF nhiều trang">
-                    📄 Xuất toàn bộ PDF
+                <a href="${pageContext.request.contextPath}/admin/payroll/export-pdf?payrollId=${payroll.id}" class="btn btn-secondary" title="Export all company payslips into a single multi-page PDF">
+                    📄 Export All PDFs
                 </a>
 
-                <form method="post" action="${pageContext.request.contextPath}/admin/payroll/send-email" onsubmit="return confirm('Bạn có chắc chắn muốn gửi email phiếu lương kèm PDF tới TOÀN BỘ ${payroll.totalEmployees} nhân sự trong Tháng ${month}/${year}?');" style="margin:0;">
+                <form method="post" action="${pageContext.request.contextPath}/admin/payroll/send-email" onsubmit="return confirm('Are you sure you want to email payslip PDFs to ALL ${payroll.totalEmployees} employees for Month ${month}/${year}?');" style="margin:0;">
                     <input type="hidden" name="payrollId" value="${payroll.id}">
                     <input type="hidden" name="sendAll" value="true">
-                    <button type="submit" class="btn btn-secondary" style="color:#2563eb; border-color:#2563eb;" title="Gửi email phiếu lương PDF cho tất cả nhân viên">
-                        📧 Gửi email toàn bộ
+                    <button type="submit" class="btn btn-secondary" style="color:#2563eb; border-color:#2563eb;" title="Send PDF payslips via email to all employees">
+                        📧 Send All Emails
                     </button>
                 </form>
             </c:if>
@@ -242,19 +242,19 @@
 <c:if test="${not empty payroll}">
     <div class="payroll-kpi-bar">
         <div class="payroll-kpi">
-            <div class="muted small font-bold" style="text-transform:uppercase;">Số nhân sự nhận lương</div>
-            <div class="payroll-kpi-val" style="color:#2563eb;">${payroll.totalEmployees} <span style="font-size:14px; color:var(--muted); font-weight:500;">người</span></div>
+            <div class="muted small font-bold" style="text-transform:uppercase;">Employees on Payroll</div>
+            <div class="payroll-kpi-val" style="color:#2563eb;">${payroll.totalEmployees} <span style="font-size:14px; color:var(--muted); font-weight:500;">employees</span></div>
         </div>
         <div class="payroll-kpi">
-            <div class="muted small font-bold" style="text-transform:uppercase;">Tổng chi lương thực nhận</div>
+            <div class="muted small font-bold" style="text-transform:uppercase;">Total Net Salary Disbursed</div>
             <div class="payroll-kpi-val" style="color:#059669;">
                 <fmt:formatNumber value="${payroll.totalNetSalary}" pattern="#,##0"/> <span style="font-size:14px; color:var(--muted); font-weight:500;">VND</span>
             </div>
         </div>
         <div class="payroll-kpi">
-            <div class="muted small font-bold" style="text-transform:uppercase;">Trạng thái khóa sổ</div>
+            <div class="muted small font-bold" style="text-transform:uppercase;">Closing Status</div>
             <div class="payroll-kpi-val" style="font-size:20px; margin-top:10px;">
-                ${payroll.status == 'LOCKED' ? 'Đã chốt sổ chính thức' : 'Bản nháp đang rà soát'}
+                ${payroll.status == 'LOCKED' ? 'Finalized &amp; Locked' : 'Draft Review'}
             </div>
         </div>
     </div>
@@ -264,23 +264,23 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Mã NV</th>
-                    <th>Họ và tên</th>
-                    <th>Phòng ban</th>
-                    <th>Lương cơ bản</th>
-                    <th>Giờ chuẩn</th>
-                    <th>Giờ OT</th>
-                    <th>Giờ đêm</th>
-                    <th>Phạt muộn</th>
-                    <th>Lương thực nhận (Net)</th>
-                    <th>Trạng thái Email</th>
-                    <th>Thao tác</th>
+                    <th>Emp Code</th>
+                    <th>Full Name</th>
+                    <th>Department</th>
+                    <th>Base Salary</th>
+                    <th>Regular Hours</th>
+                    <th>OT Hours</th>
+                    <th>Night Hours</th>
+                    <th>Late Penalty</th>
+                    <th>Net Salary</th>
+                    <th>Email Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <c:choose>
                     <c:when test="${empty details}">
-                        <tr><td colspan="11" class="empty">Chưa có dữ liệu chi tiết bảng lương.</td></tr>
+                        <tr><td colspan="11" class="empty">No payroll breakdown data available.</td></tr>
                     </c:when>
                     <c:otherwise>
                         <c:forEach var="d" items="${details}">
@@ -291,7 +291,7 @@
                                 <td class="mono"><fmt:formatNumber value="${d.baseSalary}" pattern="#,##0"/></td>
                                 <td class="mono">${d.regularHours}h</td>
                                 <td class="mono">
-                                    <span title="Ngày thường: ${d.otWeekdayHours}h, Cuối tuần: ${d.otWeekendHours}h, Nghỉ lễ: ${d.otHolidayHours}h">
+                                    <span title="Weekday: ${d.otWeekdayHours}h, Weekend: ${d.otWeekendHours}h, Holiday: ${d.otHolidayHours}h">
                                         ${d.totalOvertimeHours}h
                                     </span>
                                 </td>
@@ -310,28 +310,28 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${d.emailStatus == 'SENT'}">
-                                            <span class="role-badge" style="background:#dcfce7; color:#15803d; font-size:11px; font-weight:700;" title="Đã gửi email thành công">✔ ĐÃ GỬI</span>
+                                            <span class="role-badge" style="background:#dcfce7; color:#15803d; font-size:11px; font-weight:700;" title="Email sent successfully">✔ SENT</span>
                                         </c:when>
                                         <c:when test="${d.emailStatus == 'FAILED'}">
-                                            <span class="role-badge" style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:700;" title="Gửi thất bại hoặc thiếu email">⚠ THẤT BẠI</span>
+                                            <span class="role-badge" style="background:#fee2e2; color:#b91c1c; font-size:11px; font-weight:700;" title="Failed to deliver or missing email">⚠ FAILED</span>
                                         </c:when>
                                         <c:otherwise>
-                                            <span class="role-badge" style="background:#f1f5f9; color:#64748b; font-size:11px;">Chưa gửi</span>
+                                            <span class="role-badge" style="background:#f1f5f9; color:#64748b; font-size:11px;">Not Sent</span>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
                                 <td>
                                     <div style="display:inline-flex; gap:6px; align-items:center;">
-                                        <button type="button" class="btn btn-secondary btn-sm" onclick='showPayslipModal(${d.employeeId}, "${d.employeeCode}", "${d.employeeName}", "${d.department}", ${d.baseSalary}, ${d.hourlyRate}, ${d.regularHours}, ${d.regularPay}, ${d.otWeekdayHours}, ${d.otWeekdayPay}, ${d.otWeekendHours}, ${d.otWeekendPay}, ${d.otHolidayHours}, ${d.otHolidayPay}, ${d.nightHours}, ${d.nightAllowance}, ${d.nightOtHours}, ${d.nightOtBonus}, ${d.lateMinutes}, ${d.penalty}, ${d.netSalary})' title="Xem chi tiết phiếu lương">
-                                            Xem
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick='showPayslipModal(${d.employeeId}, "${d.employeeCode}", "${d.employeeName}", "${d.department}", ${d.baseSalary}, ${d.hourlyRate}, ${d.regularHours}, ${d.regularPay}, ${d.otWeekdayHours}, ${d.otWeekdayPay}, ${d.otWeekendHours}, ${d.otWeekendPay}, ${d.otHolidayHours}, ${d.otHolidayPay}, ${d.nightHours}, ${d.nightAllowance}, ${d.nightOtHours}, ${d.nightOtBonus}, ${d.lateMinutes}, ${d.penalty}, ${d.netSalary})' title="View payslip breakdown">
+                                            View
                                         </button>
-                                        <a href="${pageContext.request.contextPath}/admin/payroll/export-pdf?payrollId=${payroll.id}&employeeId=${d.employeeId}" class="btn btn-secondary btn-sm" title="Tải phiếu lương PDF">
+                                        <a href="${pageContext.request.contextPath}/admin/payroll/export-pdf?payrollId=${payroll.id}&employeeId=${d.employeeId}" class="btn btn-secondary btn-sm" title="Download PDF payslip">
                                             📄 PDF
                                         </a>
-                                        <form method="post" action="${pageContext.request.contextPath}/admin/payroll/send-email" style="display:inline; margin:0;" onsubmit="return confirm('Gửi email phiếu lương kèm PDF cho nhân viên ${d.employeeName} (${d.employeeEmail})?');">
+                                        <form method="post" action="${pageContext.request.contextPath}/admin/payroll/send-email" style="display:inline; margin:0;" onsubmit="return confirm('Send payslip email with PDF to employee ${d.employeeName} (${d.employeeEmail})?');">
                                             <input type="hidden" name="payrollId" value="${payroll.id}">
                                             <input type="hidden" name="employeeId" value="${d.employeeId}">
-                                            <button type="submit" class="btn btn-secondary btn-sm" title="Gửi email phiếu lương">
+                                            <button type="submit" class="btn btn-secondary btn-sm" title="Email payslip">
                                                 📧
                                             </button>
                                         </form>
@@ -351,10 +351,10 @@
     <div class="modal-card" onclick="event.stopPropagation()">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:16px;">
             <div>
-                <h3 style="margin:0; font-size:18px;">Phiếu lương chi tiết (Payslip)</h3>
-                <span class="muted small" id="mPeriod">Tháng ${month}/${year}</span>
+                <h3 style="margin:0; font-size:18px;">Detailed Payslip Breakdown</h3>
+                <span class="muted small" id="mPeriod">Month ${month}/${year}</span>
             </div>
-            <button type="button" class="btn-ghost btn-sm" onclick="closePayslipModal()">✕ Đóng</button>
+            <button type="button" class="btn-ghost btn-sm" onclick="closePayslipModal()">✕ Close</button>
         </div>
 
         <div style="background:#f8fafc; border-radius:8px; padding:12px 16px; margin-bottom:16px;">
@@ -365,43 +365,43 @@
         <table class="table" style="font-size:13px; margin-bottom:16px;">
             <tbody>
                 <tr>
-                    <td>Mức lương cơ bản</td>
+                    <td>Base Salary</td>
                     <td class="mono font-bold" style="text-align:right;" id="mBase">--</td>
                 </tr>
                 <tr>
-                    <td>Lương 1 giờ (Hourly rate)</td>
+                    <td>Hourly Rate</td>
                     <td class="mono font-bold" style="text-align:right;" id="mRate">--</td>
                 </tr>
                 <tr>
-                    <td>Lương giờ chuẩn (<span id="mRegH"></span> giờ)</td>
+                    <td>Standard Hours Pay (<span id="mRegH"></span> hrs)</td>
                     <td class="mono font-bold" style="text-align:right;" id="mRegPay">--</td>
                 </tr>
                 <tr>
-                    <td>Làm thêm ngày thường 150% (<span id="mOtWdH"></span> giờ)</td>
+                    <td>Weekday Overtime 150% (<span id="mOtWdH"></span> hrs)</td>
                     <td class="mono font-bold" style="text-align:right;" id="mOtWdPay">--</td>
                 </tr>
                 <tr>
-                    <td>Làm thêm cuối tuần 200% (<span id="mOtWeH"></span> giờ)</td>
+                    <td>Weekend Overtime 200% (<span id="mOtWeH"></span> hrs)</td>
                     <td class="mono font-bold" style="text-align:right;" id="mOtWePay">--</td>
                 </tr>
                 <tr>
-                    <td>Làm thêm ngày lễ 300% (<span id="mOtHolH"></span> giờ)</td>
+                    <td>Holiday Overtime 300% (<span id="mOtHolH"></span> hrs)</td>
                     <td class="mono font-bold" style="text-align:right;" id="mOtHolPay">--</td>
                 </tr>
                 <tr>
-                    <td>Phụ cấp ca đêm +30% (<span id="mNightH"></span> giờ)</td>
+                    <td>Night Shift Differential +30% (<span id="mNightH"></span> hrs)</td>
                     <td class="mono font-bold" style="text-align:right;" id="mNightPay">--</td>
                 </tr>
                 <tr>
-                    <td>Thưởng ca đêm làm thêm +20% (<span id="mNightOtH"></span> giờ)</td>
+                    <td>Night Overtime Bonus +20% (<span id="mNightOtH"></span> hrs)</td>
                     <td class="mono font-bold" style="text-align:right;" id="mNightOtPay">--</td>
                 </tr>
                 <tr style="color:#dc2626;">
-                    <td>Khấu trừ đi muộn (<span id="mLateM"></span> phút)</td>
+                    <td>Late Penalty Deduction (<span id="mLateM"></span> mins)</td>
                     <td class="mono font-bold" style="text-align:right;" id="mPenalty">--</td>
                 </tr>
                 <tr style="background:#ecfdf5; font-size:16px; font-weight:800; color:#065f46;">
-                    <td>LƯƠNG THỰC NHẬN (NET)</td>
+                    <td>NET SALARY (TAKE-HOME)</td>
                     <td class="mono" style="text-align:right;" id="mNet">--</td>
                 </tr>
             </tbody>
@@ -409,16 +409,16 @@
 
         <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
             <a id="mPdfBtn" href="#" class="btn btn-primary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
-                📄 Tải phiếu lương PDF
+                📄 Download Payslip PDF
             </a>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="closePayslipModal()">Đóng</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="closePayslipModal()">Close</button>
         </div>
     </div>
 </div>
 
 <script>
     function fmtNum(n) {
-        return Number(n || 0).toLocaleString('vi-VN');
+        return Number(n || 0).toLocaleString('en-US');
     }
 
     function showPayslipModal(id, code, name, dept, base, rate, regH, regP, otWdH, otWdP, otWeH, otWeP, otHolH, otHolP, nightH, nightP, nightOtH, nightOtP, lateM, penalty, net) {

@@ -269,21 +269,21 @@
             <h1 style="margin:0;">Live Dashboard</h1>
             <div class="live-badge" id="liveStatusBadge">
                 <span class="live-dot" id="liveDot"></span>
-                <span id="liveStatusText">Thời gian thực (SSE)</span>
+                <span id="liveStatusText">Real-time (SSE)</span>
             </div>
         </div>
-        <p class="muted" style="margin-top:4px;">Giám sát chấm công và thiết bị cảm biến vân tay trực tiếp trong ngày hôm nay (<fmt:formatDate value="<%= new java.util.Date() %>" pattern="EEEE, dd/MM/yyyy" />).</p>
+        <p class="muted" style="margin-top:4px;">Live biometric attendance monitoring and IoT sensor terminal overview for today (<fmt:formatDate value="<%= new java.util.Date() %>" pattern="EEEE, MMMM dd, yyyy" />).</p>
     </div>
     <div style="display:flex; gap:10px;">
         <a href="${pageContext.request.contextPath}/kiosk" target="_blank" class="btn btn-secondary btn-sm">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-            Mở Kiosk
+            Launch Kiosk
         </a>
         <a href="${pageContext.request.contextPath}/dev/simulator" class="btn btn-secondary btn-sm">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
             Simulator
         </a>
-        <a href="${pageContext.request.contextPath}/admin/attendance" class="btn btn-sm">Bảng chấm công</a>
+        <a href="${pageContext.request.contextPath}/admin/attendance" class="btn btn-sm">Attendance Records</a>
     </div>
 </div>
 
@@ -293,38 +293,38 @@
         <div>
             <div class="security-alert-title">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                <span id="secAlertTitle">Cảnh báo bảo mật hệ thống</span>
+                <span id="secAlertTitle">System Security Alert</span>
             </div>
-            <div class="security-alert-desc" id="secAlertDesc">Phát hiện bất thường trong quá trình quét vân tay.</div>
+            <div class="security-alert-desc" id="secAlertDesc">Anomalous fingerprint scan activity detected.</div>
         </div>
-        <button type="button" class="btn btn-ghost btn-sm" onclick="dismissSecAlert()" style="color:#991b1b; border-color:#fca5a5;">Đóng</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="dismissSecAlert()" style="color:#991b1b; border-color:#fca5a5;">Dismiss</button>
     </div>
 </div>
 
 <!-- 5 KPI Stat Cards (FR-DASH-02) -->
 <div class="kpi-grid">
     <div class="kpi-card kpi-present">
-        <div class="kpi-label">Có mặt hôm nay</div>
+        <div class="kpi-label">Present Today</div>
         <div class="kpi-value" id="kpiPresent">${presentCount}</div>
-        <div class="kpi-sub">Trên tổng số <strong>${totalEmployees}</strong> nhân sự</div>
+        <div class="kpi-sub">Out of <strong>${totalEmployees}</strong> total personnel</div>
     </div>
     <div class="kpi-card kpi-late">
-        <div class="kpi-label">Đi muộn</div>
+        <div class="kpi-label">Late Arrivals</div>
         <div class="kpi-value" id="kpiLate">${lateCount}</div>
-        <div class="kpi-sub">Sau thời gian ân hạn</div>
+        <div class="kpi-sub">Exceeded grace period</div>
     </div>
     <div class="kpi-card kpi-absent">
-        <div class="kpi-label">Vắng mặt</div>
+        <div class="kpi-label">Absents</div>
         <div class="kpi-value" id="kpiAbsent">${absentCount}</div>
-        <div class="kpi-sub">Chưa có lượt quét ca</div>
+        <div class="kpi-sub">No scan recorded for shift</div>
     </div>
     <div class="kpi-card kpi-ot">
-        <div class="kpi-label">Tăng ca (OT)</div>
+        <div class="kpi-label">Overtime (OT)</div>
         <div class="kpi-value" id="kpiOvertime">${overtimeCount}</div>
-        <div class="kpi-sub">Vượt khung giờ ca chuẩn</div>
+        <div class="kpi-sub">Exceeded standard shift hours</div>
     </div>
     <div class="kpi-card kpipi-devices">
-        <div class="kpi-label">Máy chấm công</div>
+        <div class="kpi-label">Biometric Terminals</div>
         <div class="kpi-value" id="kpiDevices">
             <c:set var="onlineCount" value="0"/>
             <c:forEach var="d" items="${devices}">
@@ -332,7 +332,7 @@
             </c:forEach>
             ${onlineCount}/${devices.size()}
         </div>
-        <div class="kpi-sub">Thiết bị đang trực tuyến</div>
+        <div class="kpi-sub">Terminals currently online</div>
     </div>
 </div>
 
@@ -345,29 +345,29 @@
         <div class="table-card">
             <div class="table-card-head">
                 <div>
-                    <h2 style="font-size:16px; margin:0;">Nhân viên đang làm việc</h2>
-                    <p class="muted small" style="margin:2px 0 0;">Danh sách nhân sự đã check-in và chưa check-out trong ngày.</p>
+                    <h2 style="font-size:16px; margin:0;">Currently Working Personnel</h2>
+                    <p class="muted small" style="margin:2px 0 0;">Personnel who checked in and have not yet checked out today.</p>
                 </div>
-                <span class="role-badge role-STAFF" id="workingBadge">${currentlyWorking.size()} đang làm</span>
+                <span class="role-badge role-STAFF" id="workingBadge">${currentlyWorking.size()} active</span>
             </div>
 
             <div class="table-wrap">
                 <table class="table" id="workingTable">
                     <thead>
                         <tr>
-                            <th>Mã NV</th>
-                            <th>Họ và tên</th>
-                            <th>Phòng ban</th>
-                            <th>Ca làm việc</th>
-                            <th>Giờ check-in</th>
-                            <th>Trạng thái</th>
+                            <th>Code</th>
+                            <th>Full Name</th>
+                            <th>Department</th>
+                            <th>Shift</th>
+                            <th>Check-in Time</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="workingTbody">
                         <c:choose>
                             <c:when test="${empty currentlyWorking}">
                                 <tr id="emptyWorkingRow">
-                                    <td colspan="6" class="empty">Chưa có nhân viên nào đang làm việc lúc này.</td>
+                                    <td colspan="6" class="empty">No personnel currently clocked in.</td>
                                 </tr>
                             </c:when>
                             <c:otherwise>
@@ -394,7 +394,7 @@
 
         <!-- Devices Status (FR-DASH-05) -->
         <div class="table-card">
-            <h2 style="font-size:16px; margin:0 0 16px 0;">Thiết bị chấm công IoT (ESP32 + AS608)</h2>
+            <h2 style="font-size:16px; margin:0 0 16px 0;">IoT Terminals (ESP32 + AS608)</h2>
             <div class="device-grid">
                 <c:forEach var="d" items="${devices}">
                     <div class="device-box" id="deviceBox-${d.id}">
@@ -405,7 +405,7 @@
                         </div>
                         <div>
                             <span class="device-status-badge ${d.online ? 'dev-online' : 'dev-offline'}" id="devBadge-${d.id}">
-                                ${d.online ? '● Trực tuyến' : '○ Ngoại tuyến'}
+                                ${d.online ? '● Online' : '○ Offline'}
                             </span>
                         </div>
                     </div>
@@ -418,14 +418,14 @@
     <div>
         <div class="feed-card">
             <div class="feed-title">
-                <span>Luồng sự kiện thời gian thực</span>
-                <span class="badge-status status-online" style="font-size:11px;">Trực tiếp</span>
+                <span>Live Event Stream</span>
+                <span class="badge-status status-online" style="font-size:11px;">Live</span>
             </div>
 
             <div class="feed-list" id="feedList">
                 <c:choose>
                     <c:when test="${empty recentLogs}">
-                        <div class="empty small" id="emptyFeedMsg">Chưa có lượt quét nào gần đây.</div>
+                        <div class="empty small" id="emptyFeedMsg">No recent scans recorded.</div>
                     </c:when>
                     <c:otherwise>
                         <c:forEach var="log" items="${recentLogs}">
@@ -439,12 +439,12 @@
                                 </div>
                                 <div class="feed-info">
                                     <div class="feed-name">
-                                        <c:out value="${not empty log.employeeName ? log.employeeName : 'Vân tay không xác định'}"/>
+                                        <c:out value="${not empty log.employeeName ? log.employeeName : 'Unrecognized Fingerprint'}"/>
                                     </div>
                                     <div class="feed-time">
-                                        ${log.formattedTime} · <c:out value="${log.deviceName != null ? log.deviceName : 'Cổng'}"/>
+                                        ${log.formattedTime} · <c:out value="${log.deviceName != null ? log.deviceName : 'Terminal'}"/>
                                         <c:if test="${log.confidenceScore != null}">
-                                            · Độ tin cậy: ${log.confidenceScore}%
+                                            · Confidence: ${log.confidenceScore}%
                                         </c:if>
                                     </div>
                                     <div style="font-size:11px; color:#4b5563; margin-top:2px;">
@@ -508,9 +508,9 @@
         item.innerHTML = 
             '<div class="feed-avatar">' + avatarText + '</div>' +
             '<div class="feed-info">' +
-                '<div class="feed-name">' + (data.employeeName || 'Không xác định') + '</div>' +
-                '<div class="feed-time">' + (data.time || '') + ' · ' + (data.deviceName || 'Máy quét') + 
-                    (data.confidence ? ' · Độ tin cậy: ' + data.confidence + '%' : '') + '</div>' +
+                '<div class="feed-name">' + (data.employeeName || 'Unknown') + '</div>' +
+                '<div class="feed-time">' + (data.time || '') + ' · ' + (data.deviceName || 'Scanner') + 
+                    (data.confidence ? ' · Confidence: ' + data.confidence + '%' : '') + '</div>' +
                 '<div style="font-size:11px; color:#4b5563; margin-top:2px;">' + (data.message || '') + '</div>' +
             '</div>' +
             '<div>' +
@@ -548,9 +548,9 @@
                 '<td class="mono font-bold">' + (emp.code || '') + '</td>' +
                 '<td><strong>' + (emp.name || '') + '</strong></td>' +
                 '<td>' + (emp.department || '') + '</td>' +
-                '<td><span class="status-pill" style="background:#eef2ff; color:#3730a3;">Hiện tại</span></td>' +
+                '<td><span class="status-pill" style="background:#eef2ff; color:#3730a3;">Current</span></td>' +
                 '<td class="mono">' + (timeStr || '') + '</td>' +
-                '<td><span class="role-badge role-STAFF">' + (statusLabel || 'Đúng giờ') + '</span></td>';
+                '<td><span class="role-badge role-STAFF">' + (statusLabel || 'On Time') + '</span></td>';
             tbody.insertBefore(tr, tbody.firstChild);
         } else if (action === 'CHECK_OUT') {
             if (existingRow) {
@@ -560,7 +560,7 @@
 
         // Count rows
         const currentCount = tbody.querySelectorAll('tr:not(#emptyWorkingRow)').length;
-        badge.textContent = currentCount + ' đang làm';
+        badge.textContent = currentCount + ' active';
         if (currentCount === 0 && emptyRow) {
             emptyRow.style.display = '';
         }
@@ -576,7 +576,7 @@
 
         es.addEventListener('open', () => {
             dot.className = 'live-dot';
-            text.textContent = 'Thời gian thực (SSE)';
+            text.textContent = 'Real-time (SSE)';
             badge.style.background = '#ecfdf5';
             badge.style.color = '#065f46';
         });
@@ -612,7 +612,7 @@
         es.addEventListener('security_alert', (e) => {
             try {
                 const data = JSON.parse(e.data);
-                showSecAlert('CẢNH BÁO AN NINH', data.message || 'Phát hiện sự cố quét vân tay bất thường!');
+                showSecAlert('SECURITY ALERT', data.message || 'Anomalous fingerprint scan attempt detected!');
             } catch (err) {
                 console.error('Security alert parse error', err);
             }
@@ -624,7 +624,7 @@
                 const badge = document.getElementById('devBadge-' + data.deviceId);
                 if (badge) {
                     badge.className = 'device-status-badge ' + (data.online ? 'dev-online' : 'dev-offline');
-                    badge.textContent = data.online ? '● Trực tuyến' : '○ Ngoại tuyến';
+                    badge.textContent = data.online ? '● Online' : '○ Offline';
                 }
             } catch (err) {
                 console.error('Device status parse error', err);
@@ -633,7 +633,7 @@
 
         es.onerror = () => {
             dot.className = 'live-dot offline';
-            text.textContent = 'Kết nối lại (Polling fallback)...';
+            text.textContent = 'Reconnecting (Polling fallback)...';
             badge.style.background = '#fef2f2';
             badge.style.color = '#991b1b';
         };
