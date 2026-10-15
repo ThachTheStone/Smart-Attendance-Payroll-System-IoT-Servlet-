@@ -75,6 +75,10 @@ IF NOT EXISTS (SELECT 1 FROM Device WHERE api_key = 'DEV-7f3a9c2e-esp32-main')
     INSERT INTO Device (name, location, api_key, last_heartbeat)
     VALUES ('ESP32 Workshop Gate', 'Workshop Area - Ground Floor', 'DEV-7f3a9c2e-esp32-main', SYSDATETIME());
 
+IF NOT EXISTS (SELECT 1 FROM Device WHERE api_key = 'DEV-ESP32-ATTENDANCE-KEY-001')
+    INSERT INTO Device (name, location, api_key, last_heartbeat)
+    VALUES ('ESP32 USB Scanner', 'Main Gate - USB Port', 'DEV-ESP32-ATTENDANCE-KEY-001', SYSDATETIME());
+
 /* ---------- 5. EMPLOYEES (Employee) ---------- */
 IF NOT EXISTS (SELECT 1 FROM Employee WHERE code = 'NV001')
     INSERT INTO Employee (code, full_name, email, phone, department, position, salary_type, base_salary, status) VALUES

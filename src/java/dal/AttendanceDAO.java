@@ -195,11 +195,9 @@ public class AttendanceDAO extends DBContext {
                    + "  AND att.check_out IS NULL "
                    + "  AND att.status NOT IN ('MISSING_CHECKOUT') "
                    + "  AND ( "
-                   + "      -- Normal shift: work_date + end_time + 2 hours < NOW "
-                   + "      (s.start_time <= s.end_time AND DATEADD(hour, 2, CAST(att.work_date AS DATETIME2) + CAST(s.end_time AS DATETIME2)) < SYSDATETIME()) "
+                   + "      (s.start_time <= s.end_time AND DATEADD(hour, 2, CAST(att.work_date AS DATETIME) + CAST(s.end_time AS DATETIME)) < GETDATE()) "
                    + "      OR "
-                   + "      -- Overnight shift: work_date + 1 day + end_time + 2 hours < NOW "
-                   + "      (s.start_time > s.end_time AND DATEADD(hour, 2, DATEADD(day, 1, CAST(att.work_date AS DATETIME2)) + CAST(s.end_time AS DATETIME2)) < SYSDATETIME()) "
+                   + "      (s.start_time > s.end_time AND DATEADD(hour, 2, DATEADD(day, 1, CAST(att.work_date AS DATETIME)) + CAST(s.end_time AS DATETIME)) < GETDATE()) "
                    + "  )";
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

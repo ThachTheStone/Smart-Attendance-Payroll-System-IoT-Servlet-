@@ -239,7 +239,8 @@ INSERT INTO Shift (name, start_time, end_time, break_minutes) VALUES
 /* ---------- SEED 4: IOT DEVICES ---------- */
 INSERT INTO Device (name, location, api_key, last_heartbeat) VALUES
 ('ESP32 Main Gate',     'Floor 1 - Main Entrance',      'DEVICE_SECRET_KEY_2026', SYSDATETIME()),
-('ESP32 Workshop Gate', 'Workshop Area - Ground Floor', 'DEV-7f3a9c2e-esp32-main', SYSDATETIME());
+('ESP32 Workshop Gate', 'Workshop Area - Ground Floor', 'DEV-7f3a9c2e-esp32-main', SYSDATETIME()),
+('ESP32 USB Scanner',   'Main Gate - USB Port',         'DEV-ESP32-ATTENDANCE-KEY-001', SYSDATETIME());
 
 /* ---------- SEED 5: EMPLOYEES ---------- */
 INSERT INTO Employee (code, full_name, email, phone, department, position, salary_type, base_salary, status) VALUES
