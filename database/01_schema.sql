@@ -71,11 +71,13 @@ CREATE TABLE Fingerprint (
 
 CREATE TABLE DeviceCommand (
     id           INT IDENTITY(1,1) PRIMARY KEY,
-    device_id    INT         NOT NULL REFERENCES Device(id),
-    type         VARCHAR(10) NOT NULL CHECK (type IN ('ENROLL','DELETE')),
-    template_id  INT         NOT NULL,
-    status       VARCHAR(10) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','DONE','FAILED')),
-    created_at   DATETIME2   NOT NULL DEFAULT SYSDATETIME()
+    device_id    INT          NOT NULL REFERENCES Device(id),
+    type         VARCHAR(10)  NOT NULL CHECK (type IN ('ENROLL','DELETE')),
+    template_id  INT          NOT NULL,
+    employee_id  INT          NULL REFERENCES Employee(id),
+    finger_name  NVARCHAR(30) NULL,
+    status       VARCHAR(10)  NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','DONE','FAILED')),
+    created_at   DATETIME2    NOT NULL DEFAULT SYSDATETIME()
 );
 
 CREATE TABLE Shift (

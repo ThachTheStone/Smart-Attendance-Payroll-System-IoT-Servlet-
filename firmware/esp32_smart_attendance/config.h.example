@@ -1,0 +1,45 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// ========================================================
+// 1. Wi-Fi Configuration
+// ========================================================
+#define WIFI_SSID       "YOUR_WIFI_SSID"
+#define WIFI_PASSWORD   "YOUR_WIFI_PASSWORD"
+
+// ========================================================
+// 2. SmartAttend Server Configuration
+// ========================================================
+// Replace with the IP address of your host machine running Tomcat 9
+#define SERVER_HOST     "192.168.1.100"
+#define SERVER_PORT     8080
+#define SERVER_BASE_URL "http://" SERVER_HOST ":8080/SmartAttendance/api/device"
+
+// Device API Key (Must match a row in SQL Server 'Device' table)
+#define DEVICE_API_KEY  "DEVICE_SECRET_KEY_2026"
+
+// ========================================================
+// 3. AS608 Optical Fingerprint Sensor Pinout
+// ========================================================
+// Connect AS608 TX (White/Yellow) -> ESP32 GPIO 16 (RX2)
+// Connect AS608 RX (Green)        -> ESP32 GPIO 17 (TX2)
+// Connect AS608 VCC (Red)         -> 3.3V (or 5V if 3.3V regulator on sensor)
+// Connect AS608 GND (Black)       -> GND
+#define AS608_RX_PIN    16
+#define AS608_TX_PIN    17
+#define AS608_BAUD_RATE 57600
+
+// Feedback Peripherals (Optional)
+#define LED_STATUS_PIN  2   // ESP32 onboard LED (GPIO 2)
+#define BUZZER_PIN      4   // Active buzzer (GPIO 4)
+
+// ========================================================
+// 4. Timing & Interval Parameters (Milliseconds)
+// ========================================================
+#define HEARTBEAT_INTERVAL_MS    60000UL  // 60 seconds (FR-IOT-06)
+#define COMMAND_POLL_INTERVAL_MS 2000UL   // 2 seconds (FR-IOT-07)
+#define SCAN_COOLDOWN_MS         2500UL   // 2.5 seconds debounce
+#define ENROLL_STEP_TIMEOUT_MS   15000UL  // 15 seconds timeout per enroll step
+#define HTTP_TIMEOUT_MS          4000     // 4 seconds network timeout
+
+#endif // CONFIG_H

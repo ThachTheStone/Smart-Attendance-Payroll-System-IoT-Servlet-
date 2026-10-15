@@ -133,7 +133,7 @@ public class UserFormServlet extends HttpServlet {
     private void show(HttpServletRequest req, HttpServletResponse res, UserForm form, Map<String, String> errors)
             throws ServletException, IOException {
         req.setAttribute("form", form);
-        req.setAttribute("errors", errors);
+        req.setAttribute("errors", errors);         
         req.setAttribute("roles", Role.values());
         req.setAttribute("departments", Constants.DEPARTMENTS);
         req.getRequestDispatcher("/WEB-INF/views/admin/user-form.jsp").forward(req, res);

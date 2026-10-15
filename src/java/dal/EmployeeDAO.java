@@ -12,6 +12,75 @@ import model.Employee;
  * Cac ham insert/update nhan Connection tu ben ngoai de chay chung transaction voi Account.
  */
 public class EmployeeDAO extends DBContext {
+    
+        public Employee findById(int id) {
+        String sql = "SELECT id, code, full_name, email, phone, department, position, photo, salary_type, base_salary, status "
+                   + "FROM Employee WHERE id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Employee e = new Employee();
+                    e.setId(rs.getInt("id"));
+                    e.setCode(rs.getString("code"));
+                    e.setFullName(rs.getString("full_name"));
+                    e.setEmail(rs.getString("email"));
+                    e.setPhone(rs.getString("phone"));
+                    e.setDepartment(rs.getString("department"));
+                    e.setPosition(rs.getString("position"));
+                    e.setPhoto(rs.getString("photo"));
+                    e.setSalaryType(rs.getString("salary_type"));
+                    e.setBaseSalary(rs.getBigDecimal("base_salary"));
+                    e.setStatus(rs.getString("status"));
+                    return e;
+                }
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        return null;
+    }
+
+    public java.util.List<Employee> findAllActive() {
+        java.util.List<Employee> list = new java.util.ArrayList<>();
+        String sql = "SELECT id, code, full_name, email, phone, department, position, photo, salary_type, base_salary, status "
+                   + "FROM Employee WHERE status = 'ACTIVE' ORDER BY code ASC";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Employee e = new Employee();
+                e.setId(rs.getInt("id"));
+                e.setCode(rs.getString("code"));
+                e.setFullName(rs.getString("full_name"));
+                e.setEmail(rs.getString("email"));
+                e.setPhone(rs.getString("phone"));
+                e.setDepartment(rs.getString("department"));
+                e.setPosition(rs.getString("position"));
+                e.setPhoto(rs.getString("photo"));
+                e.setSalaryType(rs.getString("salary_type"));
+                e.setBaseSalary(rs.getBigDecimal("base_salary"));
+                e.setStatus(rs.getString("status"));
+                list.add(e);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        return list;
+    }
+
+    public int countActive() {
+        String sql = "SELECT COUNT(*) FROM Employee WHERE status = 'ACTIVE'";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
 
     /** Them nhan vien, tra ve id vua sinh. */
     public int insert(Connection con, Employee e) throws SQLException {

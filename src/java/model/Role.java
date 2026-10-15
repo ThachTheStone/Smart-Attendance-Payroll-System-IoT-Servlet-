@@ -19,7 +19,7 @@ public enum Role {
     /** Trang chu sau khi dang nhap cua tung vai tro. */
     public String getHomePath() {
         switch (this) {
-            case ADMIN: return "/admin/users";
+            case ADMIN: return "/admin/dashboard";
             case STAFF: return "/staff/today";
             default:    return "/kiosk";
         }

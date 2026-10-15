@@ -27,6 +27,9 @@ import util.UserValidator;
 public class UserActionServlet extends HttpServlet {
 
     private final AccountDAO accountDAO = new AccountDAO();
+    private final dal.FingerprintDAO fingerprintDAO = new dal.FingerprintDAO();
+    private final dal.DeviceDAO deviceDAO = new dal.DeviceDAO();
+    private final dal.DeviceCommandDAO commandDAO = new dal.DeviceCommandDAO();
     private final UserValidator validator = new UserValidator();
 
     @Override
@@ -70,6 +73,19 @@ public class UserActionServlet extends HttpServlet {
             Flash.error(req, "Không thể vô hiệu hóa admin cuối cùng đang hoạt động.");
         } else {
             accountDAO.updateStatus(target.getId(), status);
+
+            // FR-ENROLL-04: Deactivating an employee queues a DELETE command for each fingerprint template
+            if ("INACTIVE".equals(status) && target.getEmployeeId() != null) {
+                java.util.List<model.Fingerprint> fps = fingerprintDAO.findByEmployeeId(target.getEmployeeId());
+                java.util.List<model.Device> devices = deviceDAO.findAll();
+                for (model.Fingerprint fp : fps) {
+                    for (model.Device d : devices) {
+                        commandDAO.insert(new model.DeviceCommand(d.getId(), "DELETE", fp.getTemplateId(), target.getEmployeeId(), null));
+                    }
+                    fingerprintDAO.deleteByTemplateId(fp.getTemplateId());
+                }
+            }
+
             Flash.success(req, ("ACTIVE".equals(status) ? "Đã kích hoạt" : "Đã vô hiệu hóa")
                     + " tài khoản \"" + target.getUsername() + "\".");
         }

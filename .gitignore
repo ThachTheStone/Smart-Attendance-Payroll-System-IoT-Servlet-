@@ -8,8 +8,9 @@ nbproject/build-impl.xml
 nbproject/genfiles.properties
 nbproject/ant-deploy.xml
 
-# Cau hinh DB rieng tung nguoi (copy tu db.properties.example)
+# Cau hinh DB & Mail rieng tung nguoi (copy tu *.example)
 src/java/db.properties
+src/java/mail.properties
 
 # IDE khac
 .idea/

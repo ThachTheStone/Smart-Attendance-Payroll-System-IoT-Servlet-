@@ -1,0 +1,9 @@
+# Cau hinh Gmail SMTP cho SmartAttend (FR-PAY-06)
+# Huong dan: Bat 2FA tren Google Account -> Tao App Password (Mat khau ung dung)
+mail.smtp.host=smtp.gmail.com
+mail.smtp.port=587
+mail.smtp.auth=true
+mail.smtp.starttls.enable=true
+mail.user=your_email@gmail.com
+mail.password=your_16_character_app_password
+mail.from=SmartAttend Payroll <your_email@gmail.com>

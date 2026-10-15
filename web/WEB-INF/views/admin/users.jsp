@@ -72,6 +72,9 @@
                 <span class="status status-${u.status}">${u.active ? 'Hoạt động' : 'Vô hiệu'}</span>
             </td>
             <td class="actions">
+                <c:if test="${not empty u.employeeId}">
+                    <a href="${ctx}/admin/employees/enroll?id=${u.employeeId}" style="color: var(--primary); font-weight: 500;">Vân tay</a>
+                </c:if>
                 <a href="${ctx}/admin/users/edit?id=${u.id}">Sửa</a>
                 <a href="${ctx}/admin/users/reset-password?id=${u.id}">Đặt lại MK</a>
                 <c:if test="${u.id != me.id}">

@@ -29,6 +29,10 @@
         <url-pattern>/account/*</url-pattern>
     </filter-mapping>
 
+    <listener>
+        <listener-class>listener.SchedulerListener</listener-class>
+    </listener>
+
     <!-- Moi file JSP/JSPF doc bang UTF-8 (tieng Viet) -->
     <jsp-config>
         <jsp-property-group>

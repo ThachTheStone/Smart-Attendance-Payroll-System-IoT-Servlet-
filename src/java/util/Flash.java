@@ -18,6 +18,10 @@ public final class Flash {
         set(req, "error", msg);
     }
 
+    public static void info(HttpServletRequest req, String msg) {
+        set(req, "info", msg);
+    }
+
     private static void set(HttpServletRequest req, String type, String msg) {
         Map<String, String> flash = new HashMap<>();
         flash.put("type", type);

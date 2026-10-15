@@ -56,10 +56,14 @@ public class AuthFilter implements Filter {
 
         String path = req.getRequestURI().substring(req.getContextPath().length());
         Role required = requiredRole(path);
-        if (required != null && acc.getRole() != required) {
-            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            req.getRequestDispatcher("/WEB-INF/views/common/403.jsp").forward(req, res);
-            return;
+        if (required != null) {
+            boolean allowed = (acc.getRole() == required)
+                    || (required == Role.KIOSK && acc.getRole() == Role.ADMIN);
+            if (!allowed) {
+                res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                req.getRequestDispatcher("/WEB-INF/views/common/403.jsp").forward(req, res);
+                return;
+            }
         }
         chain.doFilter(request, response);
     }
