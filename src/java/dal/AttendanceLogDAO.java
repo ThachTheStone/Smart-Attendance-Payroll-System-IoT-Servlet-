@@ -104,7 +104,7 @@ public class AttendanceLogDAO extends DBContext {
     public AttendanceLog findLastLogByEmployeeId(int employeeId) {
     String sql = "SELECT TOP 1 id, employee_id, device_id, event_time, confidence_score, result, reason "
                + "FROM AttendanceLog "
-               + "WHERE employee_id = ? "
+               + "WHERE employee_id = ? AND result IN ('CHECK_IN', 'CHECK_OUT') "
                + "ORDER BY event_time DESC";
     try (Connection con = getConnection();
          PreparedStatement ps = con.prepareStatement(sql)) {
