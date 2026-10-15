@@ -18,7 +18,10 @@ Hệ thống chấm công vân tay (ESP32 + AS608) và tính lương tự độn
 | SQL Server | 2017 / 2019 / 2022 + SSMS |
 
 ## Chạy dự án lần đầu
-1. **Database**: SSMS → chạy `database/01_schema.sql` rồi `database/02_seed.sql`.
+1. **Database**: Mở SSMS hoặc Azure Data Studio:
+   - Cách 1 (Nhanh nhất): Mở và chạy file `database/master_setup.sql` (bấm F5 để tạo toàn bộ DB và nạp đầy đủ dữ liệu demo).
+   - Cách 2: Chạy lần lượt `database/01_schema.sql` → `database/02_seed.sql` → `database/03_demo_attendance.sql`.
+   - Xem hướng dẫn chi tiết tại [database/README.md](database/README.md).
 2. **Cấu hình DB**: copy `src/java/db.properties.example` → `src/java/db.properties`, sửa `db.user` / `db.password`. File này bị `.gitignore`, không push lên.
 3. SQL Server bật **TCP/IP port 1433** và **SQL Server Authentication**.
 4. NetBeans: File → Open Project → chọn thư mục project. Nếu báo *missing server*: chuột phải project → **Resolve Missing Server Problem** → chọn Tomcat 9.
@@ -46,7 +49,7 @@ web
 ├── WEB-INF/web.xml
 └── assets/css/app.css
 lib/              jstl-1.2.jar, mssql-jdbc-12.8.1.jre8.jar
-database/         01_schema.sql, 02_seed.sql
+database/         master_setup.sql, 01_schema.sql, 02_seed.sql, 03_demo_attendance.sql
 nbproject/        project.xml, project.properties (build-impl.xml NetBeans tự sinh)
 ```
 

@@ -15,6 +15,10 @@ CREATE DATABASE SmartAttendanceDB;
 GO
 USE SmartAttendanceDB;
 GO
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
 
 /* ---------- 1. USER MANAGEMENT (lam trong sprint 30/9) ---------- */
 
@@ -46,6 +50,11 @@ CREATE TABLE Account (
     last_login    DATETIME2     NULL,
     created_at    DATETIME2     NOT NULL DEFAULT SYSDATETIME()
 );
+GO
+
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
 GO
 /* Moi nhan vien toi da 1 tai khoan; nhieu tai khoan KIOSK duoc phep co employee_id = NULL */
 CREATE UNIQUE INDEX UX_Account_Employee ON Account(employee_id) WHERE employee_id IS NOT NULL;
@@ -163,4 +172,7 @@ CREATE TABLE AuditLog (
     reason      NVARCHAR(200) NULL,
     time        DATETIME2     NOT NULL DEFAULT SYSDATETIME()
 );
+GO
+
+PRINT N'==> [01_schema.sql] Da tao thanh cong Database SmartAttendanceDB voi day du 14 bang!';
 GO
