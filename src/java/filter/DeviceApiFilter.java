@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import model.Device;
 import util.JsonUtil;
 
-@WebFilter(filterName = "DeviceApiFilter", urlPatterns = {"/api/device/*"})
+@WebFilter(filterName = "DeviceApiFilter", urlPatterns = {"/api/device/*"}, asyncSupported = true)
 public class DeviceApiFilter implements Filter {
 
     private final DeviceDAO deviceDAO = new DeviceDAO();

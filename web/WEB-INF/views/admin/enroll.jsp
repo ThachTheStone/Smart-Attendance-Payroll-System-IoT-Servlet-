@@ -109,7 +109,7 @@
                         <label style="display:block; font-weight:500; margin-bottom:4px; font-size:13px;">Target Terminal: <span style="color:red;">*</span></label>
                         <select name="deviceId" required style="width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px;">
                             <c:forEach var="d" items="${devices}">
-                                <option value="${d.id}">${d.name} (${d.location})</option>
+                                <option value="${d.id}" ${d.apiKey == 'DEV-ESP32-ATTENDANCE-KEY-001' ? 'selected' : ''}>${d.name} (${d.location})</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -137,6 +137,19 @@
 <script>
     function setFingerName(name) {
         document.getElementById('fingerNameInput').value = name;
+    }
+
+    // Auto-reload when fingerprint enrollment finishes
+    if (window.EventSource) {
+        const es = new EventSource('${ctx}/kiosk/stream');
+        es.addEventListener('enroll_step', (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                if (data.step === 'SUCCESS') {
+                    setTimeout(() => window.location.reload(), 1500);
+                }
+            } catch(err){}
+        });
     }
 </script>
 

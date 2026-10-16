@@ -2,6 +2,7 @@ package service;
 
 import dal.AttendanceDAO;
 import dal.AttendanceLogDAO;
+import dal.DeviceCommandDAO;
 import dal.EmployeeDAO;
 import dal.FingerprintDAO;
 import dal.SalaryRuleDAO;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 import java.util.List;
 import model.Attendance;
 import model.AttendanceLog;
+import model.DeviceCommand;
 import model.Employee;
 import model.Fingerprint;
 import model.Shift;
@@ -28,6 +30,7 @@ public class AttendanceService {
     private final ShiftAssignmentDAO shiftAssignmentDAO;
     private final ShiftDAO shiftDAO;
     private final SalaryRuleDAO salaryRuleDAO;
+    private final DeviceCommandDAO deviceCommandDAO;
 
     public AttendanceService() {
         this.fingerprintDAO = new FingerprintDAO();
@@ -37,6 +40,7 @@ public class AttendanceService {
         this.shiftAssignmentDAO = new ShiftAssignmentDAO();
         this.shiftDAO = new ShiftDAO();
         this.salaryRuleDAO = new SalaryRuleDAO();
+        this.deviceCommandDAO = new DeviceCommandDAO();
     }
 
     // Constructor for testing with mock/custom DAOs
@@ -51,6 +55,7 @@ public class AttendanceService {
         this.shiftAssignmentDAO = shiftAssignmentDAO;
         this.shiftDAO = shiftDAO;
         this.salaryRuleDAO = salaryRuleDAO;
+        this.deviceCommandDAO = new DeviceCommandDAO();
     }
 
     /**
@@ -59,6 +64,12 @@ public class AttendanceService {
     public ScanResult processScan(int deviceId, Integer templateId, Integer confidence, LocalDateTime now) {
         if (now == null) {
             now = LocalDateTime.now();
+        }
+
+        // 0. Enrollment mode guard: If device is currently executing ENROLL, ignore attendance scans
+        DeviceCommand pendingCmd = deviceCommandDAO.findPendingByDeviceId(deviceId);
+        if (pendingCmd != null && "ENROLL".equalsIgnoreCase(pendingCmd.getType())) {
+            return ScanResult.ignored("Device is currently in fingerprint enrollment mode");
         }
 
         // 1. Raw check: invalid or missing template ID (FR-IOT-03, FR-ATT-01)

@@ -563,7 +563,7 @@
                 </svg>
             </div>
 
-            <h2 style="font-size: 26px; font-weight: 800; color: #f87171; margin-bottom: 8px;">Fingerprint Not Recognized</h2>
+            <h2 id="failTitle" style="font-size: 26px; font-weight: 800; color: #f87171; margin-bottom: 8px;">Fingerprint Not Recognized</h2>
             <p style="font-size: 15px; color: #cbd5e1; margin-bottom: 16px;" id="failMsg">Please try again or ensure your finger is clean and flat on the sensor.</p>
 
             <div class="countdown-wrap">
@@ -690,7 +690,8 @@
             scheduleReturnToIdle(5000, 'succCountdown'); // Return after 5 seconds (FR-KIOSK-03)
         }
 
-        function handleScanFail(data) {
+        function handleScanFail(data, title) {
+            document.getElementById('failTitle').textContent = title || 'Fingerprint Not Recognized';
             document.getElementById('failMsg').textContent = data.message || 'Fingerprint not recognized, please try again.';
             showView('viewFail');
             scheduleReturnToIdle(4000, 'failCountdown'); // Return after 4 seconds (FR-KIOSK-04)
@@ -775,10 +776,10 @@
                     if (data.type === 'SCAN_SUCCESS') {
                         handleScanSuccess(data);
                     } else if (data.type === 'SCAN_FAIL') {
-                        handleScanFail(data);
+                        handleScanFail(data, 'Fingerprint Not Recognized');
                     } else {
-                        // IGNORED
-                        handleScanFail({ message: data.message || 'Scan ignored' });
+                        // IGNORED (Cooldown / Spam protection)
+                        handleScanFail({ message: data.message || 'Please wait 1 minute between scans.' }, 'Scan Cooldown (Vui lòng chờ)');
                     }
                 } catch (err) {
                     console.error('Scan parse error', err);

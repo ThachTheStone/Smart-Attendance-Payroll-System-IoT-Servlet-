@@ -30,16 +30,7 @@
         <button type="submit" class="btn btn-block">Sign In</button>
     </form>
 
-    <details class="demo-accounts">
-        <summary>Demo Credentials</summary>
-        <table>
-            <tr><td>ADMIN</td><td>admin</td><td>Admin@123</td></tr>
-            <tr><td>ADMIN</td><td>hr.lan</td><td>Admin@123</td></tr>
-            <tr><td>STAFF</td><td>tuan.le</td><td>Staff@123</td></tr>
-            <tr><td>KIOSK</td><td>kiosk01</td><td>Kiosk@123</td></tr>
-            <tr><td>LOCKED</td><td>ngoc.ly</td><td>Staff@123</td></tr>
-        </table>
-    </details>
+
 </div>
 </body>
 </html>

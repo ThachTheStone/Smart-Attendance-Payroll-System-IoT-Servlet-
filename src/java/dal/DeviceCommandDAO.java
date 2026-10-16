@@ -69,6 +69,23 @@ public class DeviceCommandDAO extends DBContext {
         return null;
     }
 
+    public DeviceCommand findAnyPending() {
+        String sql = "SELECT TOP 1 id, device_id, type, template_id, employee_id, finger_name, status, created_at "
+                   + "FROM DeviceCommand "
+                   + "WHERE status = 'PENDING' "
+                   + "ORDER BY created_at ASC";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return mapResultSetToCommand(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean updateStatus(int commandId, String status) {
         String sql = "UPDATE DeviceCommand SET status = ? WHERE id = ?";
         try (Connection con = getConnection();

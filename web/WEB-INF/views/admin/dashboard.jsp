@@ -110,7 +110,7 @@
         font-size: 32px;
         font-weight: 800;
         line-height: 1;
-        font-family: ui-monospace, "Cascadia Code", monospace;
+        font-family: 'JetBrains Mono', ui-monospace, "Cascadia Code", monospace;
     }
     .kpi-sub {
         font-size: 12px;

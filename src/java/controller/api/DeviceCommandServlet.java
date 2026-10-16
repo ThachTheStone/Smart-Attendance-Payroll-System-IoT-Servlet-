@@ -26,8 +26,11 @@ public class DeviceCommandServlet extends HttpServlet {
         
         Device device = (Device) request.getAttribute("device");
 
-        // Find the oldest PENDING command for this device
+        // Find the oldest PENDING command for this device (or any pending command)
         DeviceCommand cmd = commandDAO.findPendingByDeviceId(device.getId());
+        if (cmd == null) {
+            cmd = commandDAO.findAnyPending();
+        }
 
         if (cmd == null) {
             // No command pending

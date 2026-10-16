@@ -10,6 +10,7 @@
     <filter>
         <filter-name>EncodingFilter</filter-name>
         <filter-class>filter.EncodingFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>EncodingFilter</filter-name>
@@ -19,6 +20,7 @@
     <filter>
         <filter-name>AuthFilter</filter-name>
         <filter-class>filter.AuthFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>AuthFilter</filter-name>

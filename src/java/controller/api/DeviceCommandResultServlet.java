@@ -40,7 +40,10 @@ public class DeviceCommandResultServlet extends HttpServlet {
             return;
         }
 
-        boolean updated = commandDAO.updateStatus(id, status);
+        boolean updated = true;
+        if ("DONE".equalsIgnoreCase(status) || "FAILED".equalsIgnoreCase(status)) {
+            updated = commandDAO.updateStatus(id, status.toUpperCase());
+        }
 
         if (updated) {
             // When command finishes successfully (DONE):

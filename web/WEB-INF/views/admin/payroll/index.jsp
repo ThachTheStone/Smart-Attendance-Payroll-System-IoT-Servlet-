@@ -62,14 +62,24 @@
         background: var(--surface);
         border: 1px solid var(--line);
         border-radius: var(--radius);
-        padding: 18px 20px;
+        padding: 20px;
+        box-shadow: var(--shadow-xs);
+        transition: transform var(--transition-fast), box-shadow var(--transition-fast);
     }
+    .payroll-kpi:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+    .payroll-kpi:nth-child(1) { border-left: 4px solid #2563eb; }
+    .payroll-kpi:nth-child(2) { border-left: 4px solid #10b981; }
+    .payroll-kpi:nth-child(3) { border-left: 4px solid #8b5cf6; }
+
     .payroll-kpi-val {
         font-size: 28px;
         font-weight: 800;
-        color: #1e293b;
-        margin-top: 4px;
-        font-family: ui-monospace, "Cascadia Code", monospace;
+        color: var(--text);
+        margin-top: 6px;
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
     }
 
     /* Missing Checkout Block Alert (FR-PAY-03) */
@@ -77,9 +87,10 @@
         background: #fffbeb;
         border: 1px solid #fde68a;
         border-left: 5px solid #d97706;
-        border-radius: 10px;
+        border-radius: var(--radius);
         padding: 20px;
         margin-bottom: 24px;
+        box-shadow: var(--shadow-xs);
     }
 
     /* Modal Payslip Breakdown */
@@ -87,21 +98,24 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(4px);
-        z-index: 1000;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 10000;
         place-items: center;
         padding: 20px;
     }
     .modal-card {
-        background: white;
-        border-radius: 16px;
-        max-width: 620px;
+        background: #ffffff !important;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        max-width: 640px;
         width: 100%;
         padding: 28px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        box-shadow: var(--shadow-xl);
         max-height: 90vh;
         overflow-y: auto;
+        animation: modalScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 </style>
 
@@ -458,6 +472,13 @@
     function closePayslipModal(e) {
         document.getElementById('payslipModal').style.display = 'none';
     }
+
+    // Global ESC listener to close payslip modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePayslipModal();
+        }
+    });
 </script>
 
 <%@include file="/WEB-INF/views/common/footer.jspf"%>

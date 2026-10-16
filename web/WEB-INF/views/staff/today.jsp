@@ -37,7 +37,7 @@
     }
 
     .live-timer-val {
-        font-family: ui-monospace, "Cascadia Code", monospace;
+        font-family: 'JetBrains Mono', ui-monospace, "Cascadia Code", monospace;
         font-size: 38px;
         font-weight: 800;
         color: #38bdf8;
