@@ -25,6 +25,10 @@ public class SerialBridge {
     // Trang thai kiem soat tien trinh dang ky
     private static volatile boolean commandInProgress = false;
     private static volatile long commandStartTime = 0;
+    
+    //Bien ho tro cho viec chay tu dọng
+    private static Thread bridgeThread = null;
+    private static SerialPort activePort = null;
 
     public static void main(String[] args) {
         System.out.println("==================================================");
@@ -81,6 +85,48 @@ public class SerialBridge {
             System.out.println("\n[Serial] Cong " + comPort.getSystemPortName() + " da dong.");
         }
     }
+    
+    public static synchronized void startAsync() {
+    if (bridgeThread != null && bridgeThread.isAlive()) return;
+    
+    bridgeThread = new Thread(() -> {
+        try {
+            // Chờ 3 giây để Tomcat khởi động hoàn tất
+            Thread.sleep(3000);
+            detectTomcatServer();
+            activePort = findOrFallbackPort(PORT_NAME);
+            if (activePort == null || !activePort.openPort()) {
+                System.out.println("[SerialBridge] Khong tim thay ESP32 qua cong USB COM (che do ranh tay).");
+                return;
+            }
+            activePort.setBaudRate(BAUD_RATE);
+            activePort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+            System.out.println("[SerialBridge] Da tu dong ket noi ESP32 tren " + activePort.getSystemPortName());
+            
+            Thread poller = new Thread(() -> pollCommandsLoop(activePort), "AutoCommandPoller");
+            poller.setDaemon(true);
+            poller.start();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(activePort.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    if (line.startsWith("{")) forwardToTomcat(line);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("[SerialBridge] Luong USB ket thuc: " + e.getMessage());
+        }
+    }, "AutoSerialBridgeThread");
+    
+    bridgeThread.setDaemon(true);
+    bridgeThread.start();
+}
+public static synchronized void stopBridge() {
+    if (activePort != null && activePort.isOpen()) {
+        activePort.closePort();
+        System.out.println("[SerialBridge] Da dong cong COM an toan.");
+    }
+}
 
     private static SerialPort findOrFallbackPort(String preferredPort) {
         SerialPort port = SerialPort.getCommPort(preferredPort);

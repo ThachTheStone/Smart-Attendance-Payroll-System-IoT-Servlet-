@@ -125,6 +125,8 @@ public class MailService {
             mailProps.put("mail.smtp.auth", String.valueOf(smtpAuth));
             mailProps.put("mail.smtp.starttls.enable", String.valueOf(startTls));
             mailProps.put("mail.smtp.ssl.protocols", "TLSv1.2");
+            mailProps.put("mail.smtp.connectiontimeout", "10000");
+            mailProps.put("mail.smtp.timeout", "15000");
 
             Session session = Session.getInstance(mailProps, new Authenticator() {
                 @Override
@@ -134,13 +136,24 @@ public class MailService {
             });
 
             MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(fromAddress, "SmartAttend Payroll System", StandardCharsets.UTF_8.name()));
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(safeEmail, safeName, StandardCharsets.UTF_8.name()));
+
+            // Clean sender address to prevent AddressException: Missing '<'
+            String cleanFrom = extractEmail(fromAddress);
+            if (cleanFrom.isEmpty()) {
+                cleanFrom = username;
+            }
+            String fromPersonal = extractDisplayName(fromAddress, "SmartAttend Payroll System");
+            message.setFrom(new InternetAddress(cleanFrom, fromPersonal, StandardCharsets.UTF_8.name()));
+
+            // Clean recipient address
+            String cleanTo = extractEmail(safeEmail);
+            String toPersonal = extractDisplayName(safeName, safeName);
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(cleanTo, toPersonal, StandardCharsets.UTF_8.name()));
             message.setSubject(subject, StandardCharsets.UTF_8.name());
 
             // HTML Body part
             MimeBodyPart textPart = new MimeBodyPart();
-            String html = buildEmailHtml(safeName, month, year);
+            String html = buildEmailHtml(toPersonal, month, year);
             textPart.setContent(html, "text/html; charset=UTF-8");
 
             // PDF Attachment part
@@ -156,12 +169,47 @@ public class MailService {
             message.setContent(multipart);
             Transport.send(message);
 
-            return new MailResult(true, "Email successfully sent to " + safeEmail, false);
+            return new MailResult(true, "Email successfully sent to " + cleanTo, false);
 
         } catch (Exception e) {
             e.printStackTrace();
             return new MailResult(false, "SMTP server connection error: " + e.getMessage(), false);
         }
+    }
+
+    /**
+     * Extracts pure email address from potential compound strings like "Name <user@domain.com>".
+     */
+    private String extractEmail(String input) {
+        if (input == null) return "";
+        String s = input.trim();
+        if (s.contains("<") && s.contains(">")) {
+            int start = s.indexOf("<");
+            int end = s.indexOf(">", start);
+            if (end > start) {
+                return s.substring(start + 1, end).trim();
+            }
+        }
+        return s;
+    }
+
+    /**
+     * Extracts personal display name if provided in format "Display Name <user@domain.com>".
+     */
+    private String extractDisplayName(String input, String defaultName) {
+        if (input == null) return defaultName;
+        String s = input.trim();
+        if (s.contains("<") && s.contains(">")) {
+            int start = s.indexOf("<");
+            String prefix = s.substring(0, start).trim();
+            if (!prefix.isEmpty()) {
+                if (prefix.startsWith("\"") && prefix.endsWith("\"") && prefix.length() >= 2) {
+                    prefix = prefix.substring(1, prefix.length() - 1).trim();
+                }
+                return prefix;
+            }
+        }
+        return defaultName;
     }
 
     private String buildEmailHtml(String name, int month, int year) {

@@ -336,8 +336,31 @@
                                 </td>
                                 <td>
                                     <div style="display:inline-flex; gap:6px; align-items:center;">
-                                        <button type="button" class="btn btn-secondary btn-sm" onclick='showPayslipModal(${d.employeeId}, "${d.employeeCode}", "${d.employeeName}", "${d.department}", ${d.baseSalary}, ${d.hourlyRate}, ${d.regularHours}, ${d.regularPay}, ${d.otWeekdayHours}, ${d.otWeekdayPay}, ${d.otWeekendHours}, ${d.otWeekendPay}, ${d.otHolidayHours}, ${d.otHolidayPay}, ${d.nightHours}, ${d.nightAllowance}, ${d.nightOtHours}, ${d.nightOtBonus}, ${d.lateMinutes}, ${d.penalty}, ${d.netSalary})' title="View payslip breakdown">
-                                            View
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                                data-id="${d.employeeId}"
+                                                data-code="${d.employeeCode}"
+                                                data-name="<c:out value='${d.employeeName}'/>"
+                                                data-dept="<c:out value='${d.department}'/>"
+                                                data-base="${d.baseSalary}"
+                                                data-rate="${d.hourlyRate}"
+                                                data-regh="${d.regularHours}"
+                                                data-regp="${d.regularPay}"
+                                                data-otwdh="${d.otWeekdayHours}"
+                                                data-otwdp="${d.otWeekdayPay}"
+                                                data-otweh="${d.otWeekendHours}"
+                                                data-otwep="${d.otWeekendPay}"
+                                                data-otholh="${d.otHolidayHours}"
+                                                data-otholp="${d.otHolidayPay}"
+                                                data-nighth="${d.nightHours}"
+                                                data-nightp="${d.nightAllowance}"
+                                                data-nightoth="${d.nightOtHours}"
+                                                data-nightotp="${d.nightOtBonus}"
+                                                data-latem="${d.lateMinutes}"
+                                                data-penalty="${d.penalty}"
+                                                data-net="${d.netSalary}"
+                                                onclick="openPayslipFromBtn(this)"
+                                                title="View payslip breakdown">
+                                            👁 View
                                         </button>
                                         <a href="${pageContext.request.contextPath}/admin/payroll/export-pdf?payrollId=${payroll.id}&employeeId=${d.employeeId}" class="btn btn-secondary btn-sm" title="Download PDF payslip">
                                             📄 PDF
@@ -432,45 +455,80 @@
 
 <script>
     function fmtNum(n) {
-        return Number(n || 0).toLocaleString('en-US');
+        if (n === null || n === undefined || n === '') return '0';
+        return Number(n).toLocaleString('en-US');
+    }
+
+    function setTxt(id, val) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    }
+
+    function openPayslipFromBtn(btn) {
+        if (!btn || !btn.dataset) return;
+        const d = btn.dataset;
+        showPayslipModal(
+            d.id, d.code, d.name, d.dept,
+            d.base, d.rate,
+            d.regh, d.regp,
+            d.otwdh, d.otwdp,
+            d.otweh, d.otwep,
+            d.otholh, d.otholp,
+            d.nighth, d.nightp,
+            d.nightoth, d.nightotp,
+            d.latem, d.penalty, d.net
+        );
     }
 
     function showPayslipModal(id, code, name, dept, base, rate, regH, regP, otWdH, otWdP, otWeH, otWeP, otHolH, otHolP, nightH, nightP, nightOtH, nightOtP, lateM, penalty, net) {
-        document.getElementById('mName').textContent = name;
-        document.getElementById('mMeta').textContent = code + ' · ' + dept;
+        setTxt('mName', name || '--');
+        setTxt('mMeta', (code || '') + (dept ? ' · ' + dept : ''));
 
-        document.getElementById('mBase').textContent = fmtNum(base) + ' VND';
-        document.getElementById('mRate').textContent = fmtNum(rate) + ' VND/h';
+        setTxt('mBase', fmtNum(base) + ' VND');
+        setTxt('mRate', fmtNum(rate) + ' VND/h');
 
-        document.getElementById('mRegH').textContent = regH;
-        document.getElementById('mRegPay').textContent = fmtNum(regP) + ' VND';
+        setTxt('mRegH', regH || '0');
+        setTxt('mRegPay', fmtNum(regP) + ' VND');
 
-        document.getElementById('mOtWdH').textContent = otWdH;
-        document.getElementById('mOtWdPay').textContent = fmtNum(otWdP) + ' VND';
+        setTxt('mOtWdH', otWdH || '0');
+        setTxt('mOtWdPay', fmtNum(otWdP) + ' VND');
 
-        document.getElementById('mOtWeH').textContent = otWeH;
-        document.getElementById('mOtWeP').textContent = fmtNum(otWeP) + ' VND';
+        setTxt('mOtWeH', otWeH || '0');
+        setTxt('mOtWePay', fmtNum(otWeP) + ' VND');
+        setTxt('mOtWeP', fmtNum(otWeP) + ' VND'); // Fallback alias
 
-        document.getElementById('mOtHolH').textContent = otHolH;
-        document.getElementById('mOtHolPay').textContent = fmtNum(otHolP) + ' VND';
+        setTxt('mOtHolH', otHolH || '0');
+        setTxt('mOtHolPay', fmtNum(otHolP) + ' VND');
 
-        document.getElementById('mNightH').textContent = nightH;
-        document.getElementById('mNightPay').textContent = fmtNum(nightP) + ' VND';
+        setTxt('mNightH', nightH || '0');
+        setTxt('mNightPay', fmtNum(nightP) + ' VND');
 
-        document.getElementById('mNightOtH').textContent = nightOtH;
-        document.getElementById('mNightOtPay').textContent = fmtNum(nightOtP) + ' VND';
+        setTxt('mNightOtH', nightOtH || '0');
+        setTxt('mNightOtPay', fmtNum(nightOtP) + ' VND');
 
-        document.getElementById('mLateM').textContent = lateM;
-        document.getElementById('mPenalty').textContent = '-' + fmtNum(penalty) + ' VND';
+        setTxt('mLateM', lateM || '0');
+        setTxt('mPenalty', '-' + fmtNum(penalty) + ' VND');
 
-        document.getElementById('mNet').textContent = fmtNum(net) + ' VND';
+        setTxt('mNet', fmtNum(net) + ' VND');
 
-        document.getElementById('mPdfBtn').href = '${pageContext.request.contextPath}/admin/payroll/export-pdf?payrollId=${payroll.id}&employeeId=' + id;
-        document.getElementById('payslipModal').style.display = 'grid';
+        const pdfBtn = document.getElementById('mPdfBtn');
+        if (pdfBtn) {
+            pdfBtn.href = '${pageContext.request.contextPath}/admin/payroll/export-pdf?payrollId=${payroll.id}&employeeId=' + id;
+        }
+
+        const modal = document.getElementById('payslipModal');
+        if (modal) {
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+        }
     }
 
     function closePayslipModal(e) {
-        document.getElementById('payslipModal').style.display = 'none';
+        const modal = document.getElementById('payslipModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
     }
 
     // Global ESC listener to close payslip modal
