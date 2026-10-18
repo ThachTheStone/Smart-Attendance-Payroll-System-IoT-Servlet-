@@ -1,0 +1,7 @@
+
+<FindBugsFilter>
+    <!-- Bỏ qua không quét class thư viện BCrypt -->
+    <Match>
+        <Class name="org.mindrot.jbcrypt.BCrypt" />
+    </Match>
+</FindBugsFilter>

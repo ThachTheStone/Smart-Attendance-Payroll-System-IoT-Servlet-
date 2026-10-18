@@ -85,6 +85,19 @@ public class AccountDAO extends DBContext {
         }
     }
 
+    public void testSpotBugsScanner() {
+        // Lỗi 1: So sánh chuỗi bằng dấu == thay vì .equals()
+        String a = "Hello";
+        String b = new String("Hello");
+        if (a == b) {
+            System.out.println("Lỗi so sánh chuỗi");
+        }
+
+        // Lỗi 2: Cố tình gây NullPointerException
+        Object obj = null;
+        System.out.println(obj.hashCode());
+    }
+
     /** So admin dang hoat dong - dung de chan viec khoa/ha quyen admin cuoi cung. */
     public int countActiveAdmins() {
         try (Connection con = getConnection();

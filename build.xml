@@ -1,7 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- File build cua NetBeans (Ant). Phan chinh nam o nbproject/build-impl.xml,
-     NetBeans tu sinh file do khi mo project lan dau. -->
 <project name="SmartAttendance" default="default" basedir=".">
     <description>Builds, tests, and runs the project SmartAttendance.</description>
     <import file="nbproject/build-impl.xml"/>
+
+    <!-- 1. Trỏ tới thư mục SpotBugs -->
+    <property name="spotbugs.home" location="D:\SEMEMESTER V\SWT301\Lab3\spotbugs-3.1.12\spotbugs-3.1.12"/>
+
+    <!-- 2. Khai báo thư viện Ant Task của SpotBugs -->
+    <taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties"
+             classpath="${spotbugs.home}/lib/spotbugs-ant.jar" />
+
+    <!-- 3. Đổi depends sang -do-compile để né lỗi Javadoc -->
+    <target name="spotbugs" depends="-do-compile">
+        <spotbugs home="${spotbugs.home}"
+                  output="html"
+                  outputFile="spotbugs-report.html"
+                  effort="max"
+                  reportLevel="low"
+                  >
+
+            <!-- Nơi chứa class đã biên dịch -->
+            <class location="build/web/WEB-INF/classes" />
+
+            <!-- Khai báo thư viện để SpotBugs hiểu Servlet API -->
+            <auxClasspath>
+                <pathelement location="D:/tomcat-9.0.113-windows-x64/apache-tomcat-9.0.113/lib/servlet-api.jar" />
+                <fileset dir="lib" includes="*.jar" />
+            </auxClasspath>
+
+            <!-- Trỏ tới thư mục mã nguồn gốc -->
+            <sourcePath path="src/java" />
+        </spotbugs>
+    </target>
 </project>
