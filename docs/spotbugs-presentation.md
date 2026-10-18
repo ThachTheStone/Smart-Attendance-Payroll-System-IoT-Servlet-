@@ -3,7 +3,30 @@
 
 ---
 
+## Team members
+
+| # | Member | Role in the presentation |
+|---|---|---|
+| 1 | Nguyễn Ngọc Thạch | Sections 5 and 6: results analysis and conclusion (the hardest part) |
+| 2 | Nguyễn Đức Thịnh | Sections 3 and 4: the system and the test plan |
+| 3 | Lê Hoàng Anh | Sections 1 and 2: SpotBugs background and usage |
+
+## Table of contents
+
+| Section | Topic | Presenter |
+|---|---|---|
+| [1](#1-what-is-spotbugs) | What is SpotBugs? Who created it? History | Lê Hoàng Anh |
+| [2](#2-who-uses-spotbugs-how-big-is-the-usage) | Who uses it? Usage rate and estimate | Lê Hoàng Anh |
+| [3](#3-the-system-we-tested) | The system and its architecture | Nguyễn Đức Thịnh |
+| [4](#4-what-do-we-test-and-why) | What we test, why, and the 10 test cases | Nguyễn Đức Thịnh |
+| [5](#5-what-succeeded-and-what-failed-and-why) | What succeeded, what failed, and why | **Nguyễn Ngọc Thạch** |
+| [6](#6-summary) | Summary and recommendation | **Nguyễn Ngọc Thạch** |
+
+**Why this split:** Section 5 is the hardest. It needs the full 360-warning report, the false-positive analysis and the real findings in our code, so it goes to Thạch together with the closing summary. Sections 3 and 4 are medium (architecture plus mapping SRS requirements to checks). Sections 1 and 2 are background and a simple calculation.
+
 ## 1. What is SpotBugs?
+
+> **Presenter: Lê Hoàng Anh**
 
 **SpotBugs is a free, open-source static analysis tool for Java.** It reads compiled `.class` files (bytecode), not source code, and looks for patterns that are likely to be bugs, without ever running the program.
 
@@ -26,6 +49,8 @@
 ---
 
 ## 2. Who uses SpotBugs? How big is the usage?
+
+> **Presenter: Lê Hoàng Anh**
 
 SpotBugs (and FindBugs before it) is one of the most widely used static analyzers in the Java world. It is used by open-source projects, companies and students through build plugins (Maven/Gradle), IDE plugins, and as a rule source inside code-quality platforms. Google engineers even published a paper on running FindBugs at scale: *["Experiences Using Static Analysis to Find Bugs"](https://research.google/pubs/experiences-using-static-analysis-to-find-bugs/)*.
 
@@ -52,6 +77,8 @@ There is no official "SpotBugs user count", so this is an **estimate built from 
 ---
 
 ## 3. The system we tested
+
+> **Presenter: Nguyễn Đức Thịnh**
 
 **Smart Attendance & Payroll System**: employees clock in by fingerprint, and the system calculates salary automatically.
 
@@ -97,6 +124,8 @@ Libraries: jBCrypt (password hashing), OpenPDF (payslips), JavaMail (email), jSe
 
 ## 4. What do we test, and why?
 
+> **Presenter: Nguyễn Đức Thịnh**
+
 SpotBugs is a **static** tool, so we only test the *quality and safety of the code itself*. We chose the checks that map directly to the requirements in our SRS:
 
 | Requirement (SRS) | Risk if ignored | SpotBugs check |
@@ -132,6 +161,8 @@ Each test case is one class in `src/java/spotbugs/testcase/` with a `bug...()` m
 
 ## 5. What succeeded and what failed (and why)
 
+> **Presenter: Nguyễn Ngọc Thạch**
+
 ### Succeeded
 
 1. **All 10 test cases were detected**, and none of the `fixed...()` methods produced a warning. This proves the tool is configured correctly and that each fix is valid.
@@ -162,6 +193,8 @@ Each test case is one class in `src/java/spotbugs/testcase/` with a `bug...()` m
 ---
 
 ## 6. Summary
+
+> **Presenter: Nguyễn Ngọc Thạch**
 
 - **SpotBugs** is the free successor of FindBugs (2006), which was created by Bill Pugh and David Hovemeyer and continued by the community since 2017. Roughly one in four Java developers used FindBugs/SpotBugs in 2018, which is a few million people.
 - Our system is a **Servlet/JSP MVC application with a DAO layer, an IoT fingerprint device and real-time updates**. The risks that matter most are SQL injection, resource leaks, null handling, thread safety and Vietnamese text encoding.
