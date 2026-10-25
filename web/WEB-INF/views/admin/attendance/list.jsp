@@ -1,36 +1,392 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="pageTitle" value="Attendance & Timesheet"/>
+<c:set var="pageTitle" value="Attendance & Timesheets"/>
 <c:set var="activeNav" value="attendance"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <%@ include file="/WEB-INF/views/common/header.jspf" %>
 
-<div style="margin-bottom: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
-        <div>
-            <h1 style="margin: 0; font-size: 22px;">📋 Attendance &amp; Timesheet Management</h1>
-            <p class="muted" style="margin: 4px 0 0 0;">
-                Live biometric scan logs, automated shift detection, late/early penalties, and missing checkout handling (FR-ATT-01..06)
-            </p>
-        </div>
+<style>
+    .att-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 20px 24px;
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+    .att-hero-title {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #0f172a;
+    }
+    .att-hero-desc {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 4px;
+    }
+    .att-live-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+        border-radius: var(--radius-full);
+        padding: 3px 10px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .att-live-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #059669;
+    }
+
+    /* KPI Stat Grid */
+    .att-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .att-kpi-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        box-shadow: var(--shadow-xs);
+        transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .att-kpi-card:hover {
+        border-color: var(--border-hover);
+        box-shadow: var(--shadow-sm);
+    }
+    .att-kpi-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #64748b;
+    }
+    .att-kpi-val {
+        font-size: 22px;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        color: #0f172a;
+        line-height: 1.1;
+    }
+
+    /* Filter Card */
+    .att-filter-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-xs);
+    }
+    .att-filter-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        align-items: flex-end;
+    }
+    .att-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .att-filter-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #334155;
+    }
+    .att-filter-input {
+        height: 38px;
+        padding: 0 12px;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 7px;
+        font-family: inherit;
+        font-size: 13px;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        outline: none;
+    }
+    .att-filter-input:focus {
+        border-color: #1d4ed8 !important;
+        box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12) !important;
+    }
+    .att-filter-select {
+        height: 38px;
+        padding: 0 34px 0 12px !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 7px;
+        font-family: inherit;
+        font-size: 13px;
+        background-color: #ffffff !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 10px center !important;
+        background-size: 14px 14px !important;
+        color: #0f172a !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        cursor: pointer;
+        outline: none !important;
+    }
+    .att-filter-select::-ms-expand {
+        display: none !important;
+    }
+    .att-filter-select:focus {
+        border-color: #1d4ed8 !important;
+        box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12) !important;
+        outline: none !important;
+    }
+    .att-filter-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* Missing Checkout Action Banner */
+    .missing-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-left: 4px solid #dc2626;
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 20px;
+    }
+    .missing-banner-text {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #991b1b;
+        font-size: 13px;
+    }
+
+    /* Attendance Table Card */
+    .att-table-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: 28px;
+        box-shadow: var(--shadow-xs);
+    }
+    .att-table-card .table {
+        margin: 0;
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .att-table-card .table th {
+        background: #f8fafc;
+        padding: 11px 16px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #475569;
+        border-bottom: 1px solid var(--border);
+    }
+    .att-table-card .table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        font-size: 13px;
+        color: #334155;
+    }
+    .att-table-card .table tr:last-child td {
+        border-bottom: none;
+    }
+    .att-table-card .table tr:hover td {
+        background: #f8fafc;
+    }
+
+    /* Status Badges */
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        border-radius: var(--radius-full);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+    .status-pill.ON_TIME { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .status-pill.LATE { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .status-pill.EARLY_LEAVE { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .status-pill.MISSING_CHECKOUT { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .status-pill.OVERTIME { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .status-pill.ABSENT { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+
+    /* Modal Overlay & Card */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    .modal-overlay.active {
+        display: flex;
+    }
+    .modal-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        width: 100%;
+        max-width: 560px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        color: #0f172a;
+    }
+    .modal-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8fafc;
+    }
+    .modal-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+    }
+    .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #64748b;
+        line-height: 1;
+        padding: 4px;
+        border-radius: 4px;
+    }
+    .modal-close-btn:hover {
+        color: #dc2626;
+    }
+    .modal-body {
+        padding: 20px;
+    }
+    .modal-footer {
+        padding: 14px 20px;
+        border-top: 1px solid var(--border);
+        background: #f8fafc;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<!-- Hero Section -->
+<div class="att-hero">
+    <div>
+        <h1 class="att-hero-title">
+            Attendance &amp; Timesheets
+            <span class="att-live-pill">
+                <span class="att-live-dot"></span> IoT Sync Active
+            </span>
+        </h1>
+        <p class="att-hero-desc">
+            Biometric logs, automated shift detection, late/early flags, and checkout adjustments
+        </p>
     </div>
 </div>
 
-<!-- Filter Bar -->
-<div class="card" style="margin-bottom: 20px; padding: 18px 20px;">
-    <form action="${ctx}/admin/attendance" method="get" id="filterForm" style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;">
-        <div>
-            <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:var(--text-muted);">FROM DATE</label>
-            <input type="date" name="from" value="${from}" style="padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px;">
+<!-- KPI Stats Row -->
+<div class="att-kpi-grid">
+    <div class="att-kpi-card">
+        <div class="att-kpi-label">Total Logs</div>
+        <div class="att-kpi-val">${totalRecords}</div>
+    </div>
+    <div class="att-kpi-card">
+        <div class="att-kpi-label" style="color:#059669;">On Time</div>
+        <div class="att-kpi-val" style="color:#059669;">${onTimeCount}</div>
+    </div>
+    <div class="att-kpi-card">
+        <div class="att-kpi-label" style="color:#d97706;">Late</div>
+        <div class="att-kpi-val" style="color:#d97706;">${lateCount}</div>
+    </div>
+    <div class="att-kpi-card">
+        <div class="att-kpi-label" style="color:#d97706;">Early Leave</div>
+        <div class="att-kpi-val" style="color:#d97706;">${earlyLeaveCount}</div>
+    </div>
+    <div class="att-kpi-card">
+        <div class="att-kpi-label" style="color:#dc2626;">Missing Out</div>
+        <div class="att-kpi-val" style="color:#dc2626;">${missingCheckoutCount}</div>
+    </div>
+    <div class="att-kpi-card">
+        <div class="att-kpi-label" style="color:#1d4ed8;">Overtime</div>
+        <div class="att-kpi-val" style="color:#1d4ed8;">${overtimeCount}</div>
+    </div>
+    <div class="att-kpi-card">
+        <div class="att-kpi-label" style="color:#64748b;">Absent</div>
+        <div class="att-kpi-val" style="color:#64748b;">${absentCount}</div>
+    </div>
+</div>
+
+<!-- Missing Checkout Alert Banner -->
+<c:if test="${missingCheckoutCount > 0}">
+    <div class="missing-banner">
+        <div class="missing-banner-text">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <div>
+                <strong>Action Required:</strong> Found <strong>${missingCheckoutCount}</strong> attendance record(s) without scan-out. Click <strong>Edit</strong> to record valid check-out times with audit trails before running payroll.
+            </div>
         </div>
-        <div>
-            <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:var(--text-muted);">TO DATE</label>
-            <input type="date" name="to" value="${to}" style="padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="filterMissingOnly()">
+            Filter Missing Records
+        </button>
+    </div>
+</c:if>
+
+<!-- Filter Controls Card -->
+<div class="att-filter-card">
+    <form action="${ctx}/admin/attendance" method="get" id="filterForm" class="att-filter-form">
+        <div class="att-filter-group">
+            <label class="att-filter-label">From Date</label>
+            <input type="date" name="from" value="${from}" class="att-filter-input">
         </div>
-        <div style="min-width: 200px; flex: 1;">
-            <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:var(--text-muted);">EMPLOYEE</label>
-            <select name="employeeId" style="width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px;">
-                <option value="">-- All Employees --</option>
+        <div class="att-filter-group">
+            <label class="att-filter-label">To Date</label>
+            <input type="date" name="to" value="${to}" class="att-filter-input">
+        </div>
+        <div class="att-filter-group" style="min-width: 220px;">
+            <label class="att-filter-label">Employee</label>
+            <select name="employeeId" class="att-filter-select">
+                <option value="">All Employees</option>
                 <c:forEach var="e" items="${employees}">
                     <option value="${e.id}" ${selectedEmployeeId == e.id ? 'selected' : ''}>
                         <c:out value="${e.code}"/> - <c:out value="${e.fullName}"/>
@@ -38,144 +394,113 @@
                 </c:forEach>
             </select>
         </div>
-        <div style="min-width: 180px;">
-            <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:var(--text-muted);">STATUS</label>
-            <select name="status" style="width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px;">
-                <option value="ALL">-- All Statuses --</option>
-                <option value="ON_TIME" ${selectedStatus == 'ON_TIME' ? 'selected' : ''}>🟢 On Time (ON_TIME)</option>
-                <option value="LATE" ${selectedStatus == 'LATE' ? 'selected' : ''}>🟡 Late (LATE)</option>
-                <option value="EARLY_LEAVE" ${selectedStatus == 'EARLY_LEAVE' ? 'selected' : ''}>🟠 Early Leave (EARLY_LEAVE)</option>
-                <option value="MISSING_CHECKOUT" ${selectedStatus == 'MISSING_CHECKOUT' ? 'selected' : ''}>🔴 Missing Checkout (MISSING_CHECKOUT)</option>
-                <option value="ABSENT" ${selectedStatus == 'ABSENT' ? 'selected' : ''}>⚪ Absent (ABSENT)</option>
-                <option value="OVERTIME" ${selectedStatus == 'OVERTIME' ? 'selected' : ''}>🟣 Overtime (OVERTIME)</option>
+        <div class="att-filter-group" style="min-width: 180px;">
+            <label class="att-filter-label">Status</label>
+            <select name="status" id="statusFilterSelect" class="att-filter-select">
+                <option value="ALL">All Statuses</option>
+                <option value="ON_TIME" ${selectedStatus == 'ON_TIME' ? 'selected' : ''}>On Time</option>
+                <option value="LATE" ${selectedStatus == 'LATE' ? 'selected' : ''}>Late</option>
+                <option value="EARLY_LEAVE" ${selectedStatus == 'EARLY_LEAVE' ? 'selected' : ''}>Early Leave</option>
+                <option value="MISSING_CHECKOUT" ${selectedStatus == 'MISSING_CHECKOUT' ? 'selected' : ''}>Missing Checkout</option>
+                <option value="OVERTIME" ${selectedStatus == 'OVERTIME' ? 'selected' : ''}>Overtime</option>
+                <option value="ABSENT" ${selectedStatus == 'ABSENT' ? 'selected' : ''}>Absent</option>
             </select>
         </div>
-        <div style="display:flex; gap: 8px;">
-            <button type="submit" class="btn btn-primary" style="padding: 8px 18px; font-size: 13px;">🔍 Filter</button>
-            <button type="button" class="btn btn-ghost" style="padding: 8px 14px; font-size: 13px;" onclick="setToday()">Today</button>
-            <button type="button" class="btn btn-ghost" style="padding: 8px 14px; font-size: 13px;" onclick="setThisMonth()">This Month</button>
+        <div class="att-filter-actions">
+            <button type="submit" class="btn btn-primary" style="height: 38px;">
+                Apply Filter
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" style="height: 38px;" onclick="setToday()">Today</button>
+            <button type="button" class="btn btn-ghost btn-sm" style="height: 38px;" onclick="setThisMonth()">This Month</button>
         </div>
     </form>
 </div>
 
-<!-- KPI Stats Cards -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px;">
-    <div class="card" style="padding: 14px 16px; text-align: center; border-left: 4px solid #64748b;">
-        <div class="muted small" style="font-weight: 600; text-transform: uppercase;">Total Records</div>
-        <div style="font-size: 24px; font-weight: 800; margin-top: 4px; font-family: var(--font-mono, monospace);">${totalRecords}</div>
-    </div>
-    <div class="card" style="padding: 14px 16px; text-align: center; border-left: 4px solid #10b981;">
-        <div class="muted small" style="color:#059669; font-weight: 600; text-transform: uppercase;">On Time</div>
-        <div style="font-size: 24px; font-weight: 800; margin-top: 4px; color:#059669; font-family: var(--font-mono, monospace);">${onTimeCount}</div>
-    </div>
-    <div class="card" style="padding: 14px 16px; text-align: center; border-left: 4px solid #f59e0b;">
-        <div class="muted small" style="color:#d97706; font-weight: 600; text-transform: uppercase;">Late</div>
-        <div style="font-size: 24px; font-weight: 800; margin-top: 4px; color:#d97706; font-family: var(--font-mono, monospace);">${lateCount}</div>
-    </div>
-    <div class="card" style="padding: 14px 16px; text-align: center; border-left: 4px solid #f97316;">
-        <div class="muted small" style="color:#ea580c; font-weight: 600; text-transform: uppercase;">Early Leave</div>
-        <div style="font-size: 24px; font-weight: 800; margin-top: 4px; color:#ea580c; font-family: var(--font-mono, monospace);">${earlyLeaveCount}</div>
-    </div>
-    <div class="card" style="padding: 14px 16px; text-align: center; border-left: 4px solid #ef4444; background: ${missingCheckoutCount > 0 ? 'var(--danger-bg)' : 'inherit'};">
-        <div class="muted small" style="color:#dc2626; font-weight: ${missingCheckoutCount > 0 ? '700' : '600'}; text-transform: uppercase;">Missing Out</div>
-        <div style="font-size: 24px; font-weight: 800; margin-top: 4px; color:#dc2626; font-family: var(--font-mono, monospace);">${missingCheckoutCount}</div>
-    </div>
-    <div class="card" style="padding: 14px 16px; text-align: center; border-left: 4px solid #8b5cf6;">
-        <div class="muted small" style="color:#7c3aed; font-weight: 600; text-transform: uppercase;">Overtime</div>
-        <div style="font-size: 24px; font-weight: 800; margin-top: 4px; color:#7c3aed; font-family: var(--font-mono, monospace);">${overtimeCount}</div>
-    </div>
-    <div class="card" style="padding: 14px 16px; text-align: center; border-left: 4px solid #94a3b8;">
-        <div class="muted small" style="color:#64748b; font-weight: 600; text-transform: uppercase;">Absent</div>
-        <div style="font-size: 24px; font-weight: 800; margin-top: 4px; color:#64748b; font-family: var(--font-mono, monospace);">${absentCount}</div>
-    </div>
-</div>
-
-<c:if test="${missingCheckoutCount > 0}">
-    <div class="alert alert-warning" style="margin-bottom: 24px; font-size: 13px;">
-        ⚠️ <strong>Action Required:</strong> Found <strong>${missingCheckoutCount}</strong> record(s) without checkout 2 hours after shift ended (FR-ATT-04). Click <strong>✏️ Edit</strong> to adjust checkout time with valid reason.
-    </div>
-</c:if>
-
-<!-- Attendance Table -->
-<div class="table-wrap" style="margin-bottom: 32px;">
+<!-- Attendance Records Table -->
+<div class="att-table-card">
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
+                <th style="width: 110px;">Date</th>
                 <th>Employee</th>
-                <th>Shift</th>
-                <th>Check-In</th>
-                <th>Check-Out</th>
-                <th>Duration</th>
-                <th>Status</th>
-                <th style="text-align: right;">Actions</th>
+                <th>Assigned Shift</th>
+                <th style="width: 100px;">Check-In</th>
+                <th style="width: 100px;">Check-Out</th>
+                <th style="width: 110px;">Duration</th>
+                <th style="width: 130px;">Status</th>
+                <th style="text-align: right; width: 140px;">Actions</th>
             </tr>
         </thead>
         <tbody>
             <c:choose>
                 <c:when test="${empty attendances}">
                     <tr>
-                        <td colspan="8" class="empty">
-                            No attendance records match the current filter.
+                        <td colspan="8" style="text-align: center; padding: 40px 20px; color: var(--muted);">
+                            <div style="font-weight: 600; font-size: 14px; color: #0f172a;">No attendance records found</div>
+                            <div style="font-size: 12px; margin-top: 4px;">Try broadening your date range or selecting another status filter.</div>
                         </td>
                     </tr>
                 </c:when>
                 <c:otherwise>
                     <c:forEach var="a" items="${attendances}">
                         <tr>
-                            <td style="font-weight: 600; white-space: nowrap;" class="mono">
+                            <td class="mono font-bold" style="color: #2563eb;">
                                 <c:out value="${a.workDate}"/>
                             </td>
                             <td>
-                                <div style="font-weight: 600;"><c:out value="${a.employeeName}"/></div>
-                                <div class="muted small"><c:out value="${a.employeeCode}"/> · <c:out value="${a.department}"/></div>
+                                <div style="font-weight: 600; color: #0f172a;">
+                                    <c:out value="${a.employeeName}"/>
+                                </div>
+                                <div class="muted small" style="margin-top: 2px;">
+                                    <span class="mono font-bold" style="color: #2563eb;"><c:out value="${a.employeeCode}"/></span>
+                                    <span> &bull; <c:out value="${a.department}"/></span>
+                                </div>
                             </td>
                             <td>
-                                <div style="font-weight: 500;"><c:out value="${a.shiftName}"/></div>
-                                <div class="muted small mono"><c:out value="${a.shiftStartTime}"/> - <c:out value="${a.shiftEndTime}"/></div>
+                                <div style="font-weight: 500; color: #0f172a;"><c:out value="${a.shiftName}"/></div>
+                                <div class="muted small mono" style="margin-top: 2px;"><c:out value="${a.shiftStartTime}"/> &ndash; <c:out value="${a.shiftEndTime}"/></div>
                             </td>
-                            <td class="mono">
+                            <td class="mono font-bold">
                                 <c:choose>
                                     <c:when test="${not empty a.checkIn}">
-                                        <span style="color:#059669; font-weight:600;"><c:out value="${a.formattedCheckInTime}"/></span>
+                                        <span style="color:#059669;"><c:out value="${a.formattedCheckInTime}"/></span>
                                     </c:when>
-                                    <c:otherwise><span class="muted">--:--</span></c:otherwise>
+                                    <c:otherwise><span class="muted">&ndash;&ndash;:&ndash;&ndash;</span></c:otherwise>
                                 </c:choose>
                             </td>
-                            <td class="mono">
+                            <td class="mono font-bold">
                                 <c:choose>
                                     <c:when test="${not empty a.checkOut}">
-                                        <span style="color:#2563eb; font-weight:600;"><c:out value="${a.formattedCheckOutTime}"/></span>
+                                        <span style="color:#2563eb;"><c:out value="${a.formattedCheckOutTime}"/></span>
                                     </c:when>
                                     <c:otherwise>
                                         <c:if test="${a.status == 'MISSING_CHECKOUT'}">
-                                            <span style="color:#dc2626; font-weight:700;">Missing Out ⚠️</span>
+                                            <span style="color:#f87171;">Missing</span>
                                         </c:if>
                                         <c:if test="${a.status != 'MISSING_CHECKOUT'}">
-                                            <span class="muted">--:--</span>
+                                            <span class="muted">&ndash;&ndash;:&ndash;&ndash;</span>
                                         </c:if>
                                     </c:otherwise>
                                 </c:choose>
                             </td>
-                            <td style="font-weight: 600;">
-                                <c:out value="${a.formattedWorkedHours}"/>
+                            <td>
+                                <span style="font-weight: 600; font-family: 'JetBrains Mono', monospace;"><c:out value="${a.formattedWorkedHours}"/></span>
                                 <c:if test="${a.workedMinutes > 0}">
                                     <span class="muted small mono">(${a.workedMinutes}m)</span>
                                 </c:if>
                             </td>
                             <td>
-                                <span class="badge badge-${a.statusBadgeClass}">
+                                <span class="status-pill ${a.status}">
                                     <c:out value="${a.statusLabel}"/>
                                 </span>
                             </td>
                             <td style="text-align: right; white-space: nowrap;">
-                                <button type="button" class="btn btn-sm btn-secondary" 
-                                        onclick="openEditModal(${a.id}, '<c:out value="${a.employeeName}"/>', '<c:out value="${a.employeeCode}"/>', '<c:out value="${a.shiftName}"/>', '<c:out value="${a.workDate}"/>', '<c:out value="${a.formattedCheckInDateTime}"/>', '<c:out value="${a.formattedCheckOutDateTime}"/>', '${a.status}', ${a.workedMinutes})"
-                                        style="margin-right: 4px;" title="Adjust record with audit trail">
-                                    ✏️ Edit
+                                <button type="button" class="btn btn-secondary btn-sm" 
+                                        onclick="openEditModal(${a.id}, '<c:out value="${a.employeeName}"/>', '<c:out value="${a.employeeCode}"/>', '<c:out value="${a.shiftName}"/>', '<c:out value="${a.workDate}"/>', '<c:out value="${a.formattedCheckInDateTime}"/>', '<c:out value="${a.formattedCheckOutDateTime}"/>', '${a.status}', ${a.workedMinutes})">
+                                    Edit
                                 </button>
-                                <button type="button" class="btn btn-sm btn-ghost" onclick="viewAuditLog(${a.id})" title="View audit trail history">
-                                    📜 History
+                                <button type="button" class="btn btn-ghost btn-sm" onclick="viewAuditLog(${a.id})">
+                                    Audit
                                 </button>
                             </td>
                         </tr>
@@ -186,11 +511,13 @@
     </table>
 </div>
 
-<!-- ================= Edit Attendance Modal (Solid Background, Backdrop Blur, Click & ESC dismissal) ================= -->
+<!-- Edit Attendance Modal -->
 <div id="editModal" class="modal-overlay" onclick="handleEditBackdropClick(event)">
-    <div class="modal-card" style="max-width: 540px;" onclick="event.stopPropagation()">
+    <div class="modal-card" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <h3 class="modal-title">✏️ Adjust Attendance Record (FR-ATT-05)</h3>
+            <h3 class="modal-title">
+                Adjust Attendance Record
+            </h3>
             <button type="button" class="modal-close-btn" onclick="closeEditModal()" title="Close dialog">&times;</button>
         </div>
 
@@ -199,95 +526,107 @@
             <input type="hidden" name="from" value="${from}">
             <input type="hidden" name="to" value="${to}">
 
-            <!-- Info Bar -->
-            <div style="background: #f1f5f9; padding:12px 16px; border-radius:8px; margin-bottom:18px; font-size:13px; border: 1px solid var(--line);">
-                <div><strong>Employee:</strong> <span id="modalEmpDisplay"></span></div>
-                <div style="margin-top:4px;"><strong>Shift:</strong> <span id="modalShiftDisplay"></span> · <strong>Date:</strong> <span id="modalDateDisplay"></span></div>
+            <div class="modal-body">
+                <!-- Info Summary Box -->
+                <div style="background: #eff6ff; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; border: 1px solid #bfdbfe; color: #0f172a;">
+                    <div><strong>Employee:</strong> <span id="modalEmpDisplay" style="color: #1d4ed8; font-weight: 700;"></span></div>
+                    <div style="margin-top: 4px; color: #334155;"><strong>Shift:</strong> <span id="modalShiftDisplay" style="font-weight:600;"></span> &bull; <strong>Date:</strong> <span id="modalDateDisplay" class="mono font-bold" style="color: #0f172a;"></span></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; color: #64748b;">
+                            Check-In Time
+                        </label>
+                        <input type="datetime-local" name="checkIn" id="modalCheckIn" class="att-filter-input" style="width: 100%;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; color: #64748b;">
+                            Check-Out Time
+                        </label>
+                        <input type="datetime-local" name="checkOut" id="modalCheckOut" class="att-filter-input" style="width: 100%;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                    <div>
+                        <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; color: #64748b;">
+                            Status
+                        </label>
+                        <select name="status" id="modalStatus" class="att-filter-select" style="width: 100%;">
+                            <option value="ON_TIME">On Time</option>
+                            <option value="LATE">Late</option>
+                            <option value="EARLY_LEAVE">Early Leave</option>
+                            <option value="MISSING_CHECKOUT">Missing Checkout</option>
+                            <option value="OVERTIME">Overtime</option>
+                            <option value="ABSENT">Absent</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; color: #64748b;">
+                            Worked Minutes
+                        </label>
+                        <input type="number" name="workedMinutes" id="modalWorkedMinutes" placeholder="Auto-calculated if blank" min="0" class="att-filter-input" style="width: 100%;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 4px;">
+                    <label style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; color: #dc2626;">
+                        Reason for Manual Adjustment <span style="color: #dc2626;">*</span>
+                    </label>
+                    <textarea name="reason" id="modalReason" required rows="3" class="att-filter-input"
+                              style="width: 100%; height: auto; padding: 8px 12px; resize: vertical;"
+                              placeholder="e.g. Employee offsite client meeting, verified with manager at 18:00..."></textarea>
+                    <div class="muted small" style="margin-top: 4px; font-size: 11px;">
+                        This reason and your username will be permanently recorded in the audit trail.
+                    </div>
+                </div>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:14px;">
-                <div>
-                    <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;">CHECK-IN TIME</label>
-                    <input type="datetime-local" name="checkIn" id="modalCheckIn" style="width:100%; font-size:13px;">
-                </div>
-                <div>
-                    <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;">CHECK-OUT TIME</label>
-                    <input type="datetime-local" name="checkOut" id="modalCheckOut" style="width:100%; font-size:13px;">
-                </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:14px;">
-                <div>
-                    <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;">STATUS</label>
-                    <select name="status" id="modalStatus" style="width:100%; font-size:13px;">
-                        <option value="ON_TIME">On Time (ON_TIME)</option>
-                        <option value="LATE">Late (LATE)</option>
-                        <option value="EARLY_LEAVE">Early Leave (EARLY_LEAVE)</option>
-                        <option value="MISSING_CHECKOUT">Missing Checkout (MISSING_CHECKOUT)</option>
-                        <option value="OVERTIME">Overtime (OVERTIME)</option>
-                        <option value="ABSENT">Absent (ABSENT)</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;">WORKED MINUTES</label>
-                    <input type="number" name="workedMinutes" id="modalWorkedMinutes" placeholder="Auto-calculated if blank" min="0" style="width:100%; font-size:13px;">
-                </div>
-            </div>
-
-            <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:#dc2626;">
-                    ADJUSTMENT REASON <span style="color:red;">* (Required by FR-ATT-05)</span>
-                </label>
-                <textarea name="reason" id="modalReason" required rows="3" style="width:100%; font-size:13px;"
-                          placeholder="E.g., Employee forgot to scan out due to emergency client meeting, manager verified check-out at 18:00..."></textarea>
-                <span class="muted small" style="display:block; margin-top:4px;">
-                    ⚠️ This reason and the administrator identity will be recorded permanently in the Audit Log.
-                </span>
-            </div>
-
-            <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--line); padding-top:16px;">
+            <div class="modal-footer">
                 <button type="button" class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary">💾 Save Adjustment</button>
+                <button type="submit" class="btn btn-primary">Save Adjustment</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- ================= Audit Log Modal (Solid Background, Backdrop Blur, Click & ESC dismissal) ================= -->
+<!-- Audit Trail History Modal -->
 <div id="auditModal" class="modal-overlay" onclick="handleAuditBackdropClick(event)">
     <div class="modal-card" style="max-width: 680px;" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <h3 class="modal-title">📜 Audit Trail History (FR-ATT-05)</h3>
+            <h3 class="modal-title">
+                Audit Trail History
+            </h3>
             <button type="button" class="modal-close-btn" onclick="closeAuditModal()" title="Close dialog">&times;</button>
         </div>
 
-        <div id="auditLoading" style="text-align:center; padding:32px; color:var(--muted);">
-            <div style="display:inline-block; width:24px; height:24px; border:3px solid var(--line); border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite;"></div>
-            <div style="margin-top:8px;">Loading audit trail records...</div>
-        </div>
-        <div id="auditContent" style="display:none; max-height: 420px; overflow-y:auto;">
-            <table class="table" style="width:100%; font-size:12px;">
-                <thead>
-                    <tr style="background:#f8fafc; text-align:left;">
-                        <th style="padding:10px 12px;">TIMESTAMP</th>
-                        <th style="padding:10px 12px;">MODIFIED BY</th>
-                        <th style="padding:10px 12px;">REASON</th>
-                        <th style="padding:10px 12px;">CHANGES</th>
-                    </tr>
-                </thead>
-                <tbody id="auditTableBody"></tbody>
-            </table>
+        <div class="modal-body" style="padding: 0;">
+            <div id="auditLoading" style="text-align: center; padding: 32px; color: var(--muted);">
+                <div style="display: inline-block; width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                <div style="margin-top: 10px; font-size: 12px;">Retrieving audit log entries...</div>
+            </div>
+
+            <div id="auditContent" style="display: none; max-height: 400px; overflow-y: auto;">
+                <table class="table" style="width: 100%; margin: 0; font-size: 12px;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 10px 14px;">Timestamp</th>
+                            <th style="padding: 10px 14px;">Admin</th>
+                            <th style="padding: 10px 14px;">Reason</th>
+                            <th style="padding: 10px 14px;">Field Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditTableBody"></tbody>
+                </table>
+            </div>
         </div>
 
-        <div style="margin-top:20px; text-align:right; border-top:1px solid var(--line); padding-top:16px;">
+        <div class="modal-footer">
             <button type="button" class="btn btn-ghost" onclick="closeAuditModal()">Close</button>
         </div>
     </div>
 </div>
-
-<style>
-    @keyframes spin { to { transform: rotate(360deg); } }
-</style>
 
 <script>
 function setToday() {
@@ -306,6 +645,11 @@ function setThisMonth() {
     document.getElementById('filterForm').submit();
 }
 
+function filterMissingOnly() {
+    document.getElementById('statusFilterSelect').value = 'MISSING_CHECKOUT';
+    document.getElementById('filterForm').submit();
+}
+
 function openEditModal(id, empName, empCode, shiftName, workDate, checkIn, checkOut, status, workedMinutes) {
     document.getElementById('modalId').value = id;
     document.getElementById('modalEmpDisplay').innerText = empName + ' (' + empCode + ')';
@@ -319,13 +663,11 @@ function openEditModal(id, empName, empCode, shiftName, workDate, checkIn, check
 
     const modal = document.getElementById('editModal');
     modal.classList.add('active');
-    modal.style.display = 'flex';
 }
 
 function closeEditModal() {
     const modal = document.getElementById('editModal');
     modal.classList.remove('active');
-    modal.style.display = 'none';
 }
 
 function handleEditBackdropClick(e) {
@@ -337,7 +679,6 @@ function handleEditBackdropClick(e) {
 function viewAuditLog(recordId) {
     const modal = document.getElementById('auditModal');
     modal.classList.add('active');
-    modal.style.display = 'flex';
     document.getElementById('auditLoading').style.display = 'block';
     document.getElementById('auditContent').style.display = 'none';
 
@@ -350,33 +691,31 @@ function viewAuditLog(recordId) {
             tbody.innerHTML = '';
 
             if (!logs || logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:28px; color:var(--muted);">No adjustments recorded for this entry (no audit logs).</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:24px; color:var(--muted);">No adjustments have been recorded for this attendance record yet.</td></tr>';
                 return;
             }
 
             logs.forEach(l => {
                 const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid var(--line)';
                 tr.innerHTML = 
-                    '<td style="padding:10px 12px; font-weight:500; white-space:nowrap;" class="mono">' + l.time + '</td>' +
-                    '<td style="padding:10px 12px; font-weight:600; color:var(--primary);">' + l.admin + '</td>' +
-                    '<td style="padding:10px 12px; color:#b45309;">' + (l.reason || '-') + '</td>' +
-                    '<td style="padding:10px 12px; font-family:monospace; font-size:11px;">' +
-                        '<div style="color:#dc2626; background:#fef2f2; padding:2px 6px; border-radius:4px; margin-bottom:2px;">- ' + (l.oldValue || '') + '</div>' +
-                        '<div style="color:#059669; background:#ecfdf5; padding:2px 6px; border-radius:4px;">+ ' + (l.newValue || '') + '</div>' +
+                    '<td style="padding:10px 14px; white-space:nowrap;" class="mono">' + (l.time || '-') + '</td>' +
+                    '<td style="padding:10px 14px; font-weight:600; color:#60a5fa;">' + (l.admin || '-') + '</td>' +
+                    '<td style="padding:10px 14px; color:#fbbf24;">' + (l.reason || '-') + '</td>' +
+                    '<td style="padding:10px 14px; font-family:\'JetBrains Mono\', monospace; font-size:11px;">' +
+                        '<div style="color:#f87171;">- ' + (l.oldValue || '') + '</div>' +
+                        '<div style="color:#34d399;">+ ' + (l.newValue || '') + '</div>' +
                     '</td>';
                 tbody.appendChild(tr);
             });
         })
         .catch(err => {
-            document.getElementById('auditLoading').innerText = 'Error loading audit log: ' + err;
+            document.getElementById('auditLoading').innerHTML = '<div style="color:var(--danger); padding:20px;">Error loading audit log: ' + err + '</div>';
         });
 }
 
 function closeAuditModal() {
     const modal = document.getElementById('auditModal');
     modal.classList.remove('active');
-    modal.style.display = 'none';
 }
 
 function handleAuditBackdropClick(e) {
@@ -385,7 +724,6 @@ function handleAuditBackdropClick(e) {
     }
 }
 
-// Global ESC listener to close open modals
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeEditModal();

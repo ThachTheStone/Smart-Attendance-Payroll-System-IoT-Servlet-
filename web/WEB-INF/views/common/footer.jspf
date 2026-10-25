@@ -1,4 +1,10 @@
 </main>
-<footer class="footer">Smart Attendance &amp; Payroll System · IoT + Servlet</footer>
+<footer class="footer">
+    <div style="display:flex; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap;">
+        <strong>SmartAttend</strong> &bull; Biometric IoT Attendance &amp; Automated Payroll System
+        <span style="color:var(--line);">&bull;</span>
+        <span class="mono" style="font-size:11px; color:var(--muted);">ESP32 + AS608 Optical Sensor &bull; Java Servlet &bull; SQL Server</span>
+    </div>
+</footer>
 </body>
 </html>

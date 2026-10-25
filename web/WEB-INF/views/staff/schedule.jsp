@@ -5,41 +5,183 @@
 <%@ include file="../common/header.jspf" %>
 
 <style>
+    /* ================= Staff Schedule Dashboard (Swiss Light SaaS) ================= */
+    .schedule-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 24px 28px;
+        background: #ffffff !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius-lg);
+        color: #0f172a;
+        box-shadow: var(--shadow-sm);
+    }
+    .schedule-hero h1 {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #0f172a !important;
+    }
+    .schedule-hero .today-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Week Section Card */
+    .week-section {
+        background: #ffffff !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin-bottom: 24px;
+        color: #0f172a;
+        box-shadow: var(--shadow-xs);
+    }
+    .week-section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+    .week-section-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
     .schedule-week-grid {
-        display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-top: 14px;
-    }
-    @media (max-width: 900px) {
-        .schedule-week-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 500px) {
-        .schedule-week-grid { grid-template-columns: 1fr; }
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 12px;
     }
     .day-card {
-        background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-        padding: 14px; display: flex; flex-direction: column; min-height: 120px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--radius);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        min-height: 140px;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        position: relative;
+    }
+    .day-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: var(--shadow-xs);
     }
     .day-card.is-today {
-        border-color: var(--primary); background: #f0f7ff; box-shadow: 0 0 0 1px var(--primary);
+        border-color: #1d4ed8;
+        background: #eff6ff;
     }
-    .day-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
-    .day-date { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
-    .shift-box {
-        background: #e0f2fe; color: #0369a1; border-radius: 6px; padding: 8px 10px; font-size: 13px; font-weight: 500;
+    .day-card.is-today::after {
+        content: "TODAY";
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #1d4ed8;
+        color: #ffffff;
+    }
+    .day-title {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 2px;
+        color: #0f172a;
+    }
+    .day-date {
+        color: #64748b;
+        font-size: 12px;
+        margin-bottom: 14px;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Shift block */
+    .shift-block {
+        background: #ffffff;
+        color: #1d4ed8;
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 12px;
+        font-weight: 600;
         margin-top: auto;
+        border: 1px solid #bfdbfe;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
-    .shift-box-overnight {
-        background: #fef3c7; color: #92400e;
+    .shift-block.overnight {
+        background: #ffffff;
+        color: #b45309;
+        border-color: #fde68a;
     }
-    .off-box {
-        color: var(--muted); font-size: 13px; margin-top: auto; padding: 8px 0; font-style: italic;
+    .shift-time {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        margin-top: 3px;
+        color: #334155;
+    }
+    .shift-break {
+        font-size: 11px;
+        color: #64748b;
+        margin-top: 2px;
+    }
+    .off-block {
+        color: #94a3b8;
+        font-size: 12px;
+        margin-top: auto;
+        padding: 10px 0;
+        font-style: italic;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    @media (max-width: 1100px) {
+        .schedule-week-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 700px) {
+        .schedule-week-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+        .schedule-week-grid { grid-template-columns: 1fr; }
     }
 </style>
 
-<div class="page-head">
+<div class="schedule-hero">
     <div>
-        <h1>📅 My Shift Schedule</h1>
-        <p class="muted">View your assigned shifts for this week and next week (FR-SHIFT-04)</p>
+        <h1>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>My Shift Schedule</span>
+        </h1>
+        <p class="muted" style="margin: 4px 0 0; font-size: 13px;">View your assigned shifts for this week and next week</p>
     </div>
+    <span class="today-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ${today}
+    </span>
 </div>
 
 <c:if test="${not empty errorMessage}">
@@ -47,11 +189,14 @@
 </c:if>
 
 <!-- THIS WEEK -->
-<div class="card" style="margin-bottom: 24px;">
-    <h2 style="margin: 0; font-size: 16px; display: flex; align-items: center; justify-content: space-between;">
-        <span>This Week</span>
-        <span class="muted small">Today is ${today}</span>
-    </h2>
+<div class="week-section">
+    <div class="week-section-head">
+        <h2 class="week-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+            <span>This Week</span>
+        </h2>
+        <span class="muted small">Current period</span>
+    </div>
     <div class="schedule-week-grid">
         <c:forEach var="day" items="${thisWeek}">
             <c:set var="isToday" value="${day == today}"/>
@@ -59,28 +204,29 @@
             <div class="day-card ${isToday ? 'is-today' : ''}">
                 <div class="day-title">
                     <c:choose>
-                        <c:when test="${day.dayOfWeek.value == 1}">Mon</c:when>
-                        <c:when test="${day.dayOfWeek.value == 2}">Tue</c:when>
-                        <c:when test="${day.dayOfWeek.value == 3}">Wed</c:when>
-                        <c:when test="${day.dayOfWeek.value == 4}">Thu</c:when>
-                        <c:when test="${day.dayOfWeek.value == 5}">Fri</c:when>
-                        <c:when test="${day.dayOfWeek.value == 6}">Sat</c:when>
-                        <c:when test="${day.dayOfWeek.value == 7}">Sun</c:when>
+                        <c:when test="${day.dayOfWeek.value == 1}">Monday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 2}">Tuesday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 3}">Wednesday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 4}">Thursday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 5}">Friday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 6}">Saturday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 7}">Sunday</c:when>
                     </c:choose>
-                    <c:if test="${isToday}"><span style="color:var(--primary); font-size:11px;">(Today)</span></c:if>
                 </div>
                 <div class="day-date">${day.dayOfMonth}/${day.monthValue}</div>
-
                 <c:choose>
                     <c:when test="${not empty asgn}">
-                        <div class="shift-box ${asgn.startTime > asgn.endTime ? 'shift-box-overnight' : ''}">
-                            <div style="font-weight: 700;">${asgn.shiftName}</div>
-                            <div class="mono" style="font-size: 12px; margin-top: 2px;">${asgn.startTime} - ${asgn.endTime}</div>
-                            <div class="small" style="opacity: 0.8; margin-top: 2px;">Break: ${asgn.breakMinutes}m</div>
+                        <div class="shift-block ${asgn.startTime > asgn.endTime ? 'overnight' : ''}">
+                            <div style="font-weight: 600;">${asgn.shiftName}</div>
+                            <div class="shift-time">${asgn.startTime} - ${asgn.endTime}</div>
+                            <div class="shift-break">Break: ${asgn.breakMinutes}m</div>
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <div class="off-box">Day Off</div>
+                        <div class="off-block">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/></svg>
+                            <span>Day Off</span>
+                        </div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -89,35 +235,43 @@
 </div>
 
 <!-- NEXT WEEK -->
-<div class="card">
-    <h2 style="margin: 0; font-size: 16px;">Next Week</h2>
+<div class="week-section">
+    <div class="week-section-head">
+        <h2 class="week-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+            <span>Next Week</span>
+        </h2>
+        <span class="muted small">Upcoming period</span>
+    </div>
     <div class="schedule-week-grid">
         <c:forEach var="day" items="${nextWeek}">
             <c:set var="asgn" value="${scheduleMap[day.toString()]}"/>
             <div class="day-card">
                 <div class="day-title">
                     <c:choose>
-                        <c:when test="${day.dayOfWeek.value == 1}">Mon</c:when>
-                        <c:when test="${day.dayOfWeek.value == 2}">Tue</c:when>
-                        <c:when test="${day.dayOfWeek.value == 3}">Wed</c:when>
-                        <c:when test="${day.dayOfWeek.value == 4}">Thu</c:when>
-                        <c:when test="${day.dayOfWeek.value == 5}">Fri</c:when>
-                        <c:when test="${day.dayOfWeek.value == 6}">Sat</c:when>
-                        <c:when test="${day.dayOfWeek.value == 7}">Sun</c:when>
+                        <c:when test="${day.dayOfWeek.value == 1}">Monday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 2}">Tuesday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 3}">Wednesday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 4}">Thursday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 5}">Friday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 6}">Saturday</c:when>
+                        <c:when test="${day.dayOfWeek.value == 7}">Sunday</c:when>
                     </c:choose>
                 </div>
                 <div class="day-date">${day.dayOfMonth}/${day.monthValue}</div>
-
                 <c:choose>
                     <c:when test="${not empty asgn}">
-                        <div class="shift-box ${asgn.startTime > asgn.endTime ? 'shift-box-overnight' : ''}">
-                            <div style="font-weight: 700;">${asgn.shiftName}</div>
-                            <div class="mono" style="font-size: 12px; margin-top: 2px;">${asgn.startTime} - ${asgn.endTime}</div>
-                            <div class="small" style="opacity: 0.8; margin-top: 2px;">Break: ${asgn.breakMinutes}m</div>
+                        <div class="shift-block ${asgn.startTime > asgn.endTime ? 'overnight' : ''}">
+                            <div style="font-weight: 600;">${asgn.shiftName}</div>
+                            <div class="shift-time">${asgn.startTime} - ${asgn.endTime}</div>
+                            <div class="shift-break">Break: ${asgn.breakMinutes}m</div>
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <div class="off-box">Day Off</div>
+                        <div class="off-block">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="2" x2="12" y2="9"/></svg>
+                            <span>Day Off</span>
+                        </div>
                     </c:otherwise>
                 </c:choose>
             </div>
