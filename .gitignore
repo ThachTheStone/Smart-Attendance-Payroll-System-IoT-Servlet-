@@ -22,3 +22,14 @@ src/java/mail.properties
 Thumbs.db
 desktop.ini
 *.log
+
+# Server runtime & local cache
+.smarttomcat/
+
+# UI UX Pro Max & Skills
+ui-ux-pro-max-skill-main/
+ui-ux-pro-max*/
+*ui-ux-pro-max*
+.agents/
+*.zip
+

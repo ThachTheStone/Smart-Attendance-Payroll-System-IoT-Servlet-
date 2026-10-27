@@ -1,0 +1,158 @@
+/* ==========================================================================
+   SmartAttend Typography - self-hosted fonts (web/assets/font/...)
+   Thick faces for headers, thin faces for body text:
+     --font-header   Sansation Bold      headings, sidebar + top bar, labels     (NO Vietnamese)
+     --font-display  Bungee              not used yet (logo is now an SVG)       (Vietnamese OK)
+     --font-ui       Be Vietnam Pro      body text, tables, forms, buttons, KPIs (Vietnamese OK)
+                                         (--font-body is an alias of --font-ui)
+     --font-serif    PT Serif            landing lead paragraphs                 (NO Vietnamese)
+   Sansation and PT Serif lack Vietnamese glyphs. Sansation is followed by
+   Be Vietnam Pro in its stack, so accented letters in a heading still render
+   (in Be Vietnam Pro); PT Serif must stay on fixed English text.
+   ========================================================================== */
+
+/* ---------- Bungee (display) ---------- */
+@font-face {
+    font-family: 'Bungee';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Bungee/Bungee-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ---------- Be Vietnam Pro (UI + body text) ---------- */
+@font-face {
+    font-family: 'Be Vietnam Pro';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Be_Vietnam_Pro/BeVietnamPro-Light.ttf") format("truetype");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Be Vietnam Pro';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Be_Vietnam_Pro/BeVietnamPro-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Be Vietnam Pro';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Be_Vietnam_Pro/BeVietnamPro-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Be Vietnam Pro';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Be_Vietnam_Pro/BeVietnamPro-Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Be Vietnam Pro';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Be_Vietnam_Pro/BeVietnamPro-SemiBold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Be Vietnam Pro';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Be_Vietnam_Pro/BeVietnamPro-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Be Vietnam Pro';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Be_Vietnam_Pro/BeVietnamPro-ExtraBold.ttf") format("truetype");
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Be Vietnam Pro';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Be_Vietnam_Pro/BeVietnamPro-Black.ttf") format("truetype");
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ---------- Sansation (labels, English only) ---------- */
+@font-face {
+    font-family: 'Sansation';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Sansation/Sansation-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Sansation';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/Sansation/Sansation-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ---------- PT Serif (lead paragraphs, English only) ---------- */
+@font-face {
+    font-family: 'PT Serif';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/PT_Serif/PTSerif-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'PT Serif';
+    src: url("../font/Be_Vietnam_Pro,Bungee,Fira_Sans,PT_Serif,Sansation/PT_Serif/PTSerif-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+:root {
+    --font-header: 'Sansation', 'Be Vietnam Pro', system-ui, sans-serif;
+    --font-display: 'Bungee', 'Be Vietnam Pro', system-ui, sans-serif;
+    --font-ui: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-body: var(--font-ui); /* alias: body text uses the UI face */
+    --font-serif: 'PT Serif', Georgia, 'Times New Roman', serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+/* ---------- Role rules shared by every page ---------- */
+body {
+    font-family: var(--font-ui);
+    font-weight: 400;
+}
+
+button, .btn, .tab, .form-label, label,
+.stat-num, .kpi-value, .user-kpi-val, .user-kpi-value {
+    font-family: var(--font-ui);
+}
+
+/* Headers: every heading, the page/section titles and the top header bar. */
+h1, h2, h3, h4, h5, h6,
+[class*="-hero-title"], [class*="-hero-heading"],
+.hero-title, .section-title, .pre-footer-cta h2,
+.app-topbar-title, .sidebar-brand-name, .sidebar-nav a, .nav-group-label, .sidebar-user-name,
+.site-header, .site-header .nav-links a, .brand-link,
+th, .kicker-tag, .panel-badge, .role-badge {
+    font-family: var(--font-header);
+}
+
+/* Sansation only ships 300/400/700, so page-level weights of 600-800 resolve to 700. */
+h1, h2, h3, h4, h5, h6,
+[class*="-hero-title"], [class*="-hero-heading"],
+.hero-title, .section-title, .pre-footer-cta h2,
+.sidebar-brand-name, .brand-link {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+input, select, textarea {
+    font-family: var(--font-ui);
+}
+
+.mono, code, pre, kbd {
+    font-family: var(--font-mono);
+}

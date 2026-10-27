@@ -1,0 +1,25 @@
+<%@ page pageEncoding="UTF-8" %>
+<%-- One salary rule row; expects r (SalaryRule) in scope. Used by rules/index.jsp. --%>
+<div class="rule-row">
+    <div>
+        <label class="rule-title" for="rule_${r.ruleKey}"><c:out value="${r.description}"/></label>
+        <div class="rule-spec"></div>
+        <code class="rule-key">${r.ruleKey}</code>
+    </div>
+    <div>
+        <div class="input-unit">
+            <input type="number" step="any" id="rule_${r.ruleKey}" name="rule_${r.ruleKey}" value="${r.value}" data-rule-key="${r.ruleKey}" required>
+            <span>
+                <c:choose>
+                    <c:when test="${r.ruleKey.contains('multiplier')}">&times; rate</c:when>
+                    <c:when test="${r.ruleKey.contains('minutes')}">min</c:when>
+                    <c:when test="${r.ruleKey.contains('rate')}">VND / min</c:when>
+                    <c:when test="${r.ruleKey.contains('hours')}">hours</c:when>
+                    <c:when test="${r.ruleKey.contains('confidence')}">score</c:when>
+                    <c:otherwise>value</c:otherwise>
+                </c:choose>
+            </span>
+        </div>
+        <div class="rule-changed" aria-live="polite"></div>
+    </div>
+</div>

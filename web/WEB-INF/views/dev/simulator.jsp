@@ -5,43 +5,131 @@
 <%@include file="/WEB-INF/views/common/header.jspf"%>
 
 <style>
+    /* ================= Hardware Workbench Simulator ================= */
     .sim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .sim-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
-    .sim-card h2 { font-size: 16px; margin: 0 0 16px 0; display: flex; align-items: center; justify-content: space-between; }
-    .badge-status { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-    .status-online { background: #dcfce7; color: #15803d; }
-    .status-offline { background: #fee2e2; color: #b91c1c; }
-    .field { margin-bottom: 14px; }
-    .field label { display: block; font-weight: 500; font-size: 13px; margin-bottom: 4px; }
-    .field select, .field input[type="text"], .field input[type="number"] {
-        width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px;
+    .sim-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg, 12px);
+        padding: 22px;
+        color: #0f172a;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
-    .field input[type="range"] { width: 100%; }
+    .sim-card h2 {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 16px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #0f172a;
+    }
+    .badge-status {
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+    .status-online {
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+    }
+    .status-offline {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+    .field { margin-bottom: 14px; }
+    .field label {
+        display: block;
+        font-weight: 600;
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .field select, .field input[type="text"], .field input[type="number"] {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 13px;
+        background: #ffffff;
+        color: #0f172a;
+        box-sizing: border-box;
+    }
+    .field select:focus, .field input[type="text"]:focus, .field input[type="number"]:focus {
+        border-color: #1d4ed8;
+        outline: none;
+    }
+    .field input[type="range"] {
+        width: 100%;
+        accent-color: #1d4ed8;
+    }
     .btn-row { display: flex; gap: 10px; margin-top: 14px; }
-    .btn-row .btn { flex: 1; text-align: center; justify-content: center; }
-    .btn-primary { background: #1f5eff; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-    .btn-primary:hover { background: #1848c7; }
-    .btn-warning { background: #f59e0b; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-    .btn-warning:hover { background: #d97706; }
-    .btn-danger { background: #ef4444; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-    .btn-danger:hover { background: #dc2626; }
-    .btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid var(--line); padding: 10px; border-radius: 6px; cursor: pointer; }
-    .btn-secondary:hover { background: #e5e7eb; }
+    .btn-row .btn {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 13px;
+        padding: 9px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid transparent;
+        transition: background-color 0.15s ease;
+    }
+    .btn-primary { background: #1d4ed8; color: #ffffff; border-color: #1e40af; }
+    .btn-primary:hover { background: #1e40af; }
+    .btn-warning { background: #d97706; color: #ffffff; border-color: #b45309; }
+    .btn-warning:hover { background: #b45309; }
+    .btn-danger { background: #dc2626; color: #ffffff; border-color: #b91c1c; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-secondary {
+        background: #ffffff;
+        color: #334155;
+        border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
     
     .console-box {
-        background: #111827; color: #10b981; font-family: ui-monospace, monospace;
-        font-size: 12px; padding: 16px; border-radius: 8px; height: 350px; overflow-y: auto;
-        white-space: pre-wrap; line-height: 1.5;
+        background: #0f172a;
+        color: #34d399;
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 12px;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid #1e293b;
+        height: 380px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        line-height: 1.55;
     }
     .command-banner {
-        background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 10px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        padding: 14px;
+        margin-top: 10px;
+    }
+
+    @media (max-width: 900px) {
+        .sim-grid { grid-template-columns: 1fr; }
     }
 </style>
 
-<div class="page-head">
+<div class="page-head" style="margin-bottom: 24px;">
     <div>
-        <h1>ESP32 Device Simulator</h1>
-        <p class="muted">Simulate biometric attendance scans, heartbeats, and device commands without physical hardware.</p>
+        <h1 style="font-size: 22px; font-weight: 700; color: #0f172a; margin: 0 0 6px 0;">ESP32 Device Simulator</h1>
+        <p class="muted" style="margin: 0; font-size: 13px; color: #64748b;">Simulate biometric attendance scans, heartbeats, and device commands without physical hardware.</p>
     </div>
 </div>
 
@@ -51,11 +139,11 @@
         <!-- Device Info & Heartbeat -->
         <div class="sim-card field">
             <h2>
-                1. Virtual Device
+                <span>1. Virtual Device</span>
                 <span id="heartbeatStatus" class="badge-status status-offline">Heartbeat OFF</span>
             </h2>
             <div class="field">
-                <label>Active Device:</label>
+                <label>Active Device</label>
                 <select id="deviceSelect" onchange="onDeviceChange()">
                     <c:forEach var="d" items="${devices}">
                         <option value="${d.id}" data-key="${d.apiKey}">${d.name} (${d.location})</option>
@@ -63,8 +151,8 @@
                 </select>
             </div>
             <div class="field">
-                <label>Header <code>X-API-Key</code>:</label>
-                <input type="text" id="apiKeyInput" readonly class="mono" style="background:#f9fafb;">
+                <label>Header <code>X-API-Key</code></label>
+                <input type="text" id="apiKeyInput" readonly class="mono" style="background:#f8fafc; color:#1d4ed8; border: 1px solid var(--border);">
             </div>
             <div class="btn-row">
                 <button type="button" class="btn btn-secondary" onclick="toggleHeartbeat()" id="btnHeartbeat">Start Auto Heartbeat (10s)</button>
@@ -74,9 +162,9 @@
 
         <!-- Attendance Scanner Simulation -->
         <div class="sim-card field">
-            <h2>2. AS608 Fingerprint Scanner</h2>
+            <h2><span>2. AS608 Fingerprint Scanner</span></h2>
             <div class="field">
-                <label>Select Enrolled Finger:</label>
+                <label>Select Enrolled Finger</label>
                 <select id="templateSelect" onchange="onTemplateChange()">
                     <option value="">-- Choose enrolled fingerprint or type custom --</option>
                     <c:forEach var="fp" items="${fingerprints}">
@@ -85,11 +173,11 @@
                 </select>
             </div>
             <div class="field">
-                <label>Template ID (1 - 162):</label>
+                <label>Template ID (1 - 162)</label>
                 <input type="number" id="templateIdInput" value="1" min="1" max="162">
             </div>
             <div class="field">
-                <label>Confidence Score: <span id="confDisplay" style="font-weight:700;">85</span>%</label>
+                <label>Confidence Score: <span id="confDisplay" style="font-weight:700; color:#1d4ed8;">85</span>%</label>
                 <input type="range" id="confidenceInput" min="1" max="100" value="85" oninput="document.getElementById('confDisplay').innerText = this.value">
             </div>
             <div class="btn-row">
@@ -102,12 +190,12 @@
         <!-- Command Listener -->
         <div class="sim-card">
             <h2>
-                3. Device Commands Poller
+                <span>3. Device Commands Poller</span>
                 <span id="pollerStatus" class="badge-status status-online">Polling (3s)</span>
             </h2>
-            <div id="noCommandMsg" class="muted" style="font-size: 13px;">Waiting for server commands (e.g. ENROLL from Admin)...</div>
+            <div id="noCommandMsg" class="muted" style="font-size: 13px; color: #64748b;">Waiting for server commands (e.g. ENROLL from Admin)...</div>
             <div id="commandBox" class="command-banner" style="display:none;">
-                <div style="font-weight:600; color:#1e40af; margin-bottom: 6px;" id="cmdText">Incoming command...</div>
+                <div style="font-weight:600; color:#1d4ed8; margin-bottom: 10px; font-size: 13px;" id="cmdText">Incoming command...</div>
                 <div class="btn-row">
                     <button type="button" class="btn btn-primary" onclick="respondCommand('DONE')">Simulate Success (DONE)</button>
                     <button type="button" class="btn btn-danger" onclick="respondCommand('FAILED')">Simulate Fail (FAILED)</button>
@@ -118,12 +206,12 @@
 
     <!-- Right Column: Live Terminal Log -->
     <div>
-        <div class="sim-card" style="height: 100%;">
+        <div class="sim-card" style="height: 100%; display: flex; flex-direction: column;">
             <h2>
-                HTTP Traffic Log
-                <button type="button" class="btn btn-secondary btn-sm" onclick="clearConsole()" style="font-size:11px; padding:4px 8px;">Clear</button>
+                <span>HTTP Traffic Log</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="clearConsole()" style="font-size:11px; padding:3px 10px;">Clear</button>
             </h2>
-            <div id="console" class="console-box">Simulator initialized. Ready for traffic...</div>
+            <div id="console" class="console-box" style="flex: 1;">Simulator initialized. Ready for traffic...</div>
         </div>
     </div>
 </div>
@@ -229,7 +317,7 @@
     }
 
     function simulateBurst() {
-        log("⚡ Sending Burst x5 scans (interval 200ms)...");
+        log("Sending Burst x5 scans (interval 200ms)...");
         const tid = parseInt(document.getElementById('templateIdInput').value) || 1;
         const conf = parseInt(document.getElementById('confidenceInput').value) || 90;
         let count = 0;
@@ -252,7 +340,7 @@
                 document.getElementById('noCommandMsg').style.display = 'none';
                 document.getElementById('commandBox').style.display = 'block';
                 document.getElementById('cmdText').innerHTML = 
-                    "🔔 <strong>Command #" + data.id + "</strong>: " + data.type + " (Template #" + data.templateId + ")";
+                    "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' style='display:inline; vertical-align:middle; margin-right:4px;'><path d='M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9'></path><path d='M13.73 21a2 2 0 0 1-3.46 0'></path></svg><strong>Command #" + data.id + "</strong>: " + data.type + " (Template #" + data.templateId + ")";
                 log("--> Received command: " + JSON.stringify(data));
             } else {
                 currentCommand = null;
