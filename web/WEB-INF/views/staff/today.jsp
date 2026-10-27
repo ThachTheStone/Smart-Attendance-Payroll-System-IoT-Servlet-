@@ -55,7 +55,7 @@
         min-width: 220px;
     }
     .live-timer-val {
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
         font-size: 32px;
         font-weight: 700;
         color: #1d4ed8;
@@ -176,7 +176,7 @@
     .timeline-step-time {
         font-size: 11px;
         color: #64748b;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
         margin-top: 2px;
     }
 
@@ -199,7 +199,7 @@
         font-weight: 700;
         margin-top: 6px;
         color: #0f172a;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
     }
 
     /* History Table Card */
@@ -269,22 +269,22 @@
         <div style="margin-top: 14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
             <c:choose>
                 <c:when test="${not empty todayAtt && not empty todayAtt.checkIn && empty todayAtt.checkOut}">
-                    <span class="role-badge" style="background:rgba(16, 185, 129, 0.12); color:#34d399; padding:5px 12px; font-size:12px; font-weight:600; border:1px solid rgba(16, 185, 129, 0.3);">
+                    <span class="role-badge" style="background:#ecfdf3; color:#15803d; padding:5px 12px; font-size:12px; font-weight:600; border:1px solid #bbf7d0;">
                         Shift in Progress (${todayAtt.statusLabel})
                     </span>
-                    <span style="font-size:13px; color:#cbd5e1;">Clocked in at <strong class="mono" style="color:#ffffff;">${todayAtt.formattedCheckIn}</strong></span>
+                    <span style="font-size:13px; color:var(--text-secondary);">Clocked in at <strong style="color:var(--text);">${todayAtt.formattedCheckIn}</strong></span>
                 </c:when>
                 <c:when test="${not empty todayAtt && not empty todayAtt.checkOut}">
-                    <span class="role-badge" style="background:rgba(37, 99, 235, 0.12); color:#60a5fa; padding:5px 12px; font-size:12px; font-weight:600; border:1px solid rgba(37, 99, 235, 0.3);">
+                    <span class="role-badge" style="background:#eef3ff; color:#1d4ed8; padding:5px 12px; font-size:12px; font-weight:600; border:1px solid #bfdbfe;">
                         Shift Completed (${todayAtt.statusLabel})
                     </span>
-                    <span style="font-size:13px; color:#cbd5e1;">Logged: <strong class="mono" style="color:#ffffff;">${todayAtt.workedMinutes / 60}h ${todayAtt.workedMinutes % 60}m</strong></span>
+                    <span style="font-size:13px; color:var(--text-secondary);">Worked today: <strong style="color:var(--text);">${todayAtt.formattedWorkedHours}</strong></span>
                 </c:when>
                 <c:otherwise>
-                    <span class="role-badge" style="background:rgba(148, 163, 184, 0.12); color:#cbd5e1; padding:5px 12px; font-size:12px; font-weight:600; border:1px solid rgba(148, 163, 184, 0.2);">
+                    <span class="role-badge" style="background:#f1f5f9; color:#475569; padding:5px 12px; font-size:12px; font-weight:600; border:1px solid #e2e8f0;">
                         Not Clocked In Today
                     </span>
-                    <span style="font-size:13px; color:#94a3b8;">Scan your fingerprint at any kiosk terminal to start work.</span>
+                    <span style="font-size:13px; color:var(--muted);">Scan your fingerprint at any kiosk terminal to start work.</span>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -301,11 +301,11 @@
 <div class="shift-card">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <div>
-            <h2 style="font-size:16px; font-weight:700; margin:0; color:#f8fafc;">Today's Shift Roster</h2>
+            <h2 style="font-size:16px; font-weight:700; margin:0; color:var(--text);">Today's shift</h2>
             <p class="muted small" style="margin:2px 0 0;"><fmt:formatDate value="<%= new java.util.Date() %>" pattern="EEEE, MMMM dd, yyyy" /></p>
         </div>
         <c:if test="${not empty todayShift}">
-            <span class="role-badge" style="background:rgba(37, 99, 235, 0.12); color:#60a5fa; font-size:12px; font-weight:600; border:1px solid rgba(37, 99, 235, 0.25);">
+            <span class="role-badge" style="background:#eef3ff; color:#1d4ed8; font-size:12px; font-weight:600; border:1px solid #bfdbfe;">
                 <c:out value="${todayShift.name}"/>
             </span>
         </c:if>
@@ -316,11 +316,11 @@
             <div class="shift-grid">
                 <div class="shift-metric">
                     <div class="shift-metric-label">Start Time</div>
-                    <div class="shift-metric-val mono" style="color:#34d399;">${todayShift.startTime}</div>
+                    <div class="shift-metric-val" style="color:#15803d;">${todayShift.startTime}</div>
                 </div>
                 <div class="shift-metric">
                     <div class="shift-metric-label">End Time</div>
-                    <div class="shift-metric-val mono" style="color:#60a5fa;">${todayShift.endTime}</div>
+                    <div class="shift-metric-val" style="color:#1d4ed8;">${todayShift.endTime}</div>
                 </div>
                 <div class="shift-metric">
                     <div class="shift-metric-label">Break Duration</div>
@@ -328,7 +328,7 @@
                 </div>
                 <div class="shift-metric">
                     <div class="shift-metric-label">Standard Duration</div>
-                    <div class="shift-metric-val">${todayShift.durationMinutes / 60} hrs</div>
+                    <div class="shift-metric-val"><fmt:formatNumber value="${todayShift.durationMinutes / 60}" maxFractionDigits="1"/> hrs</div>
                 </div>
             </div>
 
@@ -367,9 +367,9 @@
             </div>
         </c:when>
         <c:otherwise>
-            <div style="text-align:center; padding:36px; color:var(--muted);">
-                <div style="font-weight:600; font-size:15px; color:#f8fafc;">No shift scheduled for today</div>
-                <div style="font-size:13px; margin-top:4px; color:#94a3b8;">Enjoy your day off or review your weekly schedule tab.</div>
+            <div style="text-align:center; padding:32px 20px; margin-top:16px; border:1px dashed var(--border); border-radius:8px; background:#fafbfc;">
+                <div style="font-weight:600; font-size:15px; color:var(--text);">No shift scheduled for today</div>
+                <div style="font-size:13px; margin-top:4px; color:var(--muted);">Enjoy your day off, or check <a href="${ctx}/staff/schedule">My schedule</a> for your next shift.</div>
             </div>
         </c:otherwise>
     </c:choose>
@@ -377,30 +377,30 @@
 
 <!-- 3. Monthly Summary Cards (FR-STAFF-03) -->
 <div style="margin-bottom:14px;">
-    <h2 style="font-size:16px; font-weight:700; margin:0; color:#f8fafc;">
-        Monthly Accrual Summary &bull; Month <%= java.time.LocalDate.now().getMonthValue() %>
+    <h2 style="font-size:16px; font-weight:700; margin:0; color:var(--text);">
+        This month so far &bull; Month <%= java.time.LocalDate.now().getMonthValue() %>
     </h2>
 </div>
 
 <div class="month-kpi-grid">
     <div class="month-kpi-card">
         <div class="muted small font-bold" style="text-transform:uppercase;">Total Worked Hours</div>
-        <div class="month-kpi-val" style="color:#60a5fa;">${totalHoursMonth} <span style="font-size:13px; font-weight:500; color:var(--muted);">hrs</span></div>
+        <div class="month-kpi-val" style="color:var(--text);">${totalHoursMonth} <span style="font-size:13px; font-weight:500; color:var(--muted);">hrs</span></div>
         <div class="muted small" style="margin-top:4px;">Target: 208 hrs/month</div>
     </div>
     <div class="month-kpi-card">
         <div class="muted small font-bold" style="text-transform:uppercase;">Late Check-ins</div>
-        <div class="month-kpi-val" style="color:#fbbf24;">${lateCountMonth} <span style="font-size:13px; font-weight:500; color:var(--muted);">times</span></div>
+        <div class="month-kpi-val" style="color:#b45309;">${lateCountMonth} <span style="font-size:13px; font-weight:500; color:var(--muted);">times</span></div>
         <div class="muted small" style="margin-top:4px;">${onTimeCountMonth} on-time shifts</div>
     </div>
     <div class="month-kpi-card">
         <div class="muted small font-bold" style="text-transform:uppercase;">Overtime Shifts (OT)</div>
-        <div class="month-kpi-val" style="color:#a78bfa;">${overtimeCountMonth} <span style="font-size:13px; font-weight:500; color:var(--muted);">shifts</span></div>
+        <div class="month-kpi-val" style="color:var(--text);">${overtimeCountMonth} <span style="font-size:13px; font-weight:500; color:var(--muted);">shifts</span></div>
         <div class="muted small" style="margin-top:4px;">150% &ndash; 300% Multipliers</div>
     </div>
     <div class="month-kpi-card">
         <div class="muted small font-bold" style="text-transform:uppercase;">Estimated Net Accrual</div>
-        <div class="month-kpi-val" style="color:#34d399;"><fmt:formatNumber value="${estimatedSalary}" pattern="#,##0"/> <span style="font-size:13px; font-weight:500; color:var(--muted);">VND</span></div>
+        <div class="month-kpi-val" style="color:#15803d;"><fmt:formatNumber value="${estimatedSalary}" pattern="#,##0"/> <span style="font-size:13px; font-weight:500; color:var(--muted);">VND</span></div>
         <div class="muted small" style="margin-top:4px;">Before monthly tax deductions</div>
     </div>
 </div>
@@ -447,12 +447,12 @@
                             <tr>
                                 <td class="mono font-bold" style="color:var(--text);">${h.workDate}</td>
                                 <td><strong><c:out value="${h.shiftName}"/></strong></td>
-                                <td class="mono" style="color:#34d399; font-weight:600;">${not empty h.checkIn ? h.formattedCheckIn : '--:--'}</td>
-                                <td class="mono" style="color:#60a5fa; font-weight:600;">${not empty h.checkOut ? h.formattedCheckOut : '--:--'}</td>
+                                <td style="color:var(--text); font-weight:500;">${not empty h.checkIn ? h.formattedCheckIn : '--:--'}</td>
+                                <td style="color:var(--text); font-weight:500;">${not empty h.checkOut ? h.formattedCheckOut : '--:--'}</td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${h.workedMinutes > 0}">
-                                            <span class="mono font-bold">${h.workedMinutes / 60}h ${h.workedMinutes % 60}m</span>
+                                            <span class="font-bold">${h.formattedWorkedHours}</span>
                                         </c:when>
                                         <c:otherwise><span class="muted">&ndash;&ndash;</span></c:otherwise>
                                     </c:choose>

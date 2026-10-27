@@ -7,7 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Attendance Kiosk · SmartAttend</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/fonts.css?v=5">
+    <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/assets/img/logo.svg">
     <style>
         :root {
             --bg: #090d16;
@@ -28,7 +30,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-family: var(--font-body);
             background: radial-gradient(circle at 50% 20%, #1e293b 0%, #090d16 80%);
             color: var(--text-main);
             min-height: 100vh;

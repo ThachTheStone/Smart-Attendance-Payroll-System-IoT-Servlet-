@@ -4,7 +4,7 @@
    Crisp, Professional, High-Contrast IoT Telemetry & Automated Payroll Portal
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
     /* --- 8dp Spatial System Tokens --- */
@@ -19,8 +19,8 @@
     --space-12: 48px;
 
     /* --- Clean Light B2B SaaS Palette (Modern Swiss Style) --- */
-    --bg: #f8fafc;
-    --bg-app: #f8fafc;
+    --bg: #f4f5f7;
+    --bg-app: #f4f5f7;
     --surface: #ffffff;
     --surface-hover: #f1f5f9;
     --surface-glass: rgba(255, 255, 255, 0.95);
@@ -72,16 +72,16 @@
     /* Radii */
     --radius-xs: 4px;
     --radius-sm: 6px;
-    --radius: 10px;
-    --radius-lg: 14px;
-    --radius-xl: 18px;
+    --radius: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 10px;
     --radius-full: 9999px;
 
     /* Natural Drop Shadows (Soft, Realistic, Human-Crafted) */
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
-    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+    --shadow-xs: none;
+    --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
+    --shadow: 0 1px 3px rgba(16, 24, 40, 0.06);
+    --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.07), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
 
     /* Transitions & Motion */
@@ -112,7 +112,7 @@ html {
 
 body {
     margin: 0;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-body);
     font-size: 14px;
     line-height: 1.5;
     color: var(--text);
@@ -120,6 +120,13 @@ body {
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* Brand mark: "Ridge S" logo glyph inside the blue tile */
+.brand-mark img {
+    display: block;
+    width: 78%;
+    height: 78%;
 }
 
 /* Links */
@@ -159,104 +166,192 @@ p { margin: 0; }
 }
 .font-bold { font-weight: 700; }
 
-/* ---------- Topbar Navigation ---------- */
-.topbar {
+/* ---------- App Shell: sidebar + main column ---------- */
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 236px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: #14213d;
+    color: #c7cfdd;
+    overflow-y: auto;
+}
+
+.sidebar-brand {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 10px;
+    padding: 18px 20px;
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.sidebar-brand:hover { color: #ffffff; }
+.sidebar-brand-name {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.brand-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    background: #1d4ed8;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 12px 12px 16px;
+}
+
+.nav-group + .nav-group {
+    margin-top: 18px;
+}
+.nav-group-label {
+    padding: 0 10px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7d8aa3;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 5px;
+    color: #c7cfdd;
+    font-size: 13.5px;
+    font-weight: 500;
+}
+.sidebar-nav a svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.8;
+}
+.sidebar-nav a:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+}
+.sidebar-nav a.active {
+    background: #1d4ed8;
+    color: #ffffff;
+    font-weight: 600;
+}
+.sidebar-nav a.active svg { opacity: 1; }
+
+.sidebar-account {
+    padding: 14px 16px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.sidebar-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2b3a5c;
+    color: #ffffff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+.sidebar-user-name {
+    display: block;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+}
+.sidebar-user-role {
+    display: block;
+    color: #7d8aa3;
+    font-size: 12px;
+}
+.sidebar-account-links {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+}
+.sidebar-account-links a {
+    color: #9fb0cf;
+    font-size: 12px;
+    white-space: nowrap;
+}
+.sidebar-account-links a:hover,
+.sidebar-account-links a.active { color: #ffffff; }
+
+.app-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 52px;
     padding: 0 32px;
-    height: 64px;
     background: #ffffff;
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
-    z-index: 1000;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    z-index: 50;
+}
+.app-topbar-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+.app-topbar-date {
+    font-size: 13px;
+    color: var(--muted);
 }
 
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: -0.02em;
-    color: #0f172a;
-}
-.brand:hover {
-    text-decoration: none;
-    color: var(--primary);
-}
-.brand-mark {
-    display: inline-grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 6px rgba(29, 78, 216, 0.25);
+.app-content {
+    width: 100%;
+    max-width: 1320px;
+    padding: 24px 32px 56px;
 }
 
-.nav {
-    display: flex;
-    gap: 4px;
-    flex: 1;
-    overflow-x: auto;
-    padding: 4px 0;
-}
-.nav a, .nav-soon {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 13px;
-    border-radius: 7px;
-    color: #64748b;
-    font-weight: 500;
-    font-size: 13px;
-    white-space: nowrap;
-    transition: all var(--transition-fast);
-    border: 1px solid transparent;
-}
-.nav a svg {
-    opacity: 0.75;
-    transition: opacity var(--transition-fast);
-}
-.nav a:hover {
-    background: #f1f5f9;
-    color: #0f172a;
-    text-decoration: none;
-}
-.nav a:hover svg {
-    opacity: 1;
-}
-.nav a.active {
-    background: #eff6ff;
-    color: #1d4ed8;
-    border-color: #bfdbfe;
-    font-weight: 600;
-}
-.nav a.active svg {
-    opacity: 1;
-    color: #1d4ed8;
-}
-
-.user-menu {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.user-menu a.active {
-    font-weight: 600;
-    color: var(--primary);
-}
-.user-name {
-    font-weight: 600;
-    color: #0f172a;
-    font-size: 13px;
+@media (max-width: 960px) {
+    .app-shell { flex-direction: column; }
+    .sidebar { position: static; width: 100%; height: auto; }
+    .sidebar-nav { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 8px 12px; }
+    .nav-group + .nav-group { margin-top: 0; }
+    .nav-group { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; }
+    .nav-group-label { display: none; }
+    .sidebar-account { display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-account-links { margin-top: 0; padding-left: 0; }
+    .app-topbar { padding: 0 16px; }
+    .app-content { padding: 16px; }
 }
 
 /* ---------- Layout Containers ---------- */
@@ -933,3 +1028,264 @@ select:focus,
     box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12) !important;
     outline: none !important;
 }
+
+/* ==========================================================================
+   Business layer - flat, quiet, legible
+   Overrides decorative patterns still present in page-level styles:
+   no hover lift, no glow, no gradient, square-ish badges, tabular numbers.
+   ========================================================================== */
+.btn:hover,
+.btn-primary:hover,
+.btn-secondary:hover,
+.btn-danger:hover,
+.btn-warning:hover,
+.btn-success:hover {
+    transform: none !important;
+}
+.btn {
+    border-radius: 6px;
+    box-shadow: none !important;
+}
+.btn-sm { border-radius: 5px; }
+
+.card:hover,
+.stat:hover,
+.kpi-card:hover,
+.user-kpi:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.role-badge, .status-badge, .badge {
+    border-radius: 4px;
+    letter-spacing: 0;
+}
+
+.stat-num, .kpi-value,
+.user-kpi-val, .user-kpi-value {
+    font-family: var(--font-ui) !important;
+    font-weight: 600 !important;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+}
+.stat-label, .kpi-label, .user-kpi-label {
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+}
+
+/* Page header cards become a plain page header: title + description + actions, no box. */
+.page-hero, .hero-card, .users-hero, .att-hero, .payroll-hero, .rules-hero,
+.shifts-hero, .schedule-hero, .holidays-hero, .enroll-hero, .today-hero,
+.staff-hero, .pass-hero {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 0 16px !important;
+    margin-bottom: 20px !important;
+    border-bottom: 1px solid var(--border) !important;
+    border-radius: 0 !important;
+}
+
+/* Numbers, dates, codes and money use the UI face with fixed-width digits (columns still align).
+   Monospace stays only where the content is code: formulas, pre/code blocks, the device simulator. */
+.app-shell .mono,
+.app-shell [style*="JetBrains Mono"] {
+    font-family: var(--font-ui) !important;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+}
+.app-shell .formula-card .mono,
+.app-shell pre, .app-shell code, .app-shell kbd,
+.app-shell .sim-grid .mono, .app-shell .sim-grid [style*="JetBrains Mono"],
+.app-shell .console-box, .app-shell .console-box * {
+    font-family: var(--font-mono) !important;
+}
+
+/* Section tabs: sibling pages of one area (e.g. Weekly schedule | Shift types | Public holidays) */
+.section-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin: -4px 0 20px;
+    overflow-x: auto;
+}
+.section-tabs a {
+    padding: 10px 14px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+.section-tabs a:hover { color: var(--text); }
+.section-tabs a.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Enterprise components - shared by Payroll, Salary rules and other work pages
+   ========================================================================== */
+.pg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px 32px;
+    margin-bottom: 20px;
+}
+.pg-header-text { flex: 1 1 380px; min-width: 0; }
+.pg-header h1 { font-size: 22px; margin: 0 0 4px; }
+.pg-header p { margin: 0; color: var(--muted); font-size: 13px; }
+.pg-header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.panel {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+}
+.panel-head h2 { font-size: 15px; margin: 0; }
+.panel-head .count { color: var(--muted); font-weight: 400; margin-left: 4px; }
+.panel-head p { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+.panel-body { padding: 18px; }
+.panel-foot {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    background: #fafbfc;
+    border-radius: 0 0 8px 8px;
+}
+.panel-scroll { overflow-x: auto; }
+
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 9px 14px;
+    background: #f8f9fb;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+.data-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #eef0f3;
+    font-size: 13px;
+    color: var(--text-secondary);
+    vertical-align: middle;
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: #fafbfc; }
+.data-table tfoot td {
+    padding: 11px 14px;
+    border-top: 2px solid var(--border);
+    background: #f8f9fb;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 13px;
+}
+.data-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.data-table .nowrap { white-space: nowrap; }
+.data-table .strong { font-weight: 600; color: var(--text); }
+.cell-title { font-weight: 600; color: var(--text); }
+.cell-sub { font-size: 12px; color: var(--muted); }
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+.figure { padding: 14px 18px; border-left: 1px solid var(--border); margin-left: -1px; }
+.figure-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+.figure-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
+    margin: 4px 0 2px;
+}
+.figure-value small { font-size: 13px; font-weight: 500; color: var(--muted); }
+.figure-note { font-size: 12px; color: var(--muted); }
+
+.status-text { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.status-text::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.status-ok { color: #15803d; }
+.status-warn { color: #b45309; }
+.status-bad { color: #b91c1c; }
+.status-info { color: #1d4ed8; }
+.status-neutral { color: #64748b; }
+
+.btn-xs {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+/* Step tracker for multi-step work (e.g. a payroll run) */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); }
+.step-item { display: flex; gap: 12px; padding: 16px 18px; border-left: 1px solid var(--border); }
+.step-item:first-child { border-left: none; }
+.step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    border: 2px solid #d1d5db;
+    color: #6b7280;
+    background: #fff;
+}
+.step-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.step-state { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.step-item.is-done .step-num { background: #15803d; border-color: #15803d; color: #fff; }
+.step-item.is-current .step-num { border-color: #1d4ed8; color: #1d4ed8; }
+.step-item.is-current { background: #f5f8ff; }
+.step-item.is-blocked .step-num { border-color: #b91c1c; color: #b91c1c; }
+.step-item.is-blocked .step-state { color: #b91c1c; }
+.step-item.is-todo .step-name { color: var(--muted); }
+
+@media (max-width: 900px) {
+    .steps { grid-template-columns: 1fr 1fr; }
+    .step-item:nth-child(3) { border-left: none; }
+    .step-item:nth-child(n+3) { border-top: 1px solid var(--border); }
+}
+@media (max-width: 560px) {
+    .steps { grid-template-columns: 1fr; }
+    .step-item { border-left: none; border-top: 1px solid var(--border); }
+    .step-item:first-child { border-top: none; }
+}
+
+.btn:disabled,
+.btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+

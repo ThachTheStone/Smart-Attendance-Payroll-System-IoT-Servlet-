@@ -1,851 +1,366 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<c:set var="pageTitle" value="Operations Dashboard"/>
+<c:set var="pageTitle" value="Dashboard"/>
 <c:set var="activeNav" value="dashboard"/>
 <%@include file="/WEB-INF/views/common/header.jspf"%>
 
 <style>
-    /* ==========================================================================
-       SmartAttend Operations & Attendance Dashboard (Enterprise Edition)
-       Modern Swiss Light & B2B SaaS Clean Editorial Style
-       ========================================================================== */
-
-    /* Top Command Header */
-    .dash-hero-hud {
+    /* Dashboard - today's attendance at a glance (FR-DASH-01..06) */
+    .db-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
+        align-items: flex-end;
         gap: 16px;
-        margin-bottom: 24px;
-        padding: 20px 24px;
-        background: #ffffff;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-    }
-    .dash-title-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-    .dash-title-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
         flex-wrap: wrap;
+        margin-bottom: 20px;
     }
-    .dash-heading {
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: #0f172a;
-        margin: 0;
-    }
-    .live-telemetry-badge {
+    .db-header h1 { font-size: 22px; margin: 0 0 4px; }
+    .db-header p { margin: 0; color: var(--muted); font-size: 13px; }
+    .db-header-actions { display: flex; align-items: center; gap: 12px; }
+
+    .conn-status {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 4px 10px;
-        border-radius: var(--radius-full);
-        font-size: 11px;
-        font-weight: 600;
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #a7f3d0;
+        gap: 7px;
+        font-size: 12px;
+        color: var(--muted);
     }
-    .telemetry-radar-dot {
-        width: 7px;
-        height: 7px;
+    .conn-dot {
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        background: #059669;
+        background: #94a3b8;
     }
-    .telemetry-radar-dot.offline {
-        background: #dc2626;
-    }
-    .dash-time-indicator {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        font-weight: 600;
-        color: #334155;
-        background: #f1f5f9;
-        border: 1px solid #e2e8f0;
-        padding: 4px 10px;
-        border-radius: 6px;
-    }
+    .conn-status.is-live .conn-dot { background: #16a34a; }
+    .conn-status.is-down .conn-dot { background: #dc2626; }
+    .conn-status.is-down { color: #b91c1c; }
 
-    /* Action Buttons in Header */
-    .hud-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    .hud-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 14px;
-        border-radius: 7px;
-        font-size: 12px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all var(--transition-fast);
-        cursor: pointer;
-        border: 1px solid transparent;
-    }
-    .hud-btn-primary {
-        background: #1d4ed8;
-        color: #ffffff;
-        border-color: #1e40af;
-        box-shadow: 0 1px 2px rgba(29, 78, 216, 0.2);
-    }
-    .hud-btn-primary:hover {
-        background: #1e40af;
-        color: #ffffff;
-    }
-    .hud-btn-secondary {
-        background: #ffffff;
-        color: #334155;
-        border: 1px solid #cbd5e1;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-    }
-    .hud-btn-secondary:hover {
-        background: #f8fafc;
-        border-color: #94a3b8;
-        color: #0f172a;
-    }
-
-    /* Security Alert Banner (FR-DASH-04) */
-    .security-alert-box {
+    /* Security alert (FR-DASH-04): hidden until the server pushes one */
+    .db-alert {
         display: none;
-        background: #fef2f2;
+        margin-bottom: 20px;
+        padding: 12px 16px;
         border: 1px solid #fecaca;
         border-left: 4px solid #dc2626;
-        padding: 14px 18px;
-        border-radius: var(--radius);
-        margin-bottom: 24px;
+        border-radius: 6px;
+        background: #fef2f2;
+        color: #7f1d1d;
     }
-    .security-alert-content {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-    }
-    .security-alert-title {
-        color: #dc2626;
-        font-weight: 700;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .security-alert-desc {
-        color: #991b1b;
-        font-size: 12px;
-        margin-top: 2px;
-    }
+    .db-alert-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .db-alert-title { font-weight: 700; font-size: 14px; }
+    .db-alert-desc { font-size: 13px; margin-top: 2px; }
 
-    /* 5 KPI Metric Bento Grid (FR-DASH-02) */
-    .kpi-grid {
+    /* Summary strip: one panel, five figures */
+    .db-summary {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-    .kpi-card {
         background: #ffffff;
         border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 18px 20px;
-        position: relative;
-        overflow: hidden;
-        transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        box-shadow: var(--shadow-xs);
-    }
-    .kpi-card:hover {
-        border-color: var(--border-hover);
-        box-shadow: var(--shadow-sm);
-    }
-    .kpi-card-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 10px;
-    }
-    .kpi-label {
-        font-size: 11px;
-        color: #64748b;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-    }
-    .kpi-icon-wrap {
-        width: 32px;
-        height: 32px;
         border-radius: 8px;
-        display: grid;
-        place-items: center;
-        flex-shrink: 0;
+        margin-bottom: 20px;
     }
-    .kpi-value {
+    .db-figure { padding: 16px 20px; }
+    .db-figure + .db-figure { border-left: 1px solid var(--border); }
+    .db-figure-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+    .db-figure-value {
         font-size: 28px;
-        font-weight: 700;
-        line-height: 1.1;
-        letter-spacing: -0.02em;
-        font-family: 'JetBrains Mono', monospace;
-        margin-bottom: 6px;
-        color: #0f172a;
+        font-weight: 600;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+        margin: 6px 0 4px;
     }
-    .kpi-sub {
-        font-size: 12px;
-        color: #64748b;
-        display: flex;
-        align-items: center;
-        gap: 4px;
+    .db-figure-value.is-warn { color: #b45309; }
+    .db-figure-value.is-bad { color: #b91c1c; }
+    .db-figure-note { font-size: 12px; color: var(--muted); }
+    .db-progress {
+        height: 4px;
+        background: #e5e7eb;
+        border-radius: 2px;
+        margin-top: 8px;
+        overflow: hidden;
     }
+    .db-progress > span { display: block; height: 100%; background: #1d4ed8; }
 
-    /* KPI Colors (Clean & Semantic) */
-    .kpi-present .kpi-icon-wrap { background: #ecfdf5; color: #059669; }
-    .kpi-present .kpi-value { color: #059669; }
-
-    .kpi-late .kpi-icon-wrap { background: #fffbeb; color: #d97706; }
-    .kpi-late .kpi-value { color: #d97706; }
-
-    .kpi-absent .kpi-icon-wrap { background: #fef2f2; color: #dc2626; }
-    .kpi-absent .kpi-value { color: #dc2626; }
-
-    .kpi-ot .kpi-icon-wrap { background: #eff6ff; color: #1d4ed8; }
-    .kpi-ot .kpi-value { color: #1d4ed8; }
-
-    .kpi-devices .kpi-icon-wrap { background: #f0f9ff; color: #0284c7; }
-    .kpi-devices .kpi-value { color: #0284c7; }
-
-    /* 2-Column Responsive Dashboard Layout */
-    .dash-columns {
+    /* Layout */
+    .db-grid {
         display: grid;
-        grid-template-columns: 1fr 400px;
-        gap: 24px;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        gap: 20px;
         align-items: start;
     }
-
-    /* Section Cards */
-    .section-card {
+    .db-panel {
         background: #ffffff;
         border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 20px;
-        margin-bottom: 24px;
-        box-shadow: var(--shadow-xs);
+        border-radius: 8px;
+        margin-bottom: 20px;
     }
-    .section-card-head {
+    .db-panel-head {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
         gap: 12px;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border);
     }
-    .section-card-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: #0f172a;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin: 0;
-    }
+    .db-panel-head h2 { font-size: 15px; margin: 0; }
+    .db-panel-head .count { color: var(--muted); font-weight: 400; margin-left: 4px; }
+    .db-panel-head a { font-size: 13px; }
 
-    /* Table Modern */
-    .table-modern-wrap {
-        overflow-x: auto;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: #ffffff;
-    }
-    .table-modern {
-        width: 100%;
-        border-collapse: collapse;
+    .db-table { width: 100%; border-collapse: collapse; }
+    .db-table th {
         text-align: left;
-    }
-    .table-modern th {
-        font-size: 11px;
-        font-weight: 700;
-        color: #475569;
-        background: #f8fafc;
-        padding: 10px 14px;
-        border-bottom: 1px solid var(--border);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
-    }
-    .table-modern td {
-        padding: 12px 14px;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 13px;
-        vertical-align: middle;
-        color: #334155;
-    }
-    .table-modern tr:last-child td {
-        border-bottom: 0;
-    }
-    .table-modern tr:hover td {
-        background: #f8fafc;
-    }
-    .table-modern td strong {
-        color: #0f172a;
-    }
-
-    /* Gateway Status Box */
-    .biometric-scanner-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: var(--radius);
-        padding: 20px;
-        text-align: center;
-        margin-bottom: 24px;
-    }
-    .scanner-icon-wrap {
-        width: 52px;
-        height: 52px;
-        border-radius: 12px;
-        background: #eff6ff;
-        color: #1d4ed8;
-        display: grid;
-        place-items: center;
-        margin: 0 auto 12px;
-    }
-
-    /* IoT Hardware Stations */
-    .device-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 14px;
-    }
-    .device-card-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 14px 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .device-box-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
-    .device-name-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .device-chip-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 7px;
-        background: #eff6ff;
-        color: #1d4ed8;
-        display: grid;
-        place-items: center;
-        flex-shrink: 0;
-    }
-    .device-status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 11px;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 999px;
-    }
-    .dev-online {
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #a7f3d0;
-    }
-    .dev-offline {
-        background: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-    }
-
-    /* Memory Bar */
-    .mem-bar-wrap {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .mem-bar-track {
-        height: 5px;
-        background: #e2e8f0;
-        border-radius: 999px;
-        overflow: hidden;
-    }
-    .mem-bar-fill {
-        height: 100%;
-        border-radius: 999px;
-        background: #1d4ed8;
-        transition: width 0.3s ease;
-    }
-
-    /* Live Feed Sidebar */
-    .feed-card {
-        background: #ffffff;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 20px;
-        box-shadow: var(--shadow-xs);
-    }
-    .feed-header-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 14px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid var(--border);
-    }
-    .feed-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        max-height: 520px;
-        overflow-y: auto;
-        padding-right: 2px;
-    }
-    .feed-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 10px 12px;
-        border-radius: 7px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        transition: border-color var(--transition-fast), background var(--transition-fast);
-    }
-    .feed-item:hover {
-        border-color: #cbd5e1;
-        background: #f1f5f9;
-    }
-    .feed-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 7px;
-        font-weight: 700;
-        display: grid;
-        place-items: center;
-        font-size: 11px;
-        flex-shrink: 0;
-    }
-    .feed-avatar.in {
-        background: #ecfdf5;
-        color: #059669;
-        border: 1px solid #a7f3d0;
-    }
-    .feed-avatar.out {
-        background: #eff6ff;
-        color: #1d4ed8;
-        border: 1px solid #bfdbfe;
-    }
-    .feed-avatar.fail {
-        background: #fef2f2;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-    }
-    .feed-info { flex: 1; min-width: 0; }
-    .feed-name {
-        font-weight: 600;
-        font-size: 13px;
-        color: #0f172a;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .feed-meta {
-        font-size: 11px;
-        color: #64748b;
-        font-family: 'JetBrains Mono', monospace;
-        margin-top: 2px;
-    }
-    .feed-reason {
         font-size: 12px;
-        color: #475569;
-        margin-top: 3px;
-        line-height: 1.35;
-    }
-    .feed-badge {
-        font-size: 10px;
-        font-weight: 700;
-        padding: 2px 7px;
-        border-radius: 4px;
+        font-weight: 600;
+        color: var(--muted);
+        padding: 9px 18px;
+        background: #f8f9fb;
+        border-bottom: 1px solid var(--border);
         white-space: nowrap;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
     }
+    .db-table td {
+        padding: 11px 18px;
+        border-bottom: 1px solid #eef0f3;
+        font-size: 13px;
+        color: var(--text-secondary);
+        vertical-align: middle;
+    }
+    .db-table tr:last-child td { border-bottom: none; }
+    .db-person-name { font-weight: 600; color: var(--text); }
+    .db-person-code { font-size: 12px; color: var(--muted); }
+    .db-time { font-variant-numeric: tabular-nums; color: var(--text); }
+
+    .db-empty { padding: 32px 18px; text-align: center; color: var(--muted); font-size: 13px; }
+    .db-empty strong { display: block; color: var(--text); font-size: 14px; margin-bottom: 4px; }
+
+    /* Plain status text with a small colored marker */
+    .status-text { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; }
+    .status-text::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .status-ok { color: #15803d; }
+    .status-warn { color: #b45309; }
+    .status-bad { color: #b91c1c; }
+    .status-info { color: #1d4ed8; }
+    .status-neutral { color: #64748b; }
+
+    /* Recent scans */
+    .db-feed { max-height: 640px; overflow-y: auto; }
+    .db-feed-item {
+        display: grid;
+        grid-template-columns: 66px minmax(0, 1fr) auto;
+        gap: 10px;
+        padding: 11px 18px;
+        border-bottom: 1px solid #eef0f3;
+        font-size: 13px;
+    }
+    .db-feed-item:last-child { border-bottom: none; }
+    .db-feed-time { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .db-feed-name { font-weight: 600; color: var(--text); }
+    .db-feed-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .db-feed-result { font-size: 12px; font-weight: 600; white-space: nowrap; }
 
     @media (max-width: 1200px) {
-        .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+        .db-summary { grid-template-columns: repeat(3, 1fr); }
+        .db-figure:nth-child(4) { border-left: none; }
+        .db-figure:nth-child(n+4) { border-top: 1px solid var(--border); }
     }
     @media (max-width: 1024px) {
-        .dash-columns { grid-template-columns: 1fr; }
-        .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .db-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
-        .kpi-grid { grid-template-columns: 1fr; }
-        .dash-hero-hud { padding: 16px; }
+        .db-summary { grid-template-columns: 1fr 1fr; }
+        .db-figure { border-left: none !important; border-top: 1px solid var(--border); }
+        .db-figure:nth-child(-n+2) { border-top: none; }
     }
 </style>
 
-<!-- Top Command HUD -->
-<div class="dash-hero-hud">
-    <div class="dash-title-group">
-        <div class="dash-title-row">
-            <h1 class="dash-heading">Operations Dashboard</h1>
-            <div class="live-telemetry-badge" id="liveStatusBadge">
-                <span class="telemetry-radar-dot" id="liveDot"></span>
-                <span id="liveStatusText">Live Feed Active</span>
-            </div>
-            <span class="dash-time-indicator" id="liveClockTicking">--:--:--</span>
-        </div>
-        <p class="muted small" style="margin: 0;">
-            Biometric scan logs, sensor telemetry &amp; daily personnel status (<fmt:formatDate value="<%= new java.util.Date() %>" pattern="EEEE, MMMM dd, yyyy" />).
-        </p>
-    </div>
-    <div class="hud-actions">
-        <a href="${pageContext.request.contextPath}/kiosk" target="_blank" class="hud-btn hud-btn-secondary" title="Launch biometric kiosk display in full screen">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-            Kiosk View
-        </a>
-        <a href="${pageContext.request.contextPath}/dev/simulator" class="hud-btn hud-btn-secondary" title="Simulate biometric scan events">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
-            Simulator
-        </a>
-        <a href="${pageContext.request.contextPath}/admin/attendance" class="hud-btn hud-btn-primary" title="View all attendance records">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-            Attendance Logs
-        </a>
-    </div>
-</div>
+<c:set var="onlineCount" value="0"/>
+<c:forEach var="d" items="${devices}">
+    <c:if test="${d.online}"><c:set var="onlineCount" value="${onlineCount + 1}"/></c:if>
+</c:forEach>
 
-<!-- Security Alert Banner (FR-DASH-04) -->
-<div class="security-alert-box" id="secAlertBox">
-    <div class="security-alert-content">
-        <div>
-            <div class="security-alert-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                <span id="secAlertTitle">Biometric Security Alert</span>
-            </div>
-            <div class="security-alert-desc" id="secAlertDesc">Anomalous fingerprint scan activity detected.</div>
-        </div>
-        <button type="button" class="btn btn-ghost btn-sm" onclick="dismissSecAlert()" style="color:#fca5a5; border-color:rgba(239,68,68,0.3);">Dismiss</button>
-    </div>
-</div>
-
-<!-- 5 KPI Stat Cards (FR-DASH-02) -->
-<div class="kpi-grid">
-    <!-- Present Today -->
-    <div class="kpi-card kpi-present">
-        <div class="kpi-card-top">
-            <span class="kpi-label">Present Today</span>
-            <div class="kpi-icon-wrap">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
-            </div>
-        </div>
-        <div class="kpi-value" id="kpiPresent">${presentCount}</div>
-        <div class="kpi-sub">
-            <span>Out of <strong style="color:#fff;">${totalEmployees}</strong> total personnel</span>
-        </div>
-    </div>
-
-    <!-- Late Arrivals -->
-    <div class="kpi-card kpi-late">
-        <div class="kpi-card-top">
-            <span class="kpi-label">Late Arrivals</span>
-            <div class="kpi-icon-wrap">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline><line x1="12" y1="2" x2="12" y2="4"></line></svg>
-            </div>
-        </div>
-        <div class="kpi-value" id="kpiLate">${lateCount}</div>
-        <div class="kpi-sub">
-            <span>Exceeded 5-min grace window</span>
-        </div>
-    </div>
-
-    <!-- Absents -->
-    <div class="kpi-card kpi-absent">
-        <div class="kpi-card-top">
-            <span class="kpi-label">Absents</span>
-            <div class="kpi-icon-wrap">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="18" y1="8" x2="23" y2="13"></line><line x1="23" y1="8" x2="18" y2="13"></line></svg>
-            </div>
-        </div>
-        <div class="kpi-value" id="kpiAbsent">${absentCount}</div>
-        <div class="kpi-sub">
-            <span>No check-in record for shift</span>
-        </div>
-    </div>
-
-    <!-- Overtime -->
-    <div class="kpi-card kpi-ot">
-        <div class="kpi-card-top">
-            <span class="kpi-label">Overtime (OT)</span>
-            <div class="kpi-icon-wrap">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            </div>
-        </div>
-        <div class="kpi-value" id="kpiOvertime">${overtimeCount}</div>
-        <div class="kpi-sub">
-            <span>Exceeded scheduled shift hours</span>
-        </div>
-    </div>
-
-    <!-- Biometric Terminals -->
-    <div class="kpi-card kpi-devices">
-        <div class="kpi-card-top">
-            <span class="kpi-label">Terminals</span>
-            <div class="kpi-icon-wrap">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
-            </div>
-        </div>
-        <div class="kpi-value" id="kpiDevices">
-            <c:set var="onlineCount" value="0"/>
-            <c:forEach var="d" items="${devices}">
-                <c:if test="${d.online}"><c:set var="onlineCount" value="${onlineCount + 1}"/></c:if>
-            </c:forEach>
-            ${onlineCount} / ${devices.size()}
-        </div>
-        <div class="kpi-sub">
-            <span>ESP32 + AS608 devices online</span>
-        </div>
-    </div>
-</div>
-
-<!-- 2-Column Dashboard Layout -->
-<div class="dash-columns">
-
-    <!-- Left Column: Currently Working + IoT Devices -->
+<div class="db-header">
     <div>
-        <!-- Currently Checked In (FR-DASH-01) -->
-        <div class="section-card">
-            <div class="section-card-head">
-                <div>
-                    <h2 class="section-card-title">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        Currently Working Personnel
-                    </h2>
-                    <p class="muted small" style="margin: 2px 0 0;">Staff members with active check-in timestamp and pending check-out.</p>
-                </div>
-                <span class="role-badge role-STAFF" id="workingBadge">${currentlyWorking.size()} active</span>
-            </div>
+        <h1>Today's attendance</h1>
+        <p>Who is at work, who is late or absent, and the latest fingerprint scans. Figures update automatically.</p>
+    </div>
+    <div class="db-header-actions">
+        <span class="conn-status" id="liveStatusBadge">
+            <span class="conn-dot" id="liveDot"></span>
+            <span id="liveStatusText">Connecting&hellip;</span>
+        </span>
+        <a href="${ctx}/admin/attendance" class="btn btn-secondary">Attendance records</a>
+    </div>
+</div>
 
-            <div class="table-modern-wrap">
-                <table class="table-modern" id="workingTable">
-                    <thead>
-                        <tr>
-                            <th>Code</th>
-                            <th>Full Name</th>
-                            <th>Department</th>
-                            <th>Shift</th>
-                            <th>Check-in Time</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="workingTbody">
-                        <c:choose>
-                            <c:when test="${empty currentlyWorking}">
-                                <tr id="emptyWorkingRow">
-                                    <td colspan="6" style="padding: 0;">
-                                        <div style="text-align: center; padding: 40px 20px;">
-                                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(59, 130, 246, 0.12); color: #3b82f6; display: grid; place-items: center; margin: 0 auto 12px;">
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                            </div>
-                                            <h3 style="font-size: 14px; margin: 0 0 4px 0; color: #0f172a;">No Personnel Currently Clocked In</h3>
-                                            <p class="muted small" style="max-width: 400px; margin: 0 auto 16px;">
-                                                When staff place their enrolled finger on the AS608 biometric terminal, their check-in record will appear here instantaneously.
-                                            </p>
-                                            <div style="display: flex; justify-content: center; gap: 8px;">
-                                                <a href="${pageContext.request.contextPath}/dev/simulator" class="btn btn-secondary btn-sm">
-                                                    Open Simulator &rarr;
-                                                </a>
-                                                <a href="${pageContext.request.contextPath}/kiosk" target="_blank" class="btn btn-primary btn-sm">
-                                                    Launch Kiosk View &rarr;
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </c:when>
-                            <c:otherwise>
-                                <c:forEach var="a" items="${currentlyWorking}">
-                                    <tr id="workRow-${a.employeeId}">
-                                        <td class="mono font-bold" style="color: #60a5fa;">${a.employeeCode}</td>
-                                        <td><strong><c:out value="${a.employeeName}"/></strong></td>
-                                        <td><c:out value="${a.department}"/></td>
-                                        <td><span class="role-badge" style="background:rgba(99,102,241,0.12); color:#a5b4fc; border:1px solid rgba(99,102,241,0.28);"><c:out value="${a.shiftName}"/></span></td>
-                                        <td class="mono" style="color:#34d399; font-weight:600;">${a.formattedCheckIn}</td>
-                                        <td>
-                                            <span class="role-badge ${a.status == 'LATE' ? 'role-KIOSK' : 'role-STAFF'}">
-                                                <c:out value="${a.statusLabel}"/>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </c:otherwise>
-                        </c:choose>
-                    </tbody>
-                </table>
-            </div>
+<div class="db-alert" id="secAlertBox" role="alert">
+    <div class="db-alert-row">
+        <div>
+            <div class="db-alert-title" id="secAlertTitle">Security alert</div>
+            <div class="db-alert-desc" id="secAlertDesc">Repeated unrecognized fingerprint scans.</div>
         </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="dismissSecAlert()">Dismiss</button>
+    </div>
+</div>
 
-        <!-- IoT Device Telemetry Stations (FR-DASH-05) -->
-        <div class="section-card">
-            <div class="section-card-head">
-                <div>
-                    <h2 class="section-card-title">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line></svg>
-                        IoT Biometric Terminals (ESP32 + AS608)
-                    </h2>
-                    <p class="muted small" style="margin: 2px 0 0;">Hardware terminal telemetry (60s poll) and optical sensor readiness.</p>
-                </div>
+<section class="db-summary" aria-label="Today's figures">
+    <div class="db-figure">
+        <div class="db-figure-label">Present</div>
+        <div class="db-figure-value" id="kpiPresent">${presentCount}</div>
+        <div class="db-figure-note">of <span id="kpiTotal">${totalEmployees}</span> active employees</div>
+        <div class="db-progress"><span id="kpiPresentBar" style="width: ${totalEmployees > 0 ? presentCount * 100 / totalEmployees : 0}%;"></span></div>
+    </div>
+    <div class="db-figure">
+        <div class="db-figure-label">Late</div>
+        <div class="db-figure-value ${lateCount > 0 ? 'is-warn' : ''}" id="kpiLate">${lateCount}</div>
+        <div class="db-figure-note">checked in after the grace period</div>
+    </div>
+    <div class="db-figure">
+        <div class="db-figure-label">Absent</div>
+        <div class="db-figure-value ${absentCount > 0 ? 'is-bad' : ''}" id="kpiAbsent">${absentCount}</div>
+        <div class="db-figure-note">scheduled, no check-in</div>
+    </div>
+    <div class="db-figure">
+        <div class="db-figure-label">Overtime</div>
+        <div class="db-figure-value" id="kpiOvertime">${overtimeCount}</div>
+        <div class="db-figure-note">worked past the end of their shift</div>
+    </div>
+    <div class="db-figure">
+        <div class="db-figure-label">Terminals online</div>
+        <div class="db-figure-value ${onlineCount < devices.size() ? 'is-bad' : ''}" id="kpiDevices">${onlineCount} / ${devices.size()}</div>
+        <div class="db-figure-note">fingerprint devices reporting</div>
+    </div>
+</section>
+
+<div class="db-grid">
+    <div>
+        <!-- Currently checked in (FR-DASH-01) -->
+        <section class="db-panel">
+            <div class="db-panel-head">
+                <h2>At work now <span class="count" id="workingBadge">(${currentlyWorking.size()})</span></h2>
+                <a href="${ctx}/admin/attendance">All attendance &rarr;</a>
             </div>
-            <div class="device-grid">
-                <c:forEach var="d" items="${devices}">
-                    <div class="device-card-box" id="deviceBox-${d.id}">
-                        <div class="device-box-top">
-                            <div class="device-name-row">
-                                <div class="device-chip-icon">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-                                </div>
-                                <div>
-                                    <div style="font-weight:600; font-size:13px; color:#ffffff;"><c:out value="${d.name}"/></div>
-                                    <div class="muted small"><c:out value="${d.location}"/></div>
-                                </div>
-                            </div>
-                            <span class="device-status-badge ${d.online ? 'dev-online' : 'dev-offline'}" id="devBadge-${d.id}">
-                                ${d.online ? '● Online' : '○ Offline'}
-                            </span>
-                        </div>
-                        <div class="mem-bar-wrap">
-                            <div style="display:flex; justify-content:space-between; font-size:11px;" class="muted">
-                                <span>Sensor Memory</span>
-                                <span class="mono" style="color:#60a5fa;">AS608 Optical</span>
-                            </div>
-                            <div class="mem-bar-track">
-                                <div class="mem-bar-fill" style="width: ${d.online ? '68%' : '0%'};"></div>
-                            </div>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
-                            <span class="mono small muted">Ping: ${d.formattedHeartbeat}</span>
-                            <a href="${pageContext.request.contextPath}/dev/simulator" class="small font-bold" style="color:var(--primary);">Test Device &rarr;</a>
+            <table class="db-table" id="workingTable">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Shift</th>
+                        <th>Checked in</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="workingTbody">
+                    <tr id="emptyWorkingRow" style="${empty currentlyWorking ? '' : 'display:none;'}">
+                        <td colspan="5" class="db-empty">
+                            <strong>Nobody is checked in right now</strong>
+                            Check-ins appear here as soon as an employee scans at a terminal.
+                            You can try it with the <a href="${ctx}/dev/simulator">device simulator</a>.
+                        </td>
+                    </tr>
+                    <c:forEach var="a" items="${currentlyWorking}">
+                        <tr data-code="<c:out value='${a.employeeCode}'/>">
+                            <td>
+                                <div class="db-person-name"><c:out value="${a.employeeName}"/></div>
+                                <div class="db-person-code"><c:out value="${a.employeeCode}"/></div>
+                            </td>
+                            <td><c:out value="${a.department}"/></td>
+                            <td><c:out value="${a.shiftName}"/></td>
+                            <td class="db-time">${a.formattedCheckIn}</td>
+                            <td>
+                                <span class="status-text ${a.status == 'LATE' ? 'status-warn' : 'status-ok'}"><c:out value="${a.statusLabel}"/></span>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Terminals (FR-DASH-05) -->
+        <section class="db-panel">
+            <div class="db-panel-head">
+                <h2>Fingerprint terminals <span class="count">(${devices.size()})</span></h2>
+                <a href="${ctx}/dev/simulator">Test a terminal &rarr;</a>
+            </div>
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>Terminal</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Last heartbeat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:if test="${empty devices}">
+                        <tr><td colspan="4" class="db-empty">No terminals registered.</td></tr>
+                    </c:if>
+                    <c:forEach var="d" items="${devices}">
+                        <tr>
+                            <td class="db-person-name"><c:out value="${d.name}"/></td>
+                            <td><c:out value="${d.location}"/></td>
+                            <td>
+                                <span class="status-text ${d.online ? 'status-ok' : 'status-bad'}" id="devBadge-${d.id}">${d.online ? 'Online' : 'Offline'}</span>
+                            </td>
+                            <td class="db-time">${d.formattedHeartbeat}</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <!-- Recent scans (FR-DASH-03) -->
+    <section class="db-panel">
+        <div class="db-panel-head">
+            <h2>Recent scans</h2>
+        </div>
+        <div class="db-feed" id="feedList">
+            <div class="db-empty" id="emptyFeedMsg" style="${empty recentLogs ? '' : 'display:none;'}">No scans recorded yet today.</div>
+            <c:forEach var="log" items="${recentLogs}">
+                <div class="db-feed-item">
+                    <div class="db-feed-time">${log.formattedTime}</div>
+                    <div>
+                        <div class="db-feed-name"><c:out value="${not empty log.employeeName ? log.employeeName : 'Unrecognized fingerprint'}"/></div>
+                        <div class="db-feed-detail">
+                            <c:out value="${log.deviceName != null ? log.deviceName : 'Terminal'}"/><c:if test="${log.confidenceScore != null}"> &middot; match score ${log.confidenceScore}</c:if><c:if test="${not empty log.reason}"> &middot; <c:out value="${log.reason}"/></c:if>
                         </div>
                     </div>
-                </c:forEach>
-            </div>
-        </div>
-    </div>
-
-    <!-- Right Column: Gateway Status & Live Feed (FR-DASH-03) -->
-    <div>
-        <!-- Biometric Gateway Status Widget -->
-        <div class="biometric-scanner-box">
-            <div class="scanner-icon-wrap">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/>
-                    <path d="M5 19.5C5.5 18 6 15 6 12c0-3.5 2.5-6 6-6"/>
-                    <path d="M12 10c-1.1 0-2 .9-2 2 0 3-1.5 5.5-3 7"/>
-                    <path d="M22 12c0 3-1 5.5-2 7.5"/>
-                    <path d="M14 12c0 3.5-1 6.5-2 9"/>
-                    <path d="M18 12a6 6 0 0 0-6-6"/>
-                    <path d="M18 12c0 2.5-.5 5-1 7"/>
-                </svg>
-            </div>
-            <div style="font-weight: 700; font-size: 14px; color: #0f172a;">
-                Biometric Gateway Active
-            </div>
-            <div class="muted small mono" style="margin-top: 4px;">
-                Optical AS608 &bull; 500 DPI &bull; Min Conf: 50%
-            </div>
-            <div style="margin-top: 14px;">
-                <a href="${pageContext.request.contextPath}/dev/simulator" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center;">
-                    Open Hardware Simulator
-                </a>
-            </div>
-        </div>
-
-        <!-- Live Activity Stream Card -->
-        <div class="feed-card">
-            <div class="feed-header-row">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-                    <span style="font-size:14px; font-weight:700; color:#ffffff;">Live Activity Feed</span>
+                    <c:choose>
+                        <c:when test="${log.result == 'CHECK_IN'}"><span class="db-feed-result status-ok">Check-in</span></c:when>
+                        <c:when test="${log.result == 'CHECK_OUT'}"><span class="db-feed-result status-info">Check-out</span></c:when>
+                        <c:when test="${log.result == 'NOT_RECOGNIZED'}"><span class="db-feed-result status-bad">Not recognized</span></c:when>
+                        <c:otherwise><span class="db-feed-result status-neutral"><c:out value="${log.result}"/></span></c:otherwise>
+                    </c:choose>
                 </div>
-                <span class="live-telemetry-badge">
-                    <span class="telemetry-radar-dot"></span> Live
-                </span>
-            </div>
-
-            <div class="feed-list" id="feedList">
-                <c:choose>
-                    <c:when test="${empty recentLogs}">
-                        <div class="empty small" id="emptyFeedMsg" style="text-align:center; padding:32px; color:var(--muted);">No recent scans recorded.</div>
-                    </c:when>
-                    <c:otherwise>
-                        <c:forEach var="log" items="${recentLogs}">
-                            <div class="feed-item">
-                                <div class="feed-avatar ${log.result == 'CHECK_IN' ? 'in' : log.result == 'CHECK_OUT' ? 'out' : 'fail'}">
-                                    <c:choose>
-                                        <c:when test="${log.result == 'CHECK_IN'}">IN</c:when>
-                                        <c:when test="${log.result == 'CHECK_OUT'}">OUT</c:when>
-                                        <c:otherwise>?</c:otherwise>
-                                    </c:choose>
-                                </div>
-                                <div class="feed-info">
-                                    <div class="feed-name">
-                                        <c:out value="${not empty log.employeeName ? log.employeeName : 'Unrecognized Fingerprint'}"/>
-                                    </div>
-                                    <div class="feed-meta">
-                                        ${log.formattedTime} &bull; <c:out value="${log.deviceName != null ? log.deviceName : 'Terminal'}"/>
-                                        <c:if test="${log.confidenceScore != null}">
-                                            &bull; Conf: <strong style="color:#60a5fa;">${log.confidenceScore}%</strong>
-                                        </c:if>
-                                    </div>
-                                    <div class="feed-reason">
-                                        <c:out value="${log.reason}"/>
-                                    </div>
-                                </div>
-                                <div>
-                                    <span class="feed-badge" style="${log.result == 'CHECK_IN' ? 'background:rgba(16,185,129,0.12); color:#34d399; border:1px solid rgba(16,185,129,0.28);' : log.result == 'CHECK_OUT' ? 'background:rgba(59,130,246,0.12); color:#60a5fa; border:1px solid rgba(59,130,246,0.28);' : 'background:rgba(239,68,68,0.12); color:#f87171; border:1px solid rgba(239,68,68,0.28);'}">
-                                        <c:out value="${log.result}"/>
-                                    </span>
-                                </div>
-                            </div>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+            </c:forEach>
         </div>
-    </div>
-
+    </section>
 </div>
 
 <script>
-    const contextPath = '${pageContext.request.contextPath}';
+    const contextPath = '${ctx}';
     let alertHideTimer = null;
 
-    // Real-time ticking digital clock
-    function updateClock() {
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
-        const el = document.getElementById('liveClockTicking');
-        if (el) el.textContent = timeStr;
+    const RESULT_LABELS = {
+        CHECK_IN: ['Check-in', 'status-ok'],
+        CHECK_OUT: ['Check-out', 'status-info'],
+        NOT_RECOGNIZED: ['Not recognized', 'status-bad']
+    };
+
+    function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined && text !== null) node.textContent = text;
+        return node;
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+
+    function setConnection(state, label) {
+        const badge = document.getElementById('liveStatusBadge');
+        badge.classList.remove('is-live', 'is-down');
+        if (state) badge.classList.add(state);
+        document.getElementById('liveStatusText').textContent = label;
+    }
 
     function dismissSecAlert() {
         document.getElementById('secAlertBox').style.display = 'none';
@@ -856,195 +371,139 @@
         document.getElementById('secAlertTitle').textContent = title;
         document.getElementById('secAlertDesc').textContent = desc;
         box.style.display = 'block';
-
         clearTimeout(alertHideTimer);
-        alertHideTimer = setTimeout(() => {
-            box.style.display = 'none';
-        }, 12000);
+        alertHideTimer = setTimeout(dismissSecAlert, 12000);
     }
 
-    // Add event item to live feed (FR-DASH-03)
+    function bump(id, delta) {
+        const node = document.getElementById(id);
+        if (node) node.textContent = (parseInt(node.textContent, 10) || 0) + delta;
+    }
+
+    function refreshPresentBar() {
+        const present = parseInt(document.getElementById('kpiPresent').textContent, 10) || 0;
+        const total = parseInt(document.getElementById('kpiTotal').textContent, 10) || 0;
+        document.getElementById('kpiPresentBar').style.width = (total > 0 ? Math.min(100, present * 100 / total) : 0) + '%';
+    }
+
+    // Recent scans (FR-DASH-03)
     function prependFeedItem(data) {
         const list = document.getElementById('feedList');
-        const empty = document.getElementById('emptyFeedMsg');
-        if (empty) empty.style.display = 'none';
+        document.getElementById('emptyFeedMsg').style.display = 'none';
 
-        const item = document.createElement('div');
-        item.className = 'feed-item';
+        const label = RESULT_LABELS[data.result] || [data.result || 'Scan', 'status-neutral'];
+        const detail = [data.deviceName || 'Terminal'];
+        if (data.confidence) detail.push('match score ' + data.confidence);
+        if (data.message) detail.push(data.message);
 
-        let badgeStyle = 'background:rgba(239,68,68,0.12); color:#f87171; border:1px solid rgba(239,68,68,0.28);';
-        let avatarClass = 'fail';
-        let avatarText = '?';
-
-        if (data.result === 'CHECK_IN') {
-            badgeStyle = 'background:rgba(16,185,129,0.12); color:#34d399; border:1px solid rgba(16,185,129,0.28);';
-            avatarClass = 'in';
-            avatarText = 'IN';
-        } else if (data.result === 'CHECK_OUT') {
-            badgeStyle = 'background:rgba(59,130,246,0.12); color:#60a5fa; border:1px solid rgba(59,130,246,0.28);';
-            avatarClass = 'out';
-            avatarText = 'OUT';
-        }
-
-        item.innerHTML = 
-            '<div class="feed-avatar ' + avatarClass + '">' + avatarText + '</div>' +
-            '<div class="feed-info">' +
-                '<div class="feed-name">' + (data.employeeName || 'Unknown') + '</div>' +
-                '<div class="feed-meta">' + (data.time || '') + ' &bull; ' + (data.deviceName || 'Scanner') + 
-                    (data.confidence ? ' &bull; Conf: <strong>' + data.confidence + '%</strong>' : '') + '</div>' +
-                '<div class="feed-reason">' + (data.message || '') + '</div>' +
-            '</div>' +
-            '<div>' +
-                '<span class="feed-badge" style="' + badgeStyle + '">' + data.result + '</span>' +
-            '</div>';
+        const item = el('div', 'db-feed-item');
+        item.appendChild(el('div', 'db-feed-time', data.time || ''));
+        const body = el('div');
+        body.appendChild(el('div', 'db-feed-name', data.employeeName || 'Unrecognized fingerprint'));
+        body.appendChild(el('div', 'db-feed-detail', detail.join(' · ')));
+        item.appendChild(body);
+        item.appendChild(el('span', 'db-feed-result ' + label[1], label[0]));
 
         list.insertBefore(item, list.firstChild);
-
-        if (list.children.length > 30) {
-            list.removeChild(list.lastChild);
-        }
+        const items = list.querySelectorAll('.db-feed-item');
+        if (items.length > 30) items[items.length - 1].remove();
     }
 
-    // Refresh currently working table (FR-DASH-01)
-    function updateWorkingTable(emp, action, timeStr, statusLabel) {
+    // At work now (FR-DASH-01). Rows are keyed by employee code, which every scan event carries.
+    function updateWorkingTable(data) {
+        const code = data.employeeCode;
+        if (!code || code === '--') return;
         const tbody = document.getElementById('workingTbody');
-        const emptyRow = document.getElementById('emptyWorkingRow');
-        const badge = document.getElementById('workingBadge');
+        const existing = Array.prototype.find.call(tbody.querySelectorAll('tr[data-code]'), function (tr) {
+            return tr.getAttribute('data-code') === code;
+        });
+        if (existing) existing.remove();
 
-        if (!emp || !emp.id) return;
-
-        const rowId = 'workRow-' + emp.id;
-        const existingRow = document.getElementById(rowId);
-
-        if (action === 'CHECK_IN') {
-            if (emptyRow) emptyRow.style.display = 'none';
-            if (existingRow) {
-                existingRow.parentNode.removeChild(existingRow);
-            }
-            const tr = document.createElement('tr');
-            tr.id = rowId;
-            tr.innerHTML = 
-                '<td class="mono font-bold" style="color:#60a5fa;">' + (emp.code || '') + '</td>' +
-                '<td><strong>' + (emp.name || '') + '</strong></td>' +
-                '<td>' + (emp.department || '') + '</td>' +
-                '<td><span class="role-badge" style="background:rgba(99,102,241,0.12); color:#a5b4fc; border:1px solid rgba(99,102,241,0.28);">Current</span></td>' +
-                '<td class="mono" style="color:#34d399; font-weight:600;">' + (timeStr || '') + '</td>' +
-                '<td><span class="role-badge role-STAFF">' + (statusLabel || 'On Time') + '</span></td>';
-            tbody.insertBefore(tr, tbody.firstChild);
-        } else if (action === 'CHECK_OUT') {
-            if (existingRow) {
-                existingRow.parentNode.removeChild(existingRow);
-            }
+        if (data.result === 'CHECK_IN') {
+            const tr = el('tr');
+            tr.setAttribute('data-code', code);
+            const who = el('td');
+            who.appendChild(el('div', 'db-person-name', data.employeeName || ''));
+            who.appendChild(el('div', 'db-person-code', code));
+            tr.appendChild(who);
+            tr.appendChild(el('td', '', data.department || ''));
+            tr.appendChild(el('td', '', 'Current shift'));
+            tr.appendChild(el('td', 'db-time', data.time || ''));
+            const status = el('td');
+            status.appendChild(el('span', 'status-text ' + (data.status === 'LATE' ? 'status-warn' : 'status-ok'), data.statusLabel || 'On time'));
+            tr.appendChild(status);
+            tbody.insertBefore(tr, tbody.querySelector('tr[data-code]'));
         }
 
-        const currentCount = tbody.querySelectorAll('tr:not(#emptyWorkingRow)').length;
-        if (badge) badge.textContent = currentCount + ' active';
-        if (currentCount === 0 && emptyRow) {
-            emptyRow.style.display = '';
-        }
+        const count = tbody.querySelectorAll('tr[data-code]').length;
+        document.getElementById('workingBadge').textContent = '(' + count + ')';
+        document.getElementById('emptyWorkingRow').style.display = count === 0 ? '' : 'none';
     }
 
-    // Setup Server-Sent Events (SSE) (FR-DASH-06)
+    // Server-Sent Events (FR-DASH-06)
     function initDashboardSse() {
-        const badge = document.getElementById('liveStatusBadge');
-        const dot = document.getElementById('liveDot');
-        const text = document.getElementById('liveStatusText');
-
         const es = new EventSource(contextPath + '/admin/dashboard/stream');
 
-        es.addEventListener('open', () => {
-            if (dot) dot.className = 'telemetry-radar-dot';
-            if (text) text.textContent = 'Live Feed Active';
-            if (badge) {
-                badge.style.background = 'rgba(16, 185, 129, 0.12)';
-                badge.style.color = '#34d399';
-            }
-        });
+        es.addEventListener('open', function () { setConnection('is-live', 'Live updates on'); });
 
-        es.addEventListener('scan_event', (e) => {
+        es.addEventListener('scan_event', function (e) {
             try {
                 const data = JSON.parse(e.data);
                 prependFeedItem(data);
-
                 if (data.result === 'CHECK_IN') {
-                    const pres = document.getElementById('kpiPresent');
-                    if (pres) pres.textContent = parseInt(pres.textContent || '0') + 1;
-                    if (data.status === 'LATE') {
-                        const late = document.getElementById('kpiLate');
-                        if (late) late.textContent = parseInt(late.textContent || '0') + 1;
-                    }
-                    updateWorkingTable({ id: 1, name: data.employeeName, code: data.employeeCode, department: data.department }, 
-                                       'CHECK_IN', data.time, data.statusLabel);
-                } else if (data.result === 'CHECK_OUT') {
-                    if (data.status === 'OVERTIME') {
-                        const ot = document.getElementById('kpiOvertime');
-                        if (ot) ot.textContent = parseInt(ot.textContent || '0') + 1;
-                    }
-                    updateWorkingTable({ id: 1, name: data.employeeName, code: data.employeeCode, department: data.department }, 
-                                       'CHECK_OUT', data.time, data.statusLabel);
+                    bump('kpiPresent', 1);
+                    if (data.status === 'LATE') bump('kpiLate', 1);
+                    refreshPresentBar();
+                } else if (data.result === 'CHECK_OUT' && data.status === 'OVERTIME') {
+                    bump('kpiOvertime', 1);
                 }
+                if (data.result === 'CHECK_IN' || data.result === 'CHECK_OUT') updateWorkingTable(data);
             } catch (err) {
                 console.error('Scan event parse error', err);
             }
         });
 
-        es.addEventListener('security_alert', (e) => {
+        es.addEventListener('security_alert', function (e) {
             try {
                 const data = JSON.parse(e.data);
-                showSecAlert('SECURITY ALERT', data.message || 'Anomalous fingerprint scan attempt detected!');
+                showSecAlert('Security alert', data.message || 'Repeated unrecognized fingerprint scans.');
             } catch (err) {
                 console.error('Security alert parse error', err);
             }
         });
 
-        es.addEventListener('device_status', (e) => {
+        es.addEventListener('device_status', function (e) {
             try {
                 const data = JSON.parse(e.data);
                 const badge = document.getElementById('devBadge-' + data.deviceId);
                 if (badge) {
-                    badge.className = 'device-status-badge ' + (data.online ? 'dev-online' : 'dev-offline');
-                    badge.textContent = data.online ? '● Online' : '○ Offline';
+                    badge.className = 'status-text ' + (data.online ? 'status-ok' : 'status-bad');
+                    badge.textContent = data.online ? 'Online' : 'Offline';
                 }
             } catch (err) {
                 console.error('Device status parse error', err);
             }
         });
 
-        es.onerror = () => {
-            if (dot) dot.className = 'telemetry-radar-dot offline';
-            if (text) text.textContent = 'Reconnecting...';
-            if (badge) {
-                badge.style.background = 'rgba(239, 68, 68, 0.12)';
-                badge.style.color = '#f87171';
-            }
-        };
+        es.onerror = function () { setConnection('is-down', 'Reconnecting…'); };
     }
 
-    // AJAX Polling fallback every 5s if needed (FR-DASH-06)
-    setInterval(async () => {
+    // Polling fallback every 5 s keeps the figures right even if the stream drops (FR-DASH-06)
+    setInterval(async function () {
         try {
-            const res = await fetch(contextPath + '/admin/dashboard?action=poll', {
-                headers: { 'Accept': 'application/json' }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                if (data.stats) {
-                    const elP = document.getElementById('kpiPresent');
-                    if (elP) elP.textContent = data.stats.present;
-                    const elL = document.getElementById('kpiLate');
-                    if (elL) elL.textContent = data.stats.late;
-                    const elA = document.getElementById('kpiAbsent');
-                    if (elA) elA.textContent = data.stats.absent;
-                    const elO = document.getElementById('kpiOvertime');
-                    if (elO) elO.textContent = data.stats.overtime;
-                }
-            }
+            const res = await fetch(contextPath + '/admin/dashboard?action=poll', { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data.stats) return;
+            document.getElementById('kpiPresent').textContent = data.stats.present;
+            document.getElementById('kpiLate').textContent = data.stats.late;
+            document.getElementById('kpiAbsent').textContent = data.stats.absent;
+            document.getElementById('kpiOvertime').textContent = data.stats.overtime;
+            refreshPresentBar();
         } catch (err) {}
     }, 5000);
 
-    window.addEventListener('DOMContentLoaded', () => {
-        initDashboardSse();
-    });
+    window.addEventListener('DOMContentLoaded', initDashboardSse);
 </script>
 
 <%@include file="/WEB-INF/views/common/footer.jspf"%>

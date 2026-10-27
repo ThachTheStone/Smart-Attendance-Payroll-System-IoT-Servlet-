@@ -2,8 +2,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageTitle" value="Weekly Shift Schedule"/>
 <c:set var="activeNav" value="shifts"/>
+<c:set var="scheduleTab" value="week"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <%@ include file="../../common/header.jspf" %>
+<%@ include file="../../common/schedule-tabs.jspf" %>
 
 <style>
     .schedule-hero {
@@ -65,7 +67,7 @@
         font-size: 13px;
         font-weight: 600;
         color: #0f172a;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
     }
 
     /* Matrix Table Card */
@@ -266,15 +268,13 @@
 <div class="schedule-hero">
     <div>
         <h1 class="schedule-hero-title">
-            Shift Schedule
+            Weekly schedule
         </h1>
         <p class="schedule-hero-desc">
             Assign employee shifts on a weekly roster or recurring pattern with overnight shift support
         </p>
     </div>
     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <a class="btn btn-secondary" href="${ctx}/admin/shifts">Shift Definitions</a>
-        <a class="btn btn-secondary" href="${ctx}/admin/holidays">Public Holidays</a>
         <a class="btn btn-primary" href="#assignBox">Bulk Assign Shifts</a>
     </div>
 </div>

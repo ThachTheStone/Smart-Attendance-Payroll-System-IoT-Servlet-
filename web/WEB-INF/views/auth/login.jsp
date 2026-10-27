@@ -9,8 +9,10 @@
     <meta name="description" content="SmartAttend - Biometric IoT Attendance & Automated Payroll System. Sign in to manage your workforce.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/fonts.css?v=5">
+    <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/assets/img/logo.svg">
     <style>
         body {
             margin: 0;
@@ -20,7 +22,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-family: var(--font-body);
         }
 
         .login-layout {
@@ -413,11 +415,11 @@
         <div class="login-card">
             <a href="${pageContext.request.contextPath}/" class="login-back-link">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                Quay lại Trang chủ / Giới thiệu sản phẩm
+                Back to Home / Product Overview
             </a>
 
             <div class="login-header">
-                <span class="brand-mark">SA</span>
+                <span class="brand-mark"><img src="${pageContext.request.contextPath}/assets/img/logo-mark.svg" alt="" aria-hidden="true"></span>
                 <h2 class="login-welcome">Sign in to your account</h2>
                 <p class="login-desc">Enter your credentials to access the SmartAttend portal</p>
             </div>

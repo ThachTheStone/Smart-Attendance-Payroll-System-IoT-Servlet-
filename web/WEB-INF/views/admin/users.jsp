@@ -100,7 +100,7 @@
     .user-kpi-val {
         font-size: 24px !important;
         font-weight: 700 !important;
-        font-family: 'JetBrains Mono', monospace !important;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
         line-height: 1.1 !important;
         color: #0f172a !important;
         text-align: left !important;
@@ -168,26 +168,51 @@
         background: #ffffff;
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
-        overflow: hidden;
+        overflow-x: auto;
         box-shadow: var(--shadow-xs);
     }
     .users-table {
         width: 100%;
+        min-width: 960px;
         border-collapse: collapse;
+    }
+
+    /* Role and status: larger, easy to scan */
+    .users-table .role-badge {
+        font-size: 13px;
+        font-weight: 600;
+        padding: 4px 10px;
+        white-space: nowrap;
+    }
+    .users-table .status-active { background: #ecfdf3; color: #15803d; border: 1px solid #bbf7d0; }
+    .users-table .status-inactive { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+    /* Row actions: equal buttons in a fixed 2 x 2 grid (Edit, Bio / Reset, Lock),
+       one row on wide screens. Every row keeps the same positions. */
+    .users-table .actions {
+        display: grid;
+        grid-template-columns: repeat(2, 64px);
+        gap: 6px;
+    }
+    .users-table .actions form.inline { margin: 0; }
+    .users-table .actions .action-link { width: 100%; min-width: 0; }
+    .users-table .actions .action-link.is-empty { visibility: hidden; }
+    @media (min-width: 1680px) {
+        .users-table .actions { grid-template-columns: repeat(4, 64px); }
     }
     .users-table th {
         font-size: 11px;
         font-weight: 700;
         color: #475569;
         background: #f8fafc;
-        padding: 11px 16px;
+        padding: 11px 12px;
         border-bottom: 1px solid var(--border);
         text-transform: uppercase;
         letter-spacing: 0.05em;
         white-space: nowrap;
     }
     .users-table td {
-        padding: 12px 16px;
+        padding: 12px 12px;
         border-bottom: 1px solid #f1f5f9;
         vertical-align: middle;
         font-size: 13px;
@@ -225,24 +250,34 @@
     .action-link {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 4px 8px;
+        justify-content: center;
+        gap: 5px;
+        height: 30px;
+        min-width: 58px;
+        padding: 0 10px;
+        border: 1px solid var(--border) !important;
         border-radius: 5px;
-        font-size: 12px;
+        background: #ffffff !important;
+        font-family: inherit;
+        font-size: 12.5px;
         font-weight: 500;
-        color: var(--primary);
+        color: var(--text);
         text-decoration: none;
-        transition: background-color var(--transition-fast);
+        white-space: nowrap;
+        cursor: pointer;
+        transition: border-color var(--transition-fast), color var(--transition-fast);
     }
     .action-link:hover {
-        background: var(--primary-light);
+        border-color: var(--primary) !important;
+        color: var(--primary);
         text-decoration: none;
     }
     .action-link.danger {
         color: var(--danger);
     }
     .action-link.danger:hover {
-        background: var(--danger-bg);
+        border-color: var(--danger) !important;
+        color: var(--danger);
     }
 
     .results-info {
@@ -341,14 +376,13 @@
     <table class="users-table">
         <thead>
         <tr>
-            <th>Code</th><th>Full Name</th><th>Username</th><th>Role</th>
+            <th>Employee</th><th>Username</th><th>Role</th>
             <th>Department</th><th>Contact</th><th>Last Login</th><th>Status</th><th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <c:forEach var="u" items="${users}">
             <tr class="${u.active ? '' : 'row-inactive'}">
-                <td class="mono font-bold" style="color: #60a5fa;"><c:out value="${u.employee.code}" default="—"/></td>
                 <td>
                     <div class="user-name-cell">
                         <div class="user-avatar ${u.role == 'ADMIN' ? 'admin-av' : u.role == 'KIOSK' ? 'kiosk-av' : 'staff-av'}">
@@ -361,7 +395,7 @@
                         </div>
                         <div>
                             <b><c:out value="${u.employee.fullName}" default="(Kiosk Terminal)"/></b>
-                            <div class="muted small"><c:out value="${u.employee.position}"/></div>
+                            <div class="muted small"><c:if test="${not empty u.employee.code}"><span style="color: var(--text); font-weight: 600;"><c:out value="${u.employee.code}"/></span> &middot; </c:if><c:out value="${u.employee.position}"/></div>
                         </div>
                     </div>
                 </td>
@@ -378,24 +412,24 @@
                     </c:choose>
                 </td>
                 <td>
-                    <span class="role-badge ${u.active ? 'role-STAFF' : 'role-ADMIN'}">${u.active ? 'Active' : 'Inactive'}</span>
+                    <span class="role-badge ${u.active ? 'status-active' : 'status-inactive'}">${u.active ? 'Active' : 'Locked'}</span>
                 </td>
                 <td>
                     <div class="actions">
-                        <c:if test="${not empty u.employeeId}">
-                            <a href="${ctx}/admin/employees/enroll?id=${u.employeeId}" class="action-link" title="Manage fingerprints">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/><path d="M5 19.5C5.5 18 6 15 6 12c0-3.5 2.5-6 6-6"/></svg>
-                                Bio
-                            </a>
-                        </c:if>
-                        <a href="${ctx}/admin/users/edit?id=${u.id}" class="action-link">Edit</a>
-                        <a href="${ctx}/admin/users/reset-password?id=${u.id}" class="action-link">Reset</a>
+                        <a href="${ctx}/admin/users/edit?id=${u.id}" class="action-link" title="Edit account and employee details">Edit</a>
+                        <c:choose>
+                            <c:when test="${not empty u.employeeId}">
+                                <a href="${ctx}/admin/employees/enroll?id=${u.employeeId}" class="action-link" title="Enroll or manage fingerprints">Bio</a>
+                            </c:when>
+                            <c:otherwise><span class="action-link is-empty" aria-hidden="true"></span></c:otherwise>
+                        </c:choose>
+                        <a href="${ctx}/admin/users/reset-password?id=${u.id}" class="action-link" title="Reset password">Reset</a>
                         <c:if test="${u.id != me.id}">
                             <form method="post" action="${ctx}/admin/users/status" class="inline"
                                   onsubmit="return confirm('${u.active ? 'Deactivate' : 'Activate'} account ${u.username}?')">
                                 <input type="hidden" name="id" value="${u.id}">
                                 <input type="hidden" name="status" value="${u.active ? 'INACTIVE' : 'ACTIVE'}">
-                                <button type="submit" class="action-link ${u.active ? 'danger' : ''}" style="background:none; border:none; cursor:pointer; font-family:inherit;">
+                                <button type="submit" class="action-link ${u.active ? 'danger' : ''}" title="${u.active ? 'Lock this account' : 'Unlock this account'}">
                                     ${u.active ? 'Lock' : 'Unlock'}
                                 </button>
                             </form>
@@ -405,7 +439,7 @@
             </tr>
         </c:forEach>
         <c:if test="${empty users}">
-            <tr><td colspan="9" class="empty" style="text-align: center; padding: 32px; color: var(--muted);">No users match the criteria.</td></tr>
+            <tr><td colspan="8" class="empty" style="text-align: center; padding: 32px; color: var(--muted);">No users match the criteria.</td></tr>
         </c:if>
         </tbody>
     </table>

@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageTitle" value="Shift Management"/>
 <c:set var="activeNav" value="shifts"/>
+<c:set var="scheduleTab" value="types"/>
 <%@ include file="../../common/header.jspf" %>
+<%@ include file="../../common/schedule-tabs.jspf" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <style>
@@ -190,18 +192,8 @@
 <!-- Hero Header -->
 <div class="shifts-hero">
     <div>
-        <h1>Shift Management</h1>
-        <p class="muted" style="margin: 4px 0 0;">Configure morning, evening, night shifts and break durations</p>
-    </div>
-    <div class="hero-actions">
-        <a class="btn btn-primary" href="${ctx}/admin/shifts/schedule">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Weekly Schedule
-        </a>
-        <a class="btn btn-secondary" href="${ctx}/admin/holidays">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>
-            Holidays
-        </a>
+        <h1>Shift types</h1>
+        <p class="muted" style="margin: 4px 0 0;">The shifts you can assign on the weekly schedule: start and end times, breaks, overnight shifts</p>
     </div>
 </div>
 

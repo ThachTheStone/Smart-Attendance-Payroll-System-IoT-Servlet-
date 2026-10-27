@@ -87,7 +87,7 @@
         font-weight: 600;
     }
     .payslip-net-amount {
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
         font-size: 26px;
         font-weight: 700;
         color: #059669;
@@ -136,7 +136,7 @@
         margin-bottom: 6px;
     }
     .breakdown-value {
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
         font-size: 14px;
         font-weight: 600;
         color: #0f172a;

@@ -41,7 +41,7 @@
         border-radius: 999px;
         font-size: 12px;
         font-weight: 600;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
     }
 
     /* Week Section Card */
@@ -117,7 +117,7 @@
         color: #64748b;
         font-size: 12px;
         margin-bottom: 14px;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
     }
 
     /* Shift block */
@@ -138,7 +138,7 @@
         border-color: #fde68a;
     }
     .shift-time {
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
         font-size: 11px;
         margin-top: 3px;
         color: #334155;

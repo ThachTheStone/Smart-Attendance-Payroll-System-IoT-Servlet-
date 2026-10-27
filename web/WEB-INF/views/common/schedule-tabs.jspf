@@ -1,0 +1,8 @@
+<%@ page pageEncoding="UTF-8" %>
+<%-- Shared tabs for the scheduling area. The weekly schedule is the entry point;
+     shift types and public holidays are one click away. Pages set scheduleTab = week | types | holidays. --%>
+<nav class="section-tabs" aria-label="Scheduling">
+    <a href="${pageContext.request.contextPath}/admin/shifts/schedule" class="${scheduleTab == 'week' ? 'active' : ''}">Weekly schedule</a>
+    <a href="${pageContext.request.contextPath}/admin/shifts" class="${scheduleTab == 'types' ? 'active' : ''}">Shift types</a>
+    <a href="${pageContext.request.contextPath}/admin/holidays" class="${scheduleTab == 'holidays' ? 'active' : ''}">Public holidays</a>
+</nav>

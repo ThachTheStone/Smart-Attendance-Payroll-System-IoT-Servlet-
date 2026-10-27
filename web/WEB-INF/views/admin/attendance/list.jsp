@@ -85,7 +85,7 @@
     .att-kpi-val {
         font-size: 22px;
         font-weight: 700;
-        font-family: 'JetBrains Mono', monospace;
+        font-family: var(--font-ui); font-variant-numeric: tabular-nums;
         color: #0f172a;
         line-height: 1.1;
     }
@@ -100,8 +100,8 @@
         box-shadow: var(--shadow-xs);
     }
     .att-filter-form {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 14px;
         align-items: flex-end;
     }
@@ -109,6 +109,7 @@
         display: flex;
         flex-direction: column;
         gap: 5px;
+        flex: 1 1 160px;
     }
     .att-filter-label {
         font-size: 11px;
@@ -162,7 +163,12 @@
     .att-filter-actions {
         display: flex;
         gap: 8px;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        flex: 0 0 auto;
+    }
+    .att-filter-actions .btn {
+        height: 38px;
+        white-space: nowrap;
     }
 
     /* Missing Checkout Action Banner */
@@ -192,14 +198,24 @@
         background: #ffffff;
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
-        overflow: hidden;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         margin-bottom: 28px;
         box-shadow: var(--shadow-xs);
     }
     .att-table-card .table {
         margin: 0;
         width: 100%;
+        min-width: 960px; /* keep columns readable; the card scrolls sideways on narrow screens */
         border-collapse: collapse;
+    }
+    .att-table-card .table th,
+    .att-table-card .table .nowrap {
+        white-space: nowrap;
+    }
+    @media (max-width: 720px) {
+        .att-filter-actions { flex: 1 1 100%; }
+        .att-filter-actions .btn { flex: 1; }
     }
     .att-table-card .table th {
         background: #f8fafc;
@@ -407,11 +423,9 @@
             </select>
         </div>
         <div class="att-filter-actions">
-            <button type="submit" class="btn btn-primary" style="height: 38px;">
-                Apply Filter
-            </button>
-            <button type="button" class="btn btn-ghost btn-sm" style="height: 38px;" onclick="setToday()">Today</button>
-            <button type="button" class="btn btn-ghost btn-sm" style="height: 38px;" onclick="setThisMonth()">This Month</button>
+            <button type="submit" class="btn btn-primary">Apply filter</button>
+            <button type="button" class="btn btn-secondary" onclick="setToday()">Today</button>
+            <button type="button" class="btn btn-secondary" onclick="setThisMonth()">This month</button>
         </div>
     </form>
 </div>
@@ -444,7 +458,7 @@
                 <c:otherwise>
                     <c:forEach var="a" items="${attendances}">
                         <tr>
-                            <td class="mono font-bold" style="color: #2563eb;">
+                            <td class="mono font-bold nowrap" style="color: var(--text);">
                                 <c:out value="${a.workDate}"/>
                             </td>
                             <td>
@@ -458,9 +472,9 @@
                             </td>
                             <td>
                                 <div style="font-weight: 500; color: #0f172a;"><c:out value="${a.shiftName}"/></div>
-                                <div class="muted small mono" style="margin-top: 2px;"><c:out value="${a.shiftStartTime}"/> &ndash; <c:out value="${a.shiftEndTime}"/></div>
+                                <div class="muted small mono nowrap" style="margin-top: 2px;"><c:out value="${a.shiftStartTime}"/> &ndash; <c:out value="${a.shiftEndTime}"/></div>
                             </td>
-                            <td class="mono font-bold">
+                            <td class="mono font-bold nowrap">
                                 <c:choose>
                                     <c:when test="${not empty a.checkIn}">
                                         <span style="color:#059669;"><c:out value="${a.formattedCheckInTime}"/></span>
@@ -468,14 +482,14 @@
                                     <c:otherwise><span class="muted">&ndash;&ndash;:&ndash;&ndash;</span></c:otherwise>
                                 </c:choose>
                             </td>
-                            <td class="mono font-bold">
+                            <td class="mono font-bold nowrap">
                                 <c:choose>
                                     <c:when test="${not empty a.checkOut}">
                                         <span style="color:#2563eb;"><c:out value="${a.formattedCheckOutTime}"/></span>
                                     </c:when>
                                     <c:otherwise>
                                         <c:if test="${a.status == 'MISSING_CHECKOUT'}">
-                                            <span style="color:#f87171;">Missing</span>
+                                            <span style="color:#b91c1c;">Missing</span>
                                         </c:if>
                                         <c:if test="${a.status != 'MISSING_CHECKOUT'}">
                                             <span class="muted">&ndash;&ndash;:&ndash;&ndash;</span>
@@ -483,13 +497,13 @@
                                     </c:otherwise>
                                 </c:choose>
                             </td>
-                            <td>
-                                <span style="font-weight: 600; font-family: 'JetBrains Mono', monospace;"><c:out value="${a.formattedWorkedHours}"/></span>
+                            <td class="nowrap">
+                                <span style="font-weight: 600;"><c:out value="${a.formattedWorkedHours}"/></span>
                                 <c:if test="${a.workedMinutes > 0}">
                                     <span class="muted small mono">(${a.workedMinutes}m)</span>
                                 </c:if>
                             </td>
-                            <td>
+                            <td class="nowrap">
                                 <span class="status-pill ${a.status}">
                                     <c:out value="${a.statusLabel}"/>
                                 </span>

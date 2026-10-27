@@ -8,8 +8,10 @@
     <title>404 · Page Not Found · SmartAttend</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/fonts.css?v=5">
+    <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/assets/img/logo.svg">
     <style>
         body.error-page-body {
             min-height: 100vh;
@@ -19,7 +21,7 @@
             background: #f8fafc;
             padding: 20px;
             margin: 0;
-            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-family: var(--font-body);
             color: #0f172a;
         }
         .error-card {

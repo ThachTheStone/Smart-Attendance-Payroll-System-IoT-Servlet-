@@ -1,9 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="pageTitle" value="Public Holidays"/>
-<c:set var="activeNav" value="holidays"/>
+<c:set var="activeNav" value="shifts"/>
+<c:set var="scheduleTab" value="holidays"/>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <%@ include file="../../common/header.jspf" %>
+<%@ include file="../../common/schedule-tabs.jspf" %>
 
 <style>
     .holiday-hero {
@@ -108,15 +110,11 @@
 <div class="holiday-hero">
     <div>
         <h1 class="holiday-hero-title">
-            Public Holidays
+            Public holidays
         </h1>
         <p class="holiday-hero-desc">
-            Statutory calendar configured with automated 300% overtime pay multipliers
+            Days paid at the public holiday overtime rate (300% by default, set on Salary rules)
         </p>
-    </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <a class="btn btn-secondary" href="${ctx}/admin/shifts">Shifts</a>
-        <a class="btn btn-secondary" href="${ctx}/admin/shifts/schedule">Shift Schedule</a>
     </div>
 </div>
 
